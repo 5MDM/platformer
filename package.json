@@ -1,0 +1,23 @@
+{
+  "name": "platformer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview --host"
+  },
+  "author": "5MDM",
+  "license": "MIT",
+  "dependencies": {
+    "pixi.js": "^8.8.1",
+    "pnpm": "^10.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2",
+    "vite": "^6.2.0",
+    "vite-plugin-checker": "^0.9.0"
+  }
+}

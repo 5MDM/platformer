@@ -1,0 +1,14 @@
+{
+    "$schema": "../../schemas/mod-schema.json",
+    "name": "Base Game",
+    "version": [0, 0, 0],
+    "blocks": [
+        {
+            "name": "cobble",
+            "textureCreator": {
+               "color": "#ffffff" 
+            },
+            "character": "#"
+        }
+    ]
+}

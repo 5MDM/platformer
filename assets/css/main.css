@@ -1,0 +1,49 @@
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    
+}
+
+#c {
+    background-color: black;
+    width: var(--w);
+    height: var(--h);
+}
+
+#ui {
+    position: fixed;
+    top: 0;
+    width: var(--w);
+    height: var(--h);
+}
+
+#ui > div {
+    width: var(--w);
+    height: var(--h);
+}
+
+.top {
+    top: 0;
+    position: absolute;
+}
+
+.bottom {
+    bottom: 0;
+    position: absolute;
+}
+
+button {
+    padding-left: 5px;
+    padding-right: 5px;
+    background-color: skyblue;
+}
+
+.hidden {
+    display: none;
+}

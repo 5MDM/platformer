@@ -1,0 +1,32 @@
+
+
+#ui > #studio #bottom {
+    display: block;
+    background-color: #fa903e;
+    /*width: min(var(--w), 500px); */
+    height: 50px;
+    border-bottom: 5px solid #c57334;
+    left: 0;
+    right: 0;
+    margin: auto;
+    text-align: center;
+    padding-top: 15px;
+}
+
+#ui > #studio .bottom {
+    margin: auto;
+    left: 0;
+    margin-bottom: 5px;
+    right: 0;
+    width: min(var(--w), 500px);
+}
+
+#ui > #studio .bottom p {
+    display: inline;
+}
+
+#ui > #studio #fps-graph {
+    background-color: rgba(0, 0, 0, .5);
+    height: 100px;
+    margin-bottom: 50px;
+}

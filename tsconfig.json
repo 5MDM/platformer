@@ -1,0 +1,36 @@
+{
+    "compilerOptions": {
+  
+      "target": "es2022",                                  
+      "lib": ["ES2022", "DOM", "DOM.Iterable"],                                        
+  
+      "useDefineForClassFields": true,                  
+  
+      "module": "es2022",                                
+  
+      "moduleResolution": "bundler",                     
+  
+      "types": ["vite/client"],                                      
+  
+      "allowImportingTsExtensions": true,               
+  
+      "resolveJsonModule": true,                        
+  
+      "allowJs": true,                                  
+  
+      "noEmit": true,                                   
+  
+      "isolatedModules": true,                          
+  
+      "esModuleInterop": true,                             
+  
+      "forceConsistentCasingInFileNames": true,            
+  
+      "strict": true,                                      
+  
+      "noFallthroughCasesInSwitch": true,               
+  
+      "skipLibCheck": true                                 
+    },
+    "include": ["assets"]
+  }
