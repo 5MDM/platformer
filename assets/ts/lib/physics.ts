@@ -1,7 +1,8 @@
-import { blockSize } from "../main";
+//import { blockSize } from "../main";
 import { MovingObjs, NotDynamicObj, PWD, PWS } from "./pw-objects";
 import { $, MDmatrix } from "./util";
 
+const blockSize = 32;
 const colEl = $("#ui > #studio .bottom #col");
 
 interface PWopts {

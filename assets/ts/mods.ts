@@ -1,10 +1,11 @@
 import { Container, Sprite, Texture } from "pixi.js";
 import { Keymap } from "./lib/keymap";
 import { iteratePaths } from "./lib/util";
-import { toLoad } from "./loader";
-import { blockSize } from "./main";
+//import { blockSize } from "./main";
 import { PWS } from "./lib/pw-objects";
 import { PW } from "./lib/physics";
+
+const blockSize = 32;
 
 export const blockDefs: {[name: string]: BlockInfo} = {};
 
@@ -26,19 +27,12 @@ interface ModInfo {
 const staticContainer = new Container();
 export const levelmap = new Keymap();
 
-const iterate = iteratePaths<ModInfo>
+const iterate = await iteratePaths<ModInfo>
 (import.meta.glob<{default: ModInfo}>("../mods/*/manifest.json"), parseMod);
-
-toLoad.push(
-    iterate
-);
-
-await iterate;
 
 function parseMod(path: string, mod: ModInfo) {
     for(const block of mod.blocks) {
         blockDefs[block.name] = block;
-        console.log(block.character)
         levelmap.key(block.character, (x: number, y:number) => createBlock(createSprite(block, x, y)));
     }
 

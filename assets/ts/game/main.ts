@@ -1,19 +1,17 @@
-import { Container, Texture } from "pixi.js";
+import { Application, Container, Texture } from "pixi.js";
 import { PW } from "../lib/physics";
 import { PWD, PWS } from "../lib/pw-objects";
-import { app } from "../app";
 import { Player } from "../lib/player";
 import { startControlLoop } from "./controls";
 import { startStudioLoop } from "./studio";
 import { levelTextMap, setCurrentLevel } from "../levels/main";
-import { setWorldBase } from "../mods";
+
+import { levelmap, setWorldBase } from "../mods";
 
 const objSize = 25;
-export const wc = new Container();
-app.stage.addChild(wc);
-export const player = new Player(objSize, objSize);
 
-player.display(app);
+export const wc = new Container();
+export const player = new Player(objSize, objSize);
 
 export const pw = new PW({
     gx: 0,
@@ -41,7 +39,10 @@ function createStatic(x: number, y: number): PWS {
 
 setWorldBase(wc, pw);
 
-export function startGame() {    
+export function startGame(app: Application) {    
+    app.stage.addChild(wc);
+    player.display(app);
+
     setCurrentLevel("2");
     
     pw.startClock();

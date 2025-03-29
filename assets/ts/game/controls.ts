@@ -1,5 +1,6 @@
 import { $, round } from "../lib/util";
-import { app } from "../app";
+import { app } from "../main";
+
 import { player, wc } from "./main";
 import { deltaTime, RDtime } from "./studio";
 

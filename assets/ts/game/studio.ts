@@ -2,8 +2,8 @@ import { Container, Sprite, Texture } from "pixi.js";
 import { playerCollisionAmnt } from "../lib/physics";
 import { $, attatchToggle, round, stopAnimLoop } from "../lib/util";
 import { player } from "./main";
-import { app } from "../app";
 import { Graph } from "../lib/graph";
+import { app } from "../main";
 
 export var RDtime = 0;
 export var deltaTime = 0;
