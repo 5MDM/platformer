@@ -1,0 +1,74 @@
+{
+	"frames": {
+		"player-down-1.png": {
+			"frame": {
+				"x": 1,
+				"y": 1,
+				"w": 30,
+				"h": 63
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 63
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 63
+			}
+		},
+		"player-down-2.png": {
+			"frame": {
+				"x": 33,
+				"y": 1,
+				"w": 30,
+				"h": 63
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 63
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 63
+			}
+		},
+		"player-down-3.png": {
+			"frame": {
+				"x": 65,
+				"y": 1,
+				"w": 30,
+				"h": 63
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 63
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 63
+			}
+		}
+	},
+	"meta": {
+		"version": "1.0",
+		"image": "walk-td.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 96,
+			"h": 65
+		},
+		"scale": "1"
+	}
+}

@@ -258,3 +258,7 @@ export class MDmatrix<T> {
     this.matrix = [];
   }
 }
+
+export function normalize(min: number, val: number, max: number): number {
+  return (val - min) / (max - min);
+}

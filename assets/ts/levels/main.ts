@@ -8,13 +8,17 @@ export var currentLevelName: string;
 export const levelTextMap: {[name: string]: string} = {};
 
 const im = import.meta.glob<{default: string}>("./*.txt");
-const iterate = await iteratePaths<string>(im, addLevel);
 
-async function addLevel(path: string, dat: string) {
+export const levelPromises: Promise<void>[] = [];
+export const iterate = iteratePaths<string>(im, (path: string, dat: string) => {
+    levelPromises.push(addLevel(path, dat));
+});
+
+async function addLevel(path: string, dat: string): Promise<void> {
     const name = fileNameRegex.exec(path)?.[0];
     if(!name) return console.error(`File error: "${path}"`);
     
-    const levelDat: Promise<string> = fetch(dat).then(e => e.text());
+    const levelDat: Promise<string> = (await fetch(dat)).text();
 
     levelTextMap[name] = await levelDat;
 }

@@ -47,3 +47,9 @@ button {
 .hidden {
     display: none;
 }
+
+#ui > #joystick {
+    display: flex;
+    align-items: end;
+    padding: 35px;
+}

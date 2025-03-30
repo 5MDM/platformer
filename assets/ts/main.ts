@@ -5,6 +5,7 @@ import { startGame } from "./game/main";
 import { Application } from "pixi.js";
 import { $ } from "./lib/util";
 import "./canvas";
+import { iterate, levelPromises } from "./levels/main";
 
 export const app: Application = new Application();
 
@@ -16,10 +17,12 @@ app.init({
     autoDensity: true,
     height: innerWidth,
     width: innerWidth,
-    //powerPreference: "high-performance",
+    powerPreference: "high-performance",
     resolution: devicePixelRatio,
     canvas: $("#c") as HTMLCanvasElement,
-}).then(() => {
+}).then(async () => {
+    await iterate;
+    await Promise.all(levelPromises);
     startGame(app);
 })
 

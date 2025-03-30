@@ -1,10 +1,12 @@
+import { isMobile } from "pixi.js";
 import { $, round } from "../lib/util";
 import { app } from "../main";
 
 import { player, wc } from "./main";
 import { deltaTime, RDtime } from "./studio";
+import { Joystick } from "../lib/joystick";
 
-const speed = 2.2;
+const speed = 3;
 var isMovingLeft = false;
 var isMovingRight = false;
 var isJumping = false;
@@ -30,7 +32,7 @@ addEventListener("keyup", e => {
 
 export function startControlLoop() {
     function loop() {
-        const calcSpeed = Math.round(speed * deltaTime);
+        const calcSpeed = (speed * deltaTime);
 
         if(isMovingLeft) {
             player.vx -= calcSpeed;
@@ -49,3 +51,48 @@ export function startControlLoop() {
 
     setInterval(loop, 1/60);
 }
+
+const joystick = new Joystick({
+    target: $("#joystick") as HTMLDivElement,
+    outerColor: "rgba(50,50,50,.8)",
+    innerColor: "white",
+    size: 30,
+    max: 70,
+});
+
+joystick.onDrag = function() {
+    isMovingLeft = false;
+    isMovingRight = false;
+    isJumping = false;
+    isGoingDown = false;
+
+    if(joystick.xdir == "left") isMovingLeft = true; else
+    if(joystick.xdir == "right") isMovingRight = true;
+
+    if(joystick.ydir == "up") isJumping = true; else
+    if(joystick.ydir == "down") isGoingDown = true;
+};
+
+joystick.onReset = function() {
+    isMovingLeft = false;
+    isMovingRight = false;
+    isJumping = false;
+    isGoingDown = false;
+};
+
+/*
+joystick.parent.addEventListener("pointerup", () => {
+    isMovingLeft = false;
+    isMovingRight = false;
+    isJumping = false;
+    isGoingDown = false;
+});
+
+joystick.parent.addEventListener("pointercancel", () => {
+    isMovingLeft = false;
+    isMovingRight = false;
+    isJumping = false;
+    isGoingDown = false;
+});
+*/
+
