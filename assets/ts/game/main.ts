@@ -1,4 +1,4 @@
-import { Application, Container, Texture } from "pixi.js";
+import { AnimatedSprite, Application, Assets, Container, Spritesheet, SpritesheetData, Texture } from "pixi.js";
 import { PW } from "../lib/physics";
 import { PWD, PWS } from "../lib/pw-objects";
 import { Player } from "../lib/player";
@@ -9,9 +9,20 @@ import { levelTextMap, setCurrentLevel } from "../levels/main";
 import { levelmap, setWorldBase } from "../mods";
 
 const objSize = 25;
+const im = import.meta.glob<{default: SpritesheetData}>("../../spritesheet-data/*.json");
+const te = import.meta.glob<{default: string}>("../../images/entities/*.png");
+const teName = (await te["../../images/entities/walk-td.png"]()).default;
+
+const playerTexture = new Spritesheet(
+    await Assets.load(teName),
+    (await im["../../spritesheet-data/walk-td.json"]()).default
+);
+
+await playerTexture.parse();
 
 export const wc = new Container();
-export const player = new Player(objSize, objSize);
+export const player = new Player(30, 63);
+player.setAnimation("walk", new AnimatedSprite(playerTexture.animations.walk));
 
 export const pw = new PW({
     gx: 0,

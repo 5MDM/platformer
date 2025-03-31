@@ -6,6 +6,7 @@ import { PW } from "./lib/physics";
 
 export const chunkSize = 16;
 export const blockSize = 32;
+export const blockSizeHalf = blockSize / 2;
 
 export const blockDefs: {[name: string]: BlockInfo} = {};
 
@@ -40,8 +41,7 @@ function parseMod(path: string, mod: ModInfo) {
 
     levelmap.onEnd = function() {
         for(const container of staticContainer.children) {
-            container.cacheAsTexture(true);
-            console.log(0)
+            //container.cacheAsTexture(true);
         }
     };
 }

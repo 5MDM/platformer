@@ -1,4 +1,4 @@
-import { Application, Container, Sprite, Texture } from "pixi.js";
+import { AnimatedSprite, Application, Container, Sprite, Texture } from "pixi.js";
 
 var id = 0;
 
@@ -132,14 +132,56 @@ export class PWS extends PWB {
 // }
 
 export class PWD extends PWB {
+    lastAnim?: string;
+    lastSprite?: string;
+    container: Container = new Container();
+    animations: {[index: string]: AnimatedSprite} = {};
+    sprites: {[index: string]: Sprite} = {};
     vx = 0;
     vy = 0;
 
     constructor(x: number, y: number, w: number, h: number) {
         super(x, y, w, h);
         this.id = getNewID();
+    }
 
+    setAnimation(name: string, s: AnimatedSprite) {
+        this.animations[name] = s;
+        this.container.addChild(s);
+    }
 
+    setSprite(name: string, s: Sprite) {
+        this.sprites[name] = s;
+        this.container.addChild(s);
+    }
+
+    playAnimation(name: string) {
+        if(this.lastAnim) this.animations[this.lastAnim].visible = false;
+        if(this.lastSprite) this.animations[this.lastSprite].visible = false;
+
+        this.lastAnim = name;
+        this.animations[name].visible = true;
+    }
+
+    playSprite(name: string) {
+        if(this.lastAnim) this.animations[this.lastAnim].visible = false;
+        if(this.lastSprite) this.animations[this.lastSprite].visible = false;
+
+        this.lastSprite = name;
+        this.sprites[name].visible = true;
+    }
+
+    toContainer(c: Container) {
+        c.addChild(this.container);
+    }
+
+    display(app: Application) {
+        app.stage.addChild(this.container);
+    }
+
+    updateSprite() {
+        this.container.x = this.x;
+        this.container.y = this.y;
     }
 }
 

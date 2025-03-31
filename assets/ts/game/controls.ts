@@ -6,7 +6,9 @@ import { player } from "./main";
 import { deltaTime } from "./studio";
 import { Joystick } from "../lib/joystick";
 
-const speed = 3.5;
+const speed = 5;
+var isPlayingAnim = false;
+var isMoving = false;
 var isMovingLeft = false;
 var isMovingRight = false;
 var isJumping = false;
@@ -31,22 +33,39 @@ addEventListener("keyup", e => {
 });
 
 export function startControlLoop() {
+    player.animations.walk.animationSpeed = 0.15;
+
     function loop() {
+        isMoving = false;
         const calcSpeed = (speed * deltaTime);
 
         if(isMovingLeft) {
             player.vx -= calcSpeed;
+            isMoving = true;
         }
 
         if(isMovingRight) {
             player.vx += calcSpeed;
+            isMoving = true;
         }
 
         if(isJumping) {
             player.vy -= calcSpeed;
+            isMoving = true;
         }
 
-        if(isGoingDown) player.vy += calcSpeed;
+        if(isGoingDown) {
+            player.vy += calcSpeed;
+            isMoving = true;
+        }
+
+        if(isPlayingAnim && !isMoving) {
+            player.animations.walk.stop();
+            isPlayingAnim = false;
+        } else if(isMoving && !isPlayingAnim) {
+            isPlayingAnim = true;
+            player.animations.walk.play();
+        }
 
         requestAnimationFrame(loop);
     }

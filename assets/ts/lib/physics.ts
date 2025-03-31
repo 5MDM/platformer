@@ -1,4 +1,5 @@
 //import { blockSize } from "../main";
+import { blockSizeHalf } from "../mods";
 import { MovingObjs, NotDynamicObj, PWD, PWS } from "./pw-objects";
 import { $, MDmatrix } from "./util";
 
@@ -91,17 +92,12 @@ export class PW {
 
     private findCollisions() {
         for(const moving of this.dynamicObjs) {
+            moving.vy = Math.min(blockSizeHalf, moving.vy);
+            moving.vx = Math.min(blockSizeHalf, moving.vx);
+
             this.updateObj(moving);
             
             const playerCollisionAmnt = this.findStaticCollisions(moving);
-
-            /*for(const obj of this.NDOs) {
-                const isColliding = moving.testAABB(obj);
-                if(!isColliding) continue;
-               
-                playerCollisionAmnt++;
-                this.seperate(moving, obj);
-            }*/
 
             if(moving.isPlayer) colEl.textContent = playerCollisionAmnt.toString();
 

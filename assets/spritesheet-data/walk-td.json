@@ -2,8 +2,8 @@
 	"frames": {
 		"player-down-1.png": {
 			"frame": {
-				"x": 1,
-				"y": 1,
+				"x": 0,
+				"y": 0,
 				"w": 30,
 				"h": 63
 			},
@@ -22,8 +22,8 @@
 		},
 		"player-down-2.png": {
 			"frame": {
-				"x": 33,
-				"y": 1,
+				"x": 0,
+				"y": 63,
 				"w": 30,
 				"h": 63
 			},
@@ -42,8 +42,8 @@
 		},
 		"player-down-3.png": {
 			"frame": {
-				"x": 65,
-				"y": 1,
+				"x": 0,
+				"y": 126,
 				"w": 30,
 				"h": 63
 			},
@@ -60,6 +60,9 @@
 				"h": 63
 			}
 		}
+	},
+	"animations": {
+		"walk": ["player-down-1.png", "player-down-2.png", "player-down-3.png"]
 	},
 	"meta": {
 		"version": "1.0",

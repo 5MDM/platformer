@@ -14,9 +14,8 @@ export class Player extends PWD {
 
         this.halfWS = halfWS;
         this.halfHS = halfHS;
-
-        this.setTexture(Texture.WHITE);
-        this.sprite!.tint = 0xff000;
+        this.container.x = this.halfWS;
+        this.container.y = this.halfHS;
     }
 
     addX(x: number): void {
