@@ -43,7 +43,7 @@ export function startGame(app: Application) {
     app.stage.addChild(wc);
     player.display(app);
 
-    setCurrentLevel("2");
+    setCurrentLevel("3");
     
     pw.startClock();
     startControlLoop();

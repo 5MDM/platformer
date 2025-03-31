@@ -44,7 +44,7 @@ export class DragController {
         this.touchEl.onmousemove = e => this.mouseMove(e);
 
         this.canDrag = true;
-        this.touchEl.style.cursor = DragController.grab;
+        this.downElement.style.cursor = DragController.grab;
     }
 
     disable() {
@@ -95,12 +95,12 @@ export class DragController {
 
     mouseDown(e: MouseEvent) {
         this.isMouseDown = true;
-        this.touchEl.style.cursor = DragController.grabbing;
+        this.downElement.style.cursor = DragController.grabbing;
         this.onDrag(0, 0, e.pageX, e.pageY);
     }
 
     mouseUp(e: MouseEvent) {
         this.isMouseDown = false;
-        this.touchEl.style.cursor = DragController.grab;
+        this.downElement.style.cursor = DragController.grab;
     }
 }

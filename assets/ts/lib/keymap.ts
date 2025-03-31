@@ -1,5 +1,6 @@
 
 export class Keymap {
+    onEnd: () => void = () => undefined;
     keys: {[index: string]: (x: number, y: number) => void} = {};
 
     run(txt: string) {
@@ -16,6 +17,8 @@ export class Keymap {
                 x++;
             }
         }
+
+        this.onEnd();
     }
 
     key(char: string, f: (x: number, y: number) => void) {

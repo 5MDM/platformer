@@ -1,11 +1,11 @@
-import { Container, Sprite, Texture } from "pixi.js";
+import { Container, Sprite, squaredDistanceToLineSegment, Texture } from "pixi.js";
 import { Keymap } from "./lib/keymap";
-import { iteratePaths } from "./lib/util";
-//import { blockSize } from "./main";
+import { floorToMultiples, iteratePaths, MDmatrix } from "./lib/util";
 import { PWS } from "./lib/pw-objects";
 import { PW } from "./lib/physics";
 
-const blockSize = 32;
+export const chunkSize = 16;
+export const blockSize = 32;
 
 export const blockDefs: {[name: string]: BlockInfo} = {};
 
@@ -25,6 +25,8 @@ interface ModInfo {
 }
 
 const staticContainer = new Container();
+const staticChunks = new MDmatrix<Container>(64, 64);
+
 export const levelmap = new Keymap();
 
 const iterate = await iteratePaths<ModInfo>
@@ -36,22 +38,34 @@ function parseMod(path: string, mod: ModInfo) {
         levelmap.key(block.character, (x: number, y:number) => createBlock(createSprite(block, x, y)));
     }
 
-    staticContainer.cacheAsTexture(true);
+    levelmap.onEnd = function() {
+        for(const container of staticContainer.children) {
+            container.cacheAsTexture(true);
+            console.log(0)
+        }
+    };
 }
+
+Texture.WHITE.source.scaleMode = "linear";
+Texture.WHITE.source.autoGenerateMipmaps = false;
+
 
 function createSprite(block: BlockInfo, x: number, y: number): Sprite {
     x *= blockSize;
     y *= blockSize;
 
     if(block.textureCreator) {
-        return new Sprite({
+        const s = new Sprite({
             texture: Texture.WHITE,
             tint: block.textureCreator.color,
             width: blockSize,
             height: blockSize,
             position: {x, y},
+            roundPixels: true,
             //anchor: 0.5,
         });
+
+        return s;
     }
 
     if(!block.texture) throw new Error();
@@ -75,5 +89,17 @@ function createBlock(sprite: Sprite) {
     obj.sprite = sprite;
 
     pw.addStatic(obj);
-    obj.toContainer(staticContainer);
+    
+    const chunkX =  Math.floor(obj.x / blockSize / chunkSize);
+    const chunkY = Math.floor(obj.y / blockSize / chunkSize);
+
+    const got = staticChunks.get(chunkX, chunkX);
+    if(!got) {
+        const c = new Container();
+        staticChunks.set(chunkX, chunkY, c);
+        obj.toContainer(c);
+        staticContainer.addChild(c);
+    } else {
+        obj.toContainer(got);
+    }
 }

@@ -2,11 +2,11 @@ import { isMobile } from "pixi.js";
 import { $, round } from "../lib/util";
 import { app } from "../main";
 
-import { player, wc } from "./main";
-import { deltaTime, RDtime } from "./studio";
+import { player } from "./main";
+import { deltaTime } from "./studio";
 import { Joystick } from "../lib/joystick";
 
-const speed = 3;
+const speed = 3.5;
 var isMovingLeft = false;
 var isMovingRight = false;
 var isJumping = false;
@@ -47,17 +47,19 @@ export function startControlLoop() {
         }
 
         if(isGoingDown) player.vy += calcSpeed;
+
+        requestAnimationFrame(loop);
     }
 
-    setInterval(loop, 1/60);
+    loop();
 }
 
 const joystick = new Joystick({
     target: $("#joystick") as HTMLDivElement,
     outerColor: "rgba(50,50,50,.8)",
     innerColor: "white",
-    size: 30,
-    max: 70,
+    size: 40,
+    max: 90,
 });
 
 joystick.onDrag = function() {

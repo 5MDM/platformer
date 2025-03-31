@@ -244,7 +244,7 @@ export class MDmatrix<T> {
     );
   }
   
-  get(x: number, y: number): T {   
+  get(x: number, y: number): T | undefined {   
     this.OOB(x, y); 
     return this.matrix[y][x];
   }

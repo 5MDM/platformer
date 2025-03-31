@@ -29,5 +29,7 @@ export function setCurrentLevel(name: string) {
     const levelDat = levelTextMap[currentLevelName];
     if(!levelDat) throw new Error(`Level name "${name}" doesn't exist`);
 
+    
+
     levelmap.run(levelDat);
 }

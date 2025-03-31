@@ -22,7 +22,6 @@ app.init({
     canvas: $("#c") as HTMLCanvasElement,
 }).then(async () => {
     await iterate;
-    await Promise.all(levelPromises);
-    startGame(app);
+    Promise.all(levelPromises).then(() => startGame(app));
 })
 
