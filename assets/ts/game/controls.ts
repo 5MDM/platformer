@@ -8,7 +8,6 @@ import { Joystick } from "../lib/joystick";
 
 const speed = 5;
 var isPlayingAnim = false;
-var isMoving = false;
 var isMovingLeft = false;
 var isMovingRight = false;
 var isJumping = false;
@@ -33,38 +32,39 @@ addEventListener("keyup", e => {
 });
 
 export function startControlLoop() {
-    player.animations.walk.animationSpeed = 0.15;
-
+    var isMoving = false;
     function loop() {
+        player.container.scale.x = 1;
         isMoving = false;
+
         const calcSpeed = (speed * deltaTime);
 
         if(isMovingLeft) {
             player.vx -= calcSpeed;
             isMoving = true;
+            player.playAnimation("walk-l", 0.08);
         }
 
         if(isMovingRight) {
             player.vx += calcSpeed;
             isMoving = true;
+            player.playAnimation("walk-r", 0.08);
         }
 
         if(isJumping) {
             player.vy -= calcSpeed;
             isMoving = true;
+            player.playAnimation("walk-ud", 0.08);
         }
 
         if(isGoingDown) {
             player.vy += calcSpeed;
             isMoving = true;
+            player.playAnimation("walk-ud", 0.08);
         }
 
-        if(isPlayingAnim && !isMoving) {
-            player.animations.walk.stop();
-            isPlayingAnim = false;
-        } else if(isMoving && !isPlayingAnim) {
-            isPlayingAnim = true;
-            player.animations.walk.play();
+        if(!isMoving) {
+            player.playSprite("stand-ud");
         }
 
         requestAnimationFrame(loop);

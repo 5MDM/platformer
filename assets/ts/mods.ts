@@ -66,6 +66,8 @@ function createSprite(block: BlockInfo, x: number, y: number): Sprite {
         });
 
         return s;
+    } else {
+        
     }
 
     if(!block.texture) throw new Error();

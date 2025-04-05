@@ -8,7 +8,7 @@ export class Player extends PWD {
     isPlayer = true;
 
     constructor(w: number, h: number) {
-        const halfWS = Math.floor(innerWidth/2 - h/2);
+        const halfWS = Math.floor(innerWidth/2 - w/2);
         const halfHS = Math.floor(innerHeight/2 - h/2);
         super(halfWS, halfHS, w, h);
 

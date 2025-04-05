@@ -134,6 +134,7 @@ export class PWS extends PWB {
 export class PWD extends PWB {
     lastAnim?: string;
     lastSprite?: string;
+    current: string = "";
     container: Container = new Container();
     animations: {[index: string]: AnimatedSprite} = {};
     sprites: {[index: string]: Sprite} = {};
@@ -146,26 +147,44 @@ export class PWD extends PWB {
     }
 
     setAnimation(name: string, s: AnimatedSprite) {
+        s.visible = false;
         this.animations[name] = s;
         this.container.addChild(s);
     }
 
     setSprite(name: string, s: Sprite) {
+        s.visible = false;
         this.sprites[name] = s;
         this.container.addChild(s);
     }
 
-    playAnimation(name: string) {
-        if(this.lastAnim) this.animations[this.lastAnim].visible = false;
-        if(this.lastSprite) this.animations[this.lastSprite].visible = false;
+    private beforeImageChange(name: string) {
+        if(this.current == name) return;
+        this.current = name;
+
+        if(this.lastAnim) {
+            this.animations[this.lastAnim].visible = false;
+            this.animations[this.lastAnim].stop();
+            this.lastAnim = undefined;
+        }
+        if(this.lastSprite) {
+            this.sprites[this.lastSprite].visible = false;
+            this.lastSprite = undefined;
+        }
+    }
+
+    playAnimation(name: string, speed: number) {
+        const animation = this.animations[name];
+        animation.animationSpeed = speed;
+        this.beforeImageChange(name);
 
         this.lastAnim = name;
-        this.animations[name].visible = true;
+        animation.visible = true;
+        animation.play();
     }
 
     playSprite(name: string) {
-        if(this.lastAnim) this.animations[this.lastAnim].visible = false;
-        if(this.lastSprite) this.animations[this.lastSprite].visible = false;
+        this.beforeImageChange(name);
 
         this.lastSprite = name;
         this.sprites[name].visible = true;

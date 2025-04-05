@@ -4,9 +4,9 @@
     "version": [0, 0, 0],
     "blocks": [
         {
-            "name": "cobble",
+            "name": "brick",
             "textureCreator": {
-               "color": "#ffffff" 
+                "color": "ffffff"
             },
             "character": "#"
         }
