@@ -140,9 +140,11 @@ export class PWD extends PWB {
     sprites: {[index: string]: Sprite} = {};
     vx = 0;
     vy = 0;
+    
 
     constructor(x: number, y: number, w: number, h: number) {
         super(x, y, w, h);
+
         this.id = getNewID();
     }
 

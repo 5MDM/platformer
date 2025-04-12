@@ -5,10 +5,13 @@
     "blocks": [
         {
             "name": "brick",
-            "textureCreator": {
-                "color": "ffffff"
-            },
+            "texture": "brick.png",
             "character": "#"
+        },
+        {
+            "name": "Grass Block",
+            "texture": "grass_block_1.png",
+            "character": "g"
         }
     ]
 }

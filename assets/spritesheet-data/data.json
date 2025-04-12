@@ -2,15 +2,23 @@
 
 "brick.png":
 {
-	"frame": {"x":0,"y":0,"w":32,"h":32},
+	"frame": {"x":170,"y":0,"w":32,"h":32},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
+"grass_block_1.png":
+{
+	"frame": {"x":0,"y":63,"w":256,"h":256},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":256,"h":256},
+	"sourceSize": {"w":256,"h":256}
+},
 "player-down-stand.png":
 {
-	"frame": {"x":32,"y":0,"w":30,"h":63},
+	"frame": {"x":80,"y":0,"w":30,"h":63},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":63},
@@ -18,7 +26,7 @@
 },
 "player-down-walk-1.png":
 {
-	"frame": {"x":62,"y":0,"w":30,"h":63},
+	"frame": {"x":110,"y":0,"w":30,"h":63},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":63},
@@ -26,7 +34,7 @@
 },
 "player-down-walk-2.png":
 {
-	"frame": {"x":92,"y":0,"w":30,"h":63},
+	"frame": {"x":140,"y":0,"w":30,"h":63},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":63},
@@ -34,7 +42,7 @@
 },
 "player-side-stand.png":
 {
-	"frame": {"x":122,"y":0,"w":20,"h":63},
+	"frame": {"x":0,"y":0,"w":20,"h":63},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":20,"h":63},
@@ -42,7 +50,7 @@
 },
 "player-side-walk-1.png":
 {
-	"frame": {"x":142,"y":0,"w":20,"h":63},
+	"frame": {"x":20,"y":0,"w":20,"h":63},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":20,"h":63},
@@ -50,7 +58,7 @@
 },
 "player-side-walk-2.png":
 {
-	"frame": {"x":162,"y":0,"w":20,"h":63},
+	"frame": {"x":40,"y":0,"w":20,"h":63},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":20,"h":63},
@@ -58,7 +66,7 @@
 },
 "player-side-walk-3.png":
 {
-	"frame": {"x":182,"y":0,"w":20,"h":63},
+	"frame": {"x":60,"y":0,"w":20,"h":63},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":20,"h":63},
@@ -73,8 +81,8 @@
 	"version": "1.1",
 	"image": "atlas.png",
 	"format": "RGBA8888",
-	"size": {"w":202,"h":63},
+	"size": {"w":256,"h":319},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:449b457855aaf626e798961e3dc90cc5:f34f93c6ea92df8cbd3694a69ff17407:9157e326ab292468473525d456d5b553$"
+	"smartupdate": "$TexturePacker:SmartUpdate:56f05f7f65dcfc368d9c38135417549f:99d1fa38c9b1633b764c650159468a54:9157e326ab292468473525d456d5b553$"
 }
 }

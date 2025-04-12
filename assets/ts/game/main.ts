@@ -6,32 +6,20 @@ import { startControlLoop } from "./controls";
 import { startStudioLoop } from "./studio";
 import { levelTextMap, setCurrentLevel } from "../levels/main";
 
-import { levelmap, setWorldBase } from "../mods";
+import { levelmap, setWorldBase, spritesheet } from "../mods";
 
 const objSize = 25;
-const im = import.meta.glob<{default: SpritesheetData}>("../../spritesheet-data/data.json");
-const te = import.meta.glob<{default: string}>("../../images/atlas.png");
-const teName = (await te["../../images/atlas.png"]()).default;
-
-const playerTexture = new Spritesheet(
-    await Assets.load(teName),
-    (await im["../../spritesheet-data/data.json"]()).default
-);
-
-await playerTexture.parse();
-
-playerTexture.textureSource.scaleMode = "nearest";
 
 export const wc = new Container();
 export const player = new Player(30, 63);
-const walkR = new AnimatedSprite(playerTexture.animations["player-side-walk"]);
+const walkR = new AnimatedSprite(spritesheet.animations["player-side-walk"]);
 walkR.scale.x = -1;
 walkR.position.x = 30;
 
-player.setAnimation("walk-ud", new AnimatedSprite(playerTexture.animations["player-down-walk"]));
-player.setAnimation("walk-l", new AnimatedSprite(playerTexture.animations["player-side-walk"]));
+player.setAnimation("walk-ud", new AnimatedSprite(spritesheet.animations["player-down-walk"]));
+player.setAnimation("walk-l", new AnimatedSprite(spritesheet.animations["player-side-walk"]));
 player.setAnimation("walk-r", walkR);
-player.setSprite("stand-ud", new Sprite(playerTexture.textures["player-down-stand.png"]));
+player.setSprite("stand-ud", new Sprite(spritesheet.textures["player-down-stand.png"]));
 
 export const pw = new PW({
     gx: 0,

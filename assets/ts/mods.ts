@@ -1,4 +1,4 @@
-import { Container, Sprite, squaredDistanceToLineSegment, Texture } from "pixi.js";
+import { Assets, Container, Sprite, Spritesheet, SpritesheetData, squaredDistanceToLineSegment, Texture } from "pixi.js";
 import { Keymap } from "./lib/keymap";
 import { floorToMultiples, iteratePaths, MDmatrix } from "./lib/util";
 import { PWS } from "./lib/pw-objects";
@@ -9,6 +9,18 @@ export const blockSize = 32;
 export const blockSizeHalf = blockSize / 2;
 
 export const blockDefs: {[name: string]: BlockInfo} = {};
+
+const data = (await (import.meta.glob<{default: SpritesheetData}>("../spritesheet-data/data.json"))["../spritesheet-data/data.json"]()).default;
+const atlasImg = (await (import.meta.glob<{default: string}>("../images/atlas.png"))["../images/atlas.png"]()).default;
+    
+const spritesheet = new Spritesheet(
+    await Assets.load(atlasImg),
+    data
+);
+
+await spritesheet.parse();
+
+export {spritesheet};
 
 interface BlockInfo {
     name: "string";
@@ -41,7 +53,7 @@ function parseMod(path: string, mod: ModInfo) {
 
     levelmap.onEnd = function() {
         for(const container of staticContainer.children) {
-            //container.cacheAsTexture(true);
+            container.cacheAsTexture(true);
         }
     };
 }
@@ -73,7 +85,11 @@ function createSprite(block: BlockInfo, x: number, y: number): Sprite {
     if(!block.texture) throw new Error();
 
     return new Sprite({
-        texture: Texture.from(block.texture),
+        texture: spritesheet.textures[block.texture],
+        width: blockSize,
+        height: blockSize,
+        position: {x, y},
+        roundPixels: true,
     })
 }
 

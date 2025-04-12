@@ -42,29 +42,51 @@ export class PW {
         obj.addY(obj.vy);
     }
 
-    private separate(moving: PWD, obj: NotDynamicObj) {
-        const dx = moving.cx - obj.cx;
-        const dy = moving.cy - obj.cy;
+    private separateX(moving: PWD, obj: NotDynamicObj) {
+        const dx =  moving.cx - obj.cx;
 
         const calcX = Math.abs(dx - moving.vx);
-        const calcY = Math.abs(dy - moving.vy);
-
-        if(calcX == calcY) return;
         
-        if(calcX > calcY) {
-            if(Math.abs(dy) == obj.halfH + moving.halfH) return;
+        if(calcX > 0) {
             if(dx < 0) {
                 moving.setX(obj.x - moving.w);
             } else {
                 moving.setX(obj.maxX);
             }
+        }
+    }
+
+    private separate(moving: PWD, obj: NotDynamicObj) {
+        const dx =  moving.cx - obj.cx;
+        const dy = moving.cy - obj.cy;
+
+        const calcX = Math.abs(dx - moving.vx);
+        const calcY = Math.abs(dy - moving.vy);
+        
+        if(calcX > calcY) {
+            if(dx < 0) {
+                moving.setX(obj.x - moving.w);
+            } else {
+                moving.setX(obj.maxX);
+            }
+
         } else {
-            if(Math.abs(dx) == obj.halfW + moving.halfW) return;
             if(dy < 0) {
                 moving.setY(obj.y - moving.h);
             } else {
+                // pr
+                const d = (calcX - (moving.halfW + obj.halfW));
+                if(Math.round(d) == 0) {
+                    if(dx < 0) {
+                        moving.setX(obj.x - moving.w);
+                    } else {
+                        moving.setX(obj.maxX);
+                    }
+                    return;
+                }
                 moving.setY(obj.maxY);
             }
+
         }
     }
 
@@ -83,8 +105,10 @@ export class PW {
         const collision = [topLeft, topRight, bottomRight, bottomLeft];
         for(const col of collision) 
             if(col) {
-                collisionAmnt++;
-                this.separate(moving, col);
+                if(col.testAABB(moving)) {
+                    collisionAmnt++;
+                    this.separate(moving, col);
+                }
             }
 
         return collisionAmnt;
