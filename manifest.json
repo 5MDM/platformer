@@ -451,7 +451,7 @@
       "sizes": "1024x1024"
     }
   ],
-  "start_url": "/",
+  "start_url": "/platformer",
   "display": "standalone",
   "prefer_related_applications": false,
   "background_color": "#212a94",

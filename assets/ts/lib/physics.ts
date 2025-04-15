@@ -87,6 +87,7 @@ export class PW {
         const calcX = Math.abs(dx) - moving.halfW - obj.halfW;
         const calcY = Math.abs(dy) - moving.halfH - obj.halfH;
         
+        if(Math.floor(calcX - calcY) == 0) return;
         if(calcX < calcY) {
             if(dy < 0) {
                 moving.setY(obj.y - moving.h);
