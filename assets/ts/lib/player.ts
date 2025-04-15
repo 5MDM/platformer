@@ -1,6 +1,7 @@
 import { Texture } from "pixi.js";
 import { PWD } from "./pw-objects";
 import { wc } from "../game/main";
+import { PW } from "./physics";
 
 export class Player extends PWD {
     halfWS: number;
@@ -16,6 +17,13 @@ export class Player extends PWD {
         this.halfHS = halfHS;
         this.container.x = this.halfWS;
         this.container.y = this.halfHS;
+
+        PW.OnResizeChange((x, y) => {
+            this.container.x += x;
+            this.container.y += y;
+            this.halfWS += x;
+            this.halfHS += y;
+        });
     }
 
     addX(x: number): void {
@@ -30,6 +38,11 @@ export class Player extends PWD {
         this.maxX = x + this.w;
         this.cx = x + this.halfW;
         wc.x = this.halfWS - x;
+    }
+
+    teleport(x: number, y: number) {
+        this.setX(x);
+        this.setY(y);
     }
 
     addY(y: number) {

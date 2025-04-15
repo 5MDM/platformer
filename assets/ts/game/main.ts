@@ -6,7 +6,7 @@ import { startControlLoop } from "./controls";
 import { startStudioLoop } from "./studio";
 import { levelTextMap, setCurrentLevel } from "../levels/main";
 
-import { levelmap, setWorldBase, spritesheet } from "../mods";
+import { levelmap, playerStartX, playerStartY, setWorldBase, spritesheet } from "../mods";
 
 const objSize = 25;
 
@@ -25,25 +25,10 @@ export const pw = new PW({
     gx: 0,
     gy: 0,
     simSpeed: 1000 / 60,
+    world: wc,
 });
 
 pw.addDynamic(player);
-
-function createDynamic(x: number, y: number): PWD {
-    const obj = new PWD(x, y, objSize, objSize);
-    obj.setTexture(Texture.WHITE);
-    obj.toContainer(wc);
-    pw.addDynamic(obj);
-    return obj;
-}
-
-function createStatic(x: number, y: number): PWS {
-    const obj = new PWS(x, y, objSize, objSize);
-    obj.setTexture(Texture.WHITE);
-    obj.toContainer(wc);
-    pw.addStatic(obj);
-    return obj;
-}
 
 setWorldBase(wc, pw);
 
@@ -52,6 +37,7 @@ export function startGame(app: Application) {
     player.display(app);
 
     setCurrentLevel("3");
+    player.teleport(playerStartX, playerStartY);
     
     pw.startClock();
     startControlLoop();

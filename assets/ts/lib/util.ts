@@ -222,7 +222,7 @@ export function countingSort(arr: number[]) {
 }
 
 export class MDmatrix<T> {
-  private matrix: T[][];
+  public matrix: T[][];
   w: number;
   h: number;
 
@@ -231,7 +231,7 @@ export class MDmatrix<T> {
     this.h = h;
 
     this.matrix = [];
-    for(let y = 0; y < h; y++) this.matrix.push([]);
+    for(let y = 0; y < h; y++) this.matrix.push(new Array(w));
   }
 
   private OOB(x: number, y: number) {
@@ -254,6 +254,11 @@ export class MDmatrix<T> {
     this.matrix[y][x] = s;
   }
 
+  delete(x: number, y: number) {
+    this.OOB(x, y);
+    delete this.matrix[y][x];
+  }
+
   destroy() {
     this.matrix = [];
   }
@@ -261,4 +266,13 @@ export class MDmatrix<T> {
 
 export function normalize(min: number, val: number, max: number): number {
   return (val - min) / (max - min);
+}
+
+export function resizeDebounce(f: () => void, time: number) {
+  var timer = setTimeout(f, time);
+
+  return function() {
+    if(timer) clearTimeout(timer);
+    timer = setTimeout(f, time);
+  }
 }

@@ -1,18 +1,33 @@
 //import { blockSize } from "../main";
+import { Container } from "pixi.js";
 import { blockSizeHalf } from "../mods";
 import { MovingObjs, NotDynamicObj, PWD, PWS } from "./pw-objects";
-import { $, MDmatrix } from "./util";
+import { $, MDmatrix, resizeDebounce } from "./util";
 
-const blockSize = 32;
+export const blockSize = 64;
 const colEl = $("#ui > #studio .bottom #col");
 
 interface PWopts {
+    world: Container;
     gx: number;
     gy: number;
     simSpeed: number;
 }
 
 export var playerCollisionAmnt = 0;
+
+const resizeFuncs: ((x: number, y: number) => void)[] = [];
+var lastW = innerWidth;
+var lastH = innerHeight;
+addEventListener("resize", resizeDebounce(() => {
+    const changeX = (innerWidth - lastW)/2;
+    const changeY = (innerHeight - lastH)/2;
+
+    lastW = innerWidth;
+    lastH = innerHeight;
+
+    for(const f of resizeFuncs) f(changeX, changeY);
+}, 200));
 
 export class PW {
     static PartitionSize: number = 8;
@@ -24,10 +39,19 @@ export class PW {
     gx: number;
     gy: number;
 
+    static OnResizeChange(f: (x: number, y: number) => void) {
+        resizeFuncs.push(f);
+    }
+
     constructor(opts: PWopts) {
         this.gx = opts.gx;
         this.gy = opts.gy;
         this.simSpeed = opts.simSpeed;
+
+        PW.OnResizeChange((x, y) => {
+            opts.world.x += x;
+            opts.world.y += y;
+        });
     }
 
     private tick() {
@@ -60,33 +84,21 @@ export class PW {
         const dx =  moving.cx - obj.cx;
         const dy = moving.cy - obj.cy;
 
-        const calcX = Math.abs(dx - moving.vx);
-        const calcY = Math.abs(dy - moving.vy);
+        const calcX = Math.abs(dx) - moving.halfW - obj.halfW;
+        const calcY = Math.abs(dy) - moving.halfH - obj.halfH;
         
-        if(calcX > calcY) {
+        if(calcX < calcY) {
+            if(dy < 0) {
+                moving.setY(obj.y - moving.h);
+            } else {
+                moving.setY(obj.maxY);
+            }
+        } else {
             if(dx < 0) {
                 moving.setX(obj.x - moving.w);
             } else {
                 moving.setX(obj.maxX);
             }
-
-        } else {
-            if(dy < 0) {
-                moving.setY(obj.y - moving.h);
-            } else {
-                // pr
-                const d = (calcX - (moving.halfW + obj.halfW));
-                if(Math.round(d) == 0) {
-                    if(dx < 0) {
-                        moving.setX(obj.x - moving.w);
-                    } else {
-                        moving.setX(obj.maxX);
-                    }
-                    return;
-                }
-                moving.setY(obj.maxY);
-            }
-
         }
     }
 
@@ -144,8 +156,8 @@ export class PW {
         this.dynamicObjs.push(obj);
     }
 
-    addStatic(obj: PWS) {
+    addStatic(x: number, y: number, obj: PWS) {
         this.NDOs.push(obj);
-        this.staticGrid.set(Math.floor(obj.x / blockSize), Math.floor(obj.y / blockSize), obj);
+        this.staticGrid.set(x, y, obj);
     }
 }

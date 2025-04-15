@@ -1,4 +1,4 @@
-import { AnimatedSprite, Application, Container, Sprite, Texture } from "pixi.js";
+import { AnimatedSprite, Application, Container, Sprite, Texture, TilingSprite } from "pixi.js";
 
 var id = 0;
 
@@ -6,7 +6,7 @@ export function getNewID(): number {return id++}
 
 export class PWB {
     isPlayer = false;
-    sprite?: Sprite;
+    sprite?: Sprite | TilingSprite;
     id: number = 0;
     x: number;
     y: number;
@@ -50,7 +50,6 @@ export class PWB {
         //     ${this.maxX} > ${o.x}
         //     ${this.y} < ${o.maxY}
         //     ${this.maxY} > ${o.y}`);
-
         return this.x < o.maxX 
         && this.maxX > o.x
         && this.y < o.maxY 
