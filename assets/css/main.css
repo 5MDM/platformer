@@ -7,7 +7,8 @@
 
 body {
     overflow: hidden;
-    
+    user-select: none;
+    -webkit-touch-callout: none;
 }
 
 #c {
@@ -21,11 +22,17 @@ body {
     top: 0;
     width: var(--w);
     height: var(--h);
+    pointer-events: none;
 }
 
 #ui > div {
     width: var(--w);
     height: var(--h);
+    pointer-events: none;
+}
+
+#ui > div > * {
+    pointer-events: all;
 }
 
 .top {
@@ -52,4 +59,8 @@ button {
     display: flex;
     align-items: end;
     padding: 35px;
+}
+
+#ui > #menu {
+    height: auto;
 }

@@ -1,10 +1,8 @@
 //import { blockSize } from "../main";
 import { Container } from "pixi.js";
-import { blockSizeHalf } from "../mods";
 import { MovingObjs, NotDynamicObj, PWD, PWS } from "./pw-objects";
 import { $, MDmatrix, resizeDebounce } from "./util";
 
-export const blockSize = 64;
 const colEl = $("#ui > #studio .bottom #col");
 
 interface PWopts {
@@ -12,6 +10,8 @@ interface PWopts {
     gx: number;
     gy: number;
     simSpeed: number;
+    blockSize: number;
+    maxLevelSize: number;
 }
 
 export var playerCollisionAmnt = 0;
@@ -30,11 +30,14 @@ addEventListener("resize", resizeDebounce(() => {
 }, 200));
 
 export class PW {
+    blockSize: number;
+    blockSizeHalf: number;
+
     static PartitionSize: number = 8;
+    clockLoopId: number = NaN;
     readonly simSpeed: number;
     private dynamicObjs: PWD[] = [];
-    private NDOs: NotDynamicObj[] = [];
-    staticGrid: MDmatrix<NotDynamicObj> = new MDmatrix<NotDynamicObj>(512, 512);
+    staticGrid: MDmatrix<NotDynamicObj>;
 
     gx: number;
     gy: number;
@@ -44,9 +47,12 @@ export class PW {
     }
 
     constructor(opts: PWopts) {
+        this.staticGrid = new MDmatrix<NotDynamicObj>(opts.maxLevelSize, opts.maxLevelSize);
         this.gx = opts.gx;
         this.gy = opts.gy;
         this.simSpeed = opts.simSpeed;
+        this.blockSize = opts.blockSize;
+        this.blockSizeHalf = opts.blockSize / 2;
 
         PW.OnResizeChange((x, y) => {
             opts.world.x += x;
@@ -105,10 +111,10 @@ export class PW {
 
     private findStaticCollisions(moving: PWD): number {
         var collisionAmnt = 0;
-        const x = Math.floor(moving.x / blockSize);
-        const maxX = Math.floor(moving.maxX / blockSize);
-        const y = Math.floor(moving.y / blockSize);
-        const maxY = Math.floor(moving.maxY / blockSize);
+        const x = Math.floor(moving.x / this.blockSize);
+        const maxX = Math.floor(moving.maxX / this.blockSize);
+        const y = Math.floor(moving.y / this.blockSize);
+        const maxY = Math.floor(moving.maxY / this.blockSize);
         
         const topLeft = this.staticGrid.get(x, y);
         const topRight = this.staticGrid.get(maxX, y);
@@ -129,8 +135,8 @@ export class PW {
 
     private findCollisions() {
         for(const moving of this.dynamicObjs) {
-            moving.vy = Math.min(blockSizeHalf, moving.vy);
-            moving.vx = Math.min(blockSizeHalf, moving.vx);
+            moving.vy = Math.min(this.blockSizeHalf, moving.vy);
+            moving.vx = Math.min(this.blockSizeHalf, moving.vx);
 
             this.updateObj(moving);
             
@@ -150,7 +156,11 @@ export class PW {
             self.tick();
         }
 
-        setInterval(loop, this.simSpeed);
+        this.clockLoopId = setInterval(loop, this.simSpeed);
+    }
+
+    stopClock() {
+        clearInterval(this.clockLoopId);
     }
 
     addDynamic(obj: PWD) {
@@ -158,7 +168,11 @@ export class PW {
     }
 
     addStatic(x: number, y: number, obj: PWS) {
-        this.NDOs.push(obj);
         this.staticGrid.set(x, y, obj);
+    }
+
+    removeStatic(x: number, y: number) {
+        const got = this.staticGrid.get(x, y);
+        got
     }
 }

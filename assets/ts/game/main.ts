@@ -1,38 +1,29 @@
-import { AnimatedSprite, Application, Assets, Container, Sprite, Spritesheet, SpritesheetData, Texture } from "pixi.js";
-import { PW } from "../lib/physics";
-import { PWD, PWS } from "../lib/pw-objects";
-import { Player } from "../lib/player";
+import { AnimatedSprite, Application, Sprite } from "pixi.js";
 import { startControlLoop } from "./controls";
-import { startStudioLoop } from "./studio";
-import { levelTextMap, setCurrentLevel } from "../levels/main";
+import { startStudioLoop } from "./dev/studio";
+import { setCurrentLevel } from "../levels/main";
 
-import { levelmap, playerStartX, playerStartY, setWorldBase, spritesheet } from "../mods";
+import { spritesheet } from "../mods";
+import { playerStartX, playerStartY } from "../main";
+import { player, pw, wc } from "../constants";
 
-const objSize = 25;
+import "./dev/menu";
 
-export const wc = new Container();
-export const player = new Player(30, 63);
-const walkR = new AnimatedSprite(spritesheet.animations["player-side-walk"]);
-walkR.scale.x = -1;
-walkR.position.x = 30;
+function loadAnimations() {
+    const walkR = new AnimatedSprite(spritesheet.animations["player-side-walk"]);
+    walkR.scale.x = -1;
+    walkR.position.x = 30;
 
-player.setAnimation("walk-ud", new AnimatedSprite(spritesheet.animations["player-down-walk"]));
-player.setAnimation("walk-l", new AnimatedSprite(spritesheet.animations["player-side-walk"]));
-player.setAnimation("walk-r", walkR);
-player.setSprite("stand-ud", new Sprite(spritesheet.textures["player-down-stand.png"]));
-
-export const pw = new PW({
-    gx: 0,
-    gy: 0,
-    simSpeed: 1000 / 60,
-    world: wc,
-});
-
-pw.addDynamic(player);
-
-setWorldBase(wc, pw);
+    player.setAnimation("walk-ud", new AnimatedSprite(spritesheet.animations["player-down-walk"]));
+    player.setAnimation("walk-l", new AnimatedSprite(spritesheet.animations["player-side-walk"]));
+    player.setAnimation("walk-r", walkR);
+    player.setSprite("stand-ud", new Sprite(spritesheet.textures["player-down-stand.png"]));
+}
 
 export function startGame(app: Application) {    
+    spritesheet.textureSource.scaleMode = "nearest";
+    loadAnimations();
+
     app.stage.addChild(wc);
     player.display(app);
 

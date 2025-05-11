@@ -1,18 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Physics</title>
+    <title>Platv2</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/studio.css">
+    <link rel="stylesheet" href="assets/css/editor.css">
     <script defer src="assets/ts/init" type="module"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script> 
     <script>eruda.init();</script>
 </head>
 <body>
@@ -21,9 +22,20 @@
             Game not supported
         </canvas>
         <div id="ui">
+            <div id="editor" class="hidden">
+                <div id="mode">
+                </div>
+                <div id="block-row">
+                </div>
+            </div>
+            <div id="menu">
+                <button id="menu-btn">Menu</button>
+                <button class="hidden" id="diagnostics-btn">Diagnostics (P key)</button>
+                <button class="hidden" id="editor-btn">Level Editor (L key)</button>
+            </div>
             <div id="studio" class="hidden">
                 <div class="top">
-                    E
+                    
                 </div>
                 <div class="bottom">
                     <div class="bottom" id="bottom">

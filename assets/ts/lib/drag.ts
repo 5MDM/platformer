@@ -1,8 +1,7 @@
+import { Cursor } from "pixi.js";
 
 interface DragControllerOpts {
     touchEl: HTMLElement;
-    grabCursor?: string;
-    grabbingCursor?: string;
     enabled?: boolean;
     isMultitouch: boolean;
     customDownElement?: HTMLElement;
@@ -17,9 +16,10 @@ export class DragController {
     touchPosition: Map<number, {lastX: number, lastY: number}> = new Map();
     isMouseDown: boolean = false;
     isMultitouch: boolean;
-    static grab: string = "grab";
-    static grabbing: string = "grabbing";
-
+    grab: Cursor = "grab";
+    grabbing: Cursor = "grabbing";
+    defaultGrab: Cursor = "grab";
+    defaultGrabbing: Cursor = "grabbing";
 
     constructor(o: DragControllerOpts) {
         this.downElement = o.customDownElement || o.touchEl;
@@ -44,7 +44,7 @@ export class DragController {
         this.touchEl.onmousemove = e => this.mouseMove(e);
 
         this.canDrag = true;
-        this.downElement.style.cursor = DragController.grab;
+        this.downElement.style.cursor = this.grab;
     }
 
     disable() {
@@ -60,7 +60,7 @@ export class DragController {
         this.touchEl.style.cursor = "default";
     }
 
-    mouseMove(e: MouseEvent) {
+    private mouseMove(e: MouseEvent) {
         if (!this.canDrag) return;
         if (!this.isMouseDown) return;
         
@@ -70,7 +70,7 @@ export class DragController {
         this.onDrag(x, y, e.pageX, e.pageY);
     }
 
-    touchMove(e: Touch) {
+    private touchMove(e: Touch) {
         if(!this.canDrag) return;
 
         const touch = this.touchPosition.get(e.identifier);
@@ -84,23 +84,63 @@ export class DragController {
     
     onDrag: (x: number, y: number, px: number, py: number) => void = () => undefined;
 
-    touchDown(e: PointerEvent) {
+    private touchDown(e: PointerEvent) {
         this.touchPosition.set(e.pointerId, {lastX: e.pageX, lastY: e.pageY});
         this.onDrag(0, 0, e.pageX, e.pageY);
     }
 
-    touchUp(e: PointerEvent) {
+    private touchUp(e: PointerEvent) {
         this.touchPosition.delete(e.pointerId);
     }
 
-    mouseDown(e: MouseEvent) {
+    private mouseDown(e: MouseEvent) {
         this.isMouseDown = true;
-        this.downElement.style.cursor = DragController.grabbing;
+        this.downElement.style.cursor = this.grabbing;
         this.onDrag(0, 0, e.pageX, e.pageY);
     }
 
-    mouseUp(e: MouseEvent) {
+    private mouseUp(e: MouseEvent) {
         this.isMouseDown = false;
-        this.downElement.style.cursor = DragController.grab;
+        this.downElement.style.cursor = this.grab;
+    }
+
+    changeGrab(val: Cursor) {
+        this.downElement.style.cursor = val;
+        this.grab = val;
+    }
+
+    changeGrabbingAndCurrentCursor(val: Cursor) {
+        this.grabbing = val;
+        this.downElement.style.cursor = val;
+    }
+
+    changeDefualtandNormalGrab(val: Cursor) {
+        this.changeGrab(val);
+        this.defaultGrab = val;
+    }
+
+    changeDefaultAndNormalGrabbing(val: Cursor) {
+        this.defaultGrabbing = this.grabbing = val;
+    }
+
+    setCursorToDefault() {
+        this.grab = this.defaultGrab;
+        this.changeGrab(this.grab);
+        this.grabbing = this.defaultGrabbing;
+        this.cursorDisabled = false;
+    }
+
+    cursorDisabled: boolean = false;
+
+    // check and disable cursor
+    CAD(bool: boolean) {
+        if(bool && !this.cursorDisabled) {
+            this.cursorDisabled = true;
+            this.changeGrab("not-allowed");
+            this.changeGrabbingAndCurrentCursor("not-allowed");
+        } else if(!bool && this.cursorDisabled) {
+            this.cursorDisabled = false;
+            this.setCursorToDefault();
+        }
     }
 }

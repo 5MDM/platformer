@@ -15,6 +15,7 @@ export const levelPromises: Promise<void>[] = [];
 
 export const iterate = iteratePaths<string>(im, (path: string, dat: string) => {
     //levelPromises.push(addLevel(path, dat));
+    return new Promise(res => res());
 });
 
 async function addLevel(path: string, dat: string): Promise<void> {
@@ -32,6 +33,6 @@ export function setCurrentLevel(name: string) {
     const levelDat = levelTextMap[currentLevelName];
     //if(!levelDat) throw new Error(`Level name "${name}" doesn't exist`);
 
-    //console.log(JSON.stringify(levelmap.GMR(levelDat)));
+    //console.log(JSON.stringify(levelmap.GMR(levelDat)))
     levelmap.runRaw(level3);
 }

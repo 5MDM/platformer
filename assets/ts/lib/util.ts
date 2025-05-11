@@ -1,4 +1,4 @@
-import { Color, Sprite, Texture } from "pixi.js";
+import { Application, Color, Container, Sprite, Texture } from "pixi.js";
 
 export const UTIL_VERSION: number = 1.4;
 
@@ -113,29 +113,59 @@ export function sp(x: number, y: number, width: number, height: number, color: n
 
 export function toggleElement(el: HTMLElement, bool: boolean, type: string = "block") {
   if(bool) {
-    el.style.display = el.getAttribute("data-display")!;
+    el.style.display = type || el.getAttribute("data-display")!;
   } else {
     el.style.display = "none";
   }
 }
 
 export interface BtnList {
-  arr: HTMLButtonElement[];
+  arr: HTMLElement[];
   addTo: (el: HTMLElement) => void;
 }
 
-export function btnList(arr: HTMLButtonElement[], up?: () => void) {
+export function btnList(arr: HTMLElement[], up?: (el: HTMLElement, e: PointerEvent) => void) {
   function addTo(el: HTMLElement) {
     for(const btn of arr) el.appendChild(btn);
   }
 
   if(up)
-    for(const btn of arr) btn.addEventListener("pointerup", up);
+    for(const btn of arr) btn.addEventListener("pointerup", e => up(btn, e));
 
   return {
     arr,
     addTo,
   } as BtnList;
+}
+
+export class ToggleList {
+  lastElement?: HTMLElement;
+  list: BtnList;
+  unselect: (el: HTMLElement) => void;
+
+  constructor(
+    arr: HTMLElement[],
+    select: (el: HTMLElement, e: PointerEvent) => void,
+    unselect: (el: HTMLElement) => void,
+    target: HTMLElement,
+  ) {
+    this.unselect = unselect;
+
+    this.list = btnList(arr, (el, e) => {
+      if(this.lastElement) unselect(this.lastElement);
+      select(el, e);
+      this.lastElement = el;
+    });
+
+    this.list.addTo(target);
+  }
+
+  clear() {
+    if(!this.lastElement) return;
+    
+    this.unselect(this.lastElement);
+    this.lastElement = undefined;
+  }
 }
 
 export function rand255(): number {
@@ -154,10 +184,10 @@ export interface ImportGlob {
   [path: string]: () => string;
 }
 
-export async function iteratePaths<T>(e: Record<string, () => Promise<{default: T}>>, f: (path: string, obj: T) => void): Promise<void> {
+export async function iteratePaths<T>(e: Record<string, () => Promise<{default: T}>>, f: (path: string, obj: T) => Promise<void | void[]>): Promise<void> {
   for(const path in e) {
     const dat = await e[path]();
-    f(path, dat.default);
+    await f(path, dat.default);
   }
 }
 
@@ -235,13 +265,16 @@ export class MDmatrix<T> {
   }
 
   private OOB(x: number, y: number) {
-    if(x < 0
-    && x > this.w
-    && y < 0
-    && y > this.h
-    ) throw new Error(
+    if(this.isOOB(x, y)) throw new Error(
       `(${x}, ${y})`
     );
+  }
+
+  isOOB(x: number, y: number): boolean {
+    return x < 0
+    || x > this.w
+    || y < 0
+    || y > this.h;
   }
   
   get(x: number, y: number): T | undefined {   
@@ -262,6 +295,22 @@ export class MDmatrix<T> {
   destroy() {
     this.matrix = [];
   }
+
+  forEach(f: (t: T) => void) {
+    for(const y in this.matrix) {
+      const yo = this.matrix[y];
+
+      for(const x in yo) f(yo[x]);
+    }
+  }
+
+  clear() {
+    for(const y in this.matrix) {
+      const yo = this.matrix[y];
+
+      for(const x in yo) delete yo[x];
+    }
+  }
 }
 
 export function normalize(min: number, val: number, max: number): number {
@@ -275,4 +324,14 @@ export function resizeDebounce(f: () => void, time: number) {
     if(timer) clearTimeout(timer);
     timer = setTimeout(f, time);
   }
+}
+
+export function snapToGrid(n: number, gridPos: number, blockSize: number): number {
+  const offset = gridPos % blockSize;
+    
+  return floorToMultiples(n - offset, blockSize) + offset;
+}
+
+export function removeContainerChildren(c: Container) {
+  while(c.children[0]) c.removeChild(c.children[0]);
 }

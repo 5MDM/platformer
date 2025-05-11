@@ -1,10 +1,9 @@
 import { isMobile } from "pixi.js";
 import { $, round } from "../lib/util";
-import { app } from "../main";
 
-import { player } from "./main";
-import { deltaTime } from "./studio";
+import { deltaTime } from "./dev/studio";
 import { Joystick } from "../lib/joystick";
+import { player } from "../constants";
 
 const speed = 5;
 var isPlayingAnim = false;
@@ -31,9 +30,19 @@ addEventListener("keyup", e => {
     }
 });
 
+var areControlsEnabled = true;
+export function disableControls() {
+    areControlsEnabled = false;
+}
+
+export function enableControls() {
+    areControlsEnabled = true;
+}
+
 export function startControlLoop() {
     var isMoving = false;
     function loop() {
+        if(!areControlsEnabled) return requestAnimationFrame(loop);
         player.container.scale.x = 1;
         isMoving = false;
 
