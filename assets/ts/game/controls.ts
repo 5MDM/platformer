@@ -39,6 +39,8 @@ export function enableControls() {
     areControlsEnabled = true;
 }
 
+var lastMoveUDwasUp = false;
+
 export function startControlLoop() {
     var isMoving = false;
     function loop() {
@@ -52,28 +54,33 @@ export function startControlLoop() {
             player.vx -= calcSpeed;
             isMoving = true;
             player.playAnimation("walk-l", 0.08);
+            lastMoveUDwasUp = false;
         }
 
         if(isMovingRight) {
             player.vx += calcSpeed;
             isMoving = true;
             player.playAnimation("walk-r", 0.08);
+            lastMoveUDwasUp = false;
         }
 
         if(isJumping) {
             player.vy -= calcSpeed;
             isMoving = true;
-            player.playAnimation("walk-ud", 0.08);
+            player.playAnimation("walk-ud-up", 0.08);
+            lastMoveUDwasUp = true;
         }
 
         if(isGoingDown) {
             player.vy += calcSpeed;
             isMoving = true;
-            player.playAnimation("walk-ud", 0.08);
+            player.playAnimation("walk-ud-down", 0.08);
+            lastMoveUDwasUp = false;
         }
 
         if(!isMoving) {
-            player.playSprite("stand-ud");
+            if(lastMoveUDwasUp) player.playSprite("stand-ud-up");
+            else player.playSprite("stand-ud-down");
         }
 
         requestAnimationFrame(loop);

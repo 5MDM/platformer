@@ -2,7 +2,7 @@
 
 "brick.png":
 {
-	"frame": {"x":170,"y":0,"w":32,"h":32},
+	"frame": {"x":30,"y":63,"w":32,"h":32},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
@@ -10,7 +10,7 @@
 },
 "grass_block_1.png":
 {
-	"frame": {"x":0,"y":63,"w":256,"h":256},
+	"frame": {"x":0,"y":126,"w":256,"h":256},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":256,"h":256},
@@ -18,7 +18,7 @@
 },
 "player-down-stand.png":
 {
-	"frame": {"x":80,"y":0,"w":30,"h":63},
+	"frame": {"x":100,"y":0,"w":30,"h":63},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":63},
@@ -26,7 +26,7 @@
 },
 "player-down-walk-1.png":
 {
-	"frame": {"x":110,"y":0,"w":30,"h":63},
+	"frame": {"x":130,"y":0,"w":30,"h":63},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":63},
@@ -34,7 +34,7 @@
 },
 "player-down-walk-2.png":
 {
-	"frame": {"x":140,"y":0,"w":30,"h":63},
+	"frame": {"x":160,"y":0,"w":30,"h":63},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":63},
@@ -71,18 +71,51 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":20,"h":63},
 	"sourceSize": {"w":20,"h":63}
+},
+"player-side-walk-4.png":
+{
+	"frame": {"x":80,"y":0,"w":20,"h":63},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":20,"h":63},
+	"sourceSize": {"w":20,"h":63}
+},
+"player-up-stand.png":
+{
+	"frame": {"x":190,"y":0,"w":30,"h":63},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":63},
+	"sourceSize": {"w":30,"h":63}
+},
+"player-up-walk-1.png":
+{
+	"frame": {"x":220,"y":0,"w":30,"h":63},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":63},
+	"sourceSize": {"w":30,"h":63}
+},
+"player-up-walk-2.png":
+{
+	"frame": {"x":0,"y":63,"w":30,"h":63},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":63},
+	"sourceSize": {"w":30,"h":63}
 }},
 "animations": {
 	"player-down-walk": ["player-down-walk-1.png","player-down-walk-2.png"],
-	"player-side-walk": ["player-side-walk-1.png","player-side-walk-2.png","player-side-walk-3.png"]
+	"player-side-walk": ["player-side-walk-1.png","player-side-walk-2.png","player-side-walk-3.png","player-side-walk-4.png"],
+	"player-up-walk": ["player-up-walk-1.png","player-up-walk-2.png"]
 },
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.1",
 	"image": "atlas.png",
 	"format": "RGBA8888",
-	"size": {"w":256,"h":319},
+	"size": {"w":256,"h":382},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:56f05f7f65dcfc368d9c38135417549f:99d1fa38c9b1633b764c650159468a54:9157e326ab292468473525d456d5b553$"
+	"smartupdate": "$TexturePacker:SmartUpdate:2c0ccddb9ec7b247ab8acd4e4a825b3f:a577af6a2ef7851c2114f2488fc9673d:9157e326ab292468473525d456d5b553$"
 }
 }

@@ -14,10 +14,14 @@ function loadAnimations() {
     walkR.scale.x = -1;
     walkR.position.x = 30;
 
-    player.setAnimation("walk-ud", new AnimatedSprite(spritesheet.animations["player-down-walk"]));
+    player.setAnimation("walk-ud-down", new AnimatedSprite(spritesheet.animations["player-down-walk"]));
+    player.setAnimation("walk-ud-up", new AnimatedSprite(spritesheet.animations["player-up-walk"]));
     player.setAnimation("walk-l", new AnimatedSprite(spritesheet.animations["player-side-walk"]));
     player.setAnimation("walk-r", walkR);
-    player.setSprite("stand-ud", new Sprite(spritesheet.textures["player-down-stand.png"]));
+    player.setSprite("stand-ud-down", new Sprite(spritesheet.textures["player-down-stand.png"]));
+    player.setSprite("stand-ud-up", new Sprite(spritesheet.textures["player-up-stand.png"]));
+
+
 }
 
 export function startGame(app: Application) {    
