@@ -1,9 +1,9 @@
 import { Assets, BindableTexture, Container, Spritesheet, SpritesheetData, Texture, TextureSource, TilingSprite } from "pixi.js";
-import { Keymap } from "./lib/keymap";
+import { GMOutput, Keymap } from "./lib/keymap";
 import { $, iteratePaths, MDmatrix, ToggleList } from "./lib/util";
 import { PWS } from "./lib/pw-objects";
 import { enablePlacementMode, setSelectedBlock } from "./game/dev/studio";
-import { blockDefs, BlockInfo, blockSize, chunkSize, ModInfo, pw, staticChunks, staticContainer } from "./constants";
+import { blockDefs, BlockInfo, blockSize, chunkSize, maxLevelSize, ModInfo, pw, staticChunks, staticContainer } from "./constants";
 import { setPlayerSpawn } from "./main";
 
 const blocksEl = $("#ui > #editor #block-row") as HTMLDivElement;
@@ -13,6 +13,8 @@ const atlasImg = new Image();
 export const size = Number(getComputedStyle(blocksEl).getPropertyValue("--img-size").slice(0, -2));
 atlasImg.src = atlasImgUrl;
 const editorBlocks: HTMLImageElement[] = [];
+
+export const editGrid = new MDmatrix<string>(maxLevelSize, maxLevelSize);
 
 const ic = new OffscreenCanvas(256, 256);
 const ictx = ic.getContext("2d");
@@ -59,7 +61,10 @@ export async function parseMod(path: string, mod: ModInfo) {
         if(!spritesheet.textures[block.texture]) throw new Error(block.texture);
         blockDefs[block.texture] = block;
         levelmap.key(block.character, 
-            (x, y, w, h) => createBlock(createSprite(block.texture, x, y, w, h), x, y, w, h)
+            (x, y, w, h) => {
+                createBlock(createSprite(block.texture, x, y, w, h), x, y, w, h);
+                markBlock(x, y, w, h, block.texture);
+            }
         );
 
         await addToEditor(block.texture, data.frames[block.texture].frame);
@@ -89,8 +94,8 @@ export function createSprite(name: string, x: number, y: number, w: number, h: n
 
     const s = new TilingSprite({
         texture: t,
-        width: blockSize * w + 1,
-        height: blockSize * h + 1,
+        width: blockSize * w + .1,
+        height: blockSize * h + .1,
         position: {x, y},
         roundPixels: true,
         tileScale: {x: blockSize / t.width, y: blockSize / t.height},
@@ -103,6 +108,12 @@ export function createSprite(name: string, x: number, y: number, w: number, h: n
 
 export function getTexture(name: string): Texture {
     return spritesheet.textures[name];
+}
+
+export const copyLevelGrid = new MDmatrix<GMOutput>(maxLevelSize, maxLevelSize);
+
+export function markBlock(x: number, y: number, w: number, h: number, type: string) {
+    copyLevelGrid.set(x, y, {x, y, w, h, type});
 }
 
 export function createBlock(sprite: TilingSprite, x: number, y: number, w: number, h: number) {

@@ -34,5 +34,6 @@ export function setCurrentLevel(name: string) {
     //if(!levelDat) throw new Error(`Level name "${name}" doesn't exist`);
 
     //console.log(JSON.stringify(levelmap.GMR(levelDat)))
+
     levelmap.runRaw(level3);
 }

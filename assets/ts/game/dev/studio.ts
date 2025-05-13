@@ -7,7 +7,7 @@ import { DragController } from "../../lib/drag";
 import { disableControls, enableControls } from "../controls";
 import { getTexture, spritesheet } from "../../mods";
 import { c } from "../../canvas";
-import { finalizeEdits, placeBlock } from "./level-editor";
+import { copyLevel, finalizeEdits, placeBlock } from "./level-editor";
 import { blockDefs, blockSize, player, pw, wc } from "../../constants";
 
 export var RDtime = 0;
@@ -46,6 +46,8 @@ addEventListener("keypress", e => {
         toggleStudio();
     } else if(e.key == "l") {
         toggleLevelEditor();
+    } else if(e.key == "C") {
+        copyLevel();
     }
 });
 

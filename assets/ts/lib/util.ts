@@ -1,4 +1,4 @@
-import { Application, Color, Container, Sprite, Texture } from "pixi.js";
+import {Container, Sprite, Texture } from "pixi.js";
 
 export const UTIL_VERSION: number = 1.4;
 
@@ -285,6 +285,14 @@ export class MDmatrix<T> {
   set(x: number, y: number, s: T) {
     this.OOB(x, y);
     this.matrix[y][x] = s;
+  }
+
+  place(x: number, y: number, val: T): boolean {
+    if(this.get(x, y)) return false;
+
+    this.set(x, y, val);
+
+    return true;
   }
 
   delete(x: number, y: number) {
