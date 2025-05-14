@@ -16,7 +16,6 @@ menuBtn.onpointerup = function() {
     toggleElement(copyLevelBtn, isToggled, "block");
 };
 
-
 diagBtn.onpointerup = () => toggleStudio();
 editorBtn.onpointerup = () => toggleLevelEditor();
 copyLevelBtn.onpointerup = copyLevel;

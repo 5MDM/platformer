@@ -1,7 +1,7 @@
 import { Container, Cursor, Sprite, TilingSprite } from "pixi.js";
-import { floorToMultiples, MDmatrix, removeContainerChildren, snapToGrid } from "../../lib/util";
+import { $$, floorToMultiples, MDmatrix, removeContainerChildren, snapToGrid } from "../../lib/util";
 import { PWS } from "../../lib/pw-objects";
-import { blockDefs, blockSize, maxLevelSize, player, pw, staticContainer } from "../../constants";
+import { blockDefs, blocksEl, blockSize, maxLevelSize, player, pw, staticContainer } from "../../constants";
 import { copyLevelGrid, createBlock, createSprite, editGrid, markBlock, size, spritesheet } from "../../mods";
 import { editorDrag, selectedBlock, selectedSprite } from "./studio";
 import { GMOutput, Keymap, Map2D } from "../../lib/keymap";

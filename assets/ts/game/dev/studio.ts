@@ -1,6 +1,6 @@
 import { Container, Cursor, Sprite, Texture } from "pixi.js";
 import { playerCollisionAmnt } from "../../lib/physics";
-import { $, attatchToggle, floorToMultiples, round, snapToGrid, stopAnimLoop, ToggleList } from "../../lib/util";
+import { $, $$, attatchToggle, floorToMultiples, round, snapToGrid, stopAnimLoop, ToggleList } from "../../lib/util";
 import { Graph } from "../../lib/graph";
 import { app } from "../../main";
 import { DragController } from "../../lib/drag";
@@ -8,7 +8,7 @@ import { disableControls, enableControls } from "../controls";
 import { getTexture, spritesheet } from "../../mods";
 import { c } from "../../canvas";
 import { copyLevel, finalizeEdits, placeBlock } from "./level-editor";
-import { blockDefs, blockSize, player, pw, wc } from "../../constants";
+import { blockDefs, blocksEl, blockSize, player, pw, wc } from "../../constants";
 
 export var RDtime = 0;
 export var deltaTime = 0;
@@ -57,6 +57,10 @@ export const editorDrag = new DragController({
     enabled: false,
 });
 
+editorDrag.defaultGrab = "grab";
+editorDrag.defaultGrabbing = "grabbing";
+editorDrag.onDrag = pan;
+
 function pan(x: number, y: number) {
     app.stage.position.x -= x;
     app.stage.position.y -= y;
@@ -97,12 +101,25 @@ export function initStudio(o: ToggleList) {
         });
     
     list = o;
+
+    blocksEl.prepend($$("button", {
+        text: "Pan",
+        up() {
+            list.clear();
+            disablePlacementMode();
+        },
+    }));
 }
 
 export function setSelectedBlock(val: string) {
     if(!blockDefs[val]) throw new Error(`${val} isn't a valid block`);
     selectedBlock = val;
 }
+
+editorDrag.downElement.addEventListener("mousemove", ({x, y}) => {
+    if(!isOnPlacementMode) return;
+    placeHover(x, y);
+});
 
 export function enablePlacementMode() {
     if(isOnPlacementMode) return;
@@ -112,12 +129,17 @@ export function enablePlacementMode() {
     editorDrag.changeDefaultAndNormalGrabbing("pointer");
     editorDrag.changeDefualtandNormalGrab("crosshair");
 
-    editorDrag.downElement.addEventListener("mousemove", ({x, y}) => {
-        if(!isOnPlacementMode) return;
-        placeHover(x, y);
-    });
-
     app.stage.addChild(selectedSprite);
+}
+
+function disablePlacementMode() {
+    if(!isOnPlacementMode) return;
+    isOnPlacementMode = false;
+
+    editorDrag.onDrag = pan;
+    editorDrag.changeGrab("grab");
+    editorDrag.grabbing = "grabbing";
+    app.stage.removeChild(selectedSprite);
 }
 
 function enableEditor() {
@@ -126,10 +148,8 @@ function enableEditor() {
     disableControls();
     editorDrag.enable();
     editorEl.style.display = "flex";
-    editorDrag.changeGrab("grab");
-    editorDrag.grabbing = "grabbing";
-
-    editorDrag.onDrag = pan;
+    
+    disablePlacementMode();
 }
 
 function disableEditor() {

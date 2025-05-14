@@ -3,10 +3,9 @@ import { GMOutput, Keymap } from "./lib/keymap";
 import { $, iteratePaths, MDmatrix, ToggleList } from "./lib/util";
 import { PWS } from "./lib/pw-objects";
 import { enablePlacementMode, setSelectedBlock } from "./game/dev/studio";
-import { blockDefs, BlockInfo, blockSize, chunkSize, maxLevelSize, ModInfo, pw, staticChunks, staticContainer } from "./constants";
+import { blockDefs, BlockInfo, blocksEl, blockSize, chunkSize, maxLevelSize, ModInfo, pw, staticChunks, staticContainer } from "./constants";
 import { setPlayerSpawn } from "./main";
 
-const blocksEl = $("#ui > #editor #block-row") as HTMLDivElement;
 const data = (await (import.meta.glob<{default: SpritesheetData}>("../spritesheet-data/data.json"))["../spritesheet-data/data.json"]()).default;
 const atlasImgUrl = (await (import.meta.glob<{default: string}>("../images/atlas.png"))["../images/atlas.png"]()).default;
 const atlasImg = new Image();
