@@ -30,8 +30,10 @@ addEventListener("resize", resizeDebounce(() => {
 }, 200));
 
 export class PW {
+    wc: Container;
     blockSize: number;
     blockSizeHalf: number;
+    size: number;
 
     static PartitionSize: number = 8;
     clockLoopId: number = NaN;
@@ -53,11 +55,14 @@ export class PW {
         this.simSpeed = opts.simSpeed;
         this.blockSize = opts.blockSize;
         this.blockSizeHalf = opts.blockSize / 2;
+        this.size = opts.maxLevelSize;
 
         PW.OnResizeChange((x, y) => {
             opts.world.x += x;
             opts.world.y += y;
         });
+
+        this.wc = opts.world;
     }
 
     private tick() {
@@ -70,20 +75,6 @@ export class PW {
 
         obj.addX(obj.vx);
         obj.addY(obj.vy);
-    }
-
-    private separateX(moving: PWD, obj: NotDynamicObj) {
-        const dx =  moving.cx - obj.cx;
-
-        const calcX = Math.abs(dx - moving.vx);
-        
-        if(calcX > 0) {
-            if(dx < 0) {
-                moving.setX(obj.x - moving.w);
-            } else {
-                moving.setX(obj.maxX);
-            }
-        }
     }
 
     private separate(moving: PWD, obj: NotDynamicObj) {

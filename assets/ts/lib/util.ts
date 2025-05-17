@@ -191,6 +191,17 @@ export async function iteratePaths<T>(e: Record<string, () => Promise<{default: 
   }
 }
 
+export async function convertPathToObj<T>(e: Record<string, () => Promise<{default: T}>>): Promise<Record<string, T>> {
+  const o: Record<string, T> = {};
+
+  for(const path in e) {
+    const dat = await e[path]();
+    o[path] = dat.default;
+  }
+
+  return o;
+}
+
 export function stopAnimLoop(f: (start: () => void, stop: () => void) => void, counterO: number = 1):
 {start: () => void, stop: () => void} {
   var counter = counterO;

@@ -1,15 +1,16 @@
 import { AnimatedSprite, Application, Sprite } from "pixi.js";
 import { startControlLoop } from "./controls";
 import { startStudioLoop } from "./dev/studio";
-import { setCurrentLevel } from "../levels/main";
-
-import { spritesheet } from "../mods";
-import { playerStartX, playerStartY } from "../main";
 import { player, pw, wc } from "../constants";
 
 import "./dev/menu";
+import { MDshell } from "../lib/md-framework/shell";
+import { mdshell } from "../main";
 
-function loadAnimations() {
+async function loadAnimations() {
+    const spritesheet = await mdshell.spritesheet;
+    spritesheet.textureSource.scaleMode = "nearest";
+
     const walkR = new AnimatedSprite(spritesheet.animations["player-side-walk"]);
     walkR.scale.x = -1;
     walkR.position.x = 30;
@@ -20,19 +21,16 @@ function loadAnimations() {
     player.setAnimation("walk-r", walkR);
     player.setSprite("stand-ud-down", new Sprite(spritesheet.textures["player-down-stand.png"]));
     player.setSprite("stand-ud-up", new Sprite(spritesheet.textures["player-up-stand.png"]));
-
-
 }
 
-export function startGame(app: Application) {    
-    spritesheet.textureSource.scaleMode = "nearest";
-    loadAnimations();
+export async function startGame(sh: MDshell) {    
+    await loadAnimations();
 
-    app.stage.addChild(wc);
-    player.display(app);
+    sh.app.stage.addChild(wc);
+    player.display(sh.app);
 
-    setCurrentLevel("3");
-    player.teleport(playerStartX, playerStartY);
+    sh.setCurrentLevel("1");
+    player.teleport(sh.game.spawnX, sh.game.spawnY);
     
     pw.startClock();
     startControlLoop();

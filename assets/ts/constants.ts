@@ -7,22 +7,6 @@ export const chunkSize = 16;
 export const blockSize = 64;
 export const blockSizeHalf = blockSize / 2;
 
-export interface ModInfo {
-    name: string;
-    blocks: BlockInfo[];
-    version: [number, number, number];
-}
-
-export interface BlockInfo {
-    name: "string";
-    character: "#";
-    textureCreator?: {
-        color: string;
-    };
-    texture: string;
-}
-
-export const blockDefs: {[name: string]: BlockInfo} = {};
 export const maxLevelSize = 256;
 
 export const wc = new Container();

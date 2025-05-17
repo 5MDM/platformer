@@ -109,13 +109,10 @@ export class PWB {
     }
 }
 
-export class PWS extends PWB {
-    
+export class PWS extends PWB {    
     constructor(x: number, y: number, w: number, h: number) {
         super(x, y, w, h);
         this.id = getNewID();
-
-        
     }
 }
 

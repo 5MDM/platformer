@@ -1,11 +1,10 @@
-import { Container, Cursor, Sprite, TilingSprite } from "pixi.js";
-import { $$, floorToMultiples, MDmatrix, removeContainerChildren, snapToGrid } from "../../lib/util";
+import { Container, Sprite } from "pixi.js";
+import { floorToMultiples, MDmatrix, removeContainerChildren, snapToGrid } from "../../lib/util";
 import { PWS } from "../../lib/pw-objects";
-import { blockDefs, blocksEl, blockSize, maxLevelSize, player, pw, staticContainer } from "../../constants";
-import { copyLevelGrid, createBlock, createSprite, editGrid, markBlock, size, spritesheet } from "../../mods";
+import { blockSize, maxLevelSize, player, pw, staticContainer } from "../../constants";
 import { editorDrag, selectedBlock, selectedSprite } from "./studio";
-import { GMOutput, Keymap, Map2D } from "../../lib/keymap";
-import { app } from "../../main";
+import { GMOutput, Keymap } from "../../lib/keymap";
+import { app, mdshell } from "../../main";
 
 var hasEdited = false;
 
@@ -20,9 +19,9 @@ export function placeBlock(rx: number, ry: number, x: number, y: number) {
     const fx = floorToMultiples(player.x + x - player.halfWS - app.stage.position.x, blockSize) / blockSize;
     const fy = floorToMultiples(player.y + y - player.halfHS - app.stage.position.y, blockSize) / blockSize;
 
-    editorDrag.CAD(editGrid.isOOB(fx, fy));
+    if(mdshell.game.editGrid.isOOB(fx, fy)) return editorDrag.CAD(true);
 
-    if(!editGrid.place(fx, fy, selectedBlock!)) return;
+    if(mdshell.game.editGrid.place(fx, fy, selectedBlock!)) return;
 
     try {
         const got = pw.staticGrid.get(fx, fy);
@@ -51,6 +50,7 @@ export function placeBlock(rx: number, ry: number, x: number, y: number) {
     }));
 }
 
+
 export function finalizeEdits() {
     if(!hasEdited) return;
     hasEdited = false;
@@ -59,27 +59,28 @@ export function finalizeEdits() {
 
     for(const blockName in blockRecord) {
         const boxes: GMOutput[] = Keymap.GMBool(blockRecord[blockName].matrix, selectedBlock!);
+        const t = mdshell.getTexture(blockName);
 
         for(const {x, y, w, h} of boxes) {
-            const s = createSprite(blockName, x, y, w, h);
-            createBlock(s, x, y, w, h);
-
-            markBlock(x, y, w, h, blockName);
+            mdshell.createBlock(x, y, w, h, blockName);
         }
     }
     
-    editGrid.clear();
+    //editGrid.clear();
 }
+
 
 export function copyLevel() {
     const arr: GMOutput[] = [];
 
-    copyLevelGrid.forEach(block => {
-        block.type = blockDefs[block.type].character;
-        arr.push(block);
+    mdshell.game.grids.fg.forEach(({id, type}) => {
+        const {x, y, w, h} = mdshell.pwObjects[id];
+        
+        arr.push({x, y, w, h, type});
     });
 
     navigator.clipboard.writeText(JSON.stringify(arr))
     .then(() => alert("Copied level json"))
     .catch(err => alert(err));
 }
+

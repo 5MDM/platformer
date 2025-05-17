@@ -2,13 +2,12 @@ import { Container, Cursor, Sprite, Texture } from "pixi.js";
 import { playerCollisionAmnt } from "../../lib/physics";
 import { $, $$, attatchToggle, floorToMultiples, round, snapToGrid, stopAnimLoop, ToggleList } from "../../lib/util";
 import { Graph } from "../../lib/graph";
-import { app } from "../../main";
+import { app, mdshell } from "../../main";
 import { DragController } from "../../lib/drag";
 import { disableControls, enableControls } from "../controls";
-import { getTexture, spritesheet } from "../../mods";
 import { c } from "../../canvas";
 import { copyLevel, finalizeEdits, placeBlock } from "./level-editor";
-import { blockDefs, blocksEl, blockSize, player, pw, wc } from "../../constants";
+import { blocksEl, blockSize, player, pw, wc } from "../../constants";
 
 export var RDtime = 0;
 export var deltaTime = 0;
@@ -93,14 +92,16 @@ export const selectedSprite: Sprite = new Sprite({
 
 var list: ToggleList;
 
-export function initStudio(o: ToggleList) {
-    for(const el of o.list.arr) 
-        el.addEventListener("pointerup", () => {
-            const t = getTexture(selectedBlock!);
-            selectedSprite.texture = t;
-        });
-    
-    list = o;
+export function initStudio(images: HTMLImageElement[]) {
+    list = new ToggleList(images, (el) => {
+        enablePlacementMode();
+        selectedBlock = el.getAttribute("data-name")!;
+        el.classList.add("toggled");
+
+        selectedSprite.texture = mdshell.getTexture(selectedBlock!);
+    }, (el) => {
+        el.classList.remove("toggled");
+    }, blocksEl);
 
     blocksEl.prepend($$("button", {
         text: "Pan",
@@ -109,11 +110,6 @@ export function initStudio(o: ToggleList) {
             disablePlacementMode();
         },
     }));
-}
-
-export function setSelectedBlock(val: string) {
-    if(!blockDefs[val]) throw new Error(`${val} isn't a valid block`);
-    selectedBlock = val;
 }
 
 editorDrag.downElement.addEventListener("mousemove", ({x, y}) => {

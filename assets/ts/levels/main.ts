@@ -1,39 +1,7 @@
 
-import { Container } from "pixi.js";
-import { fileNameRegex, iteratePaths } from "../lib/util";
-import "../mods";
-import { levelmap } from "../mods";
-
 import level3 from "../../compiled-levels/3.json";
+import { MDshell } from "../lib/md-framework/shell";
 
-export var currentLevelName: string;
-export const levelTextMap: {[name: string]: string} = {};
-
-const im = import.meta.glob<{default: string}>("./*.txt");
-
-export const levelPromises: Promise<void>[] = [];
-
-export const iterate = iteratePaths<string>(im, (path: string, dat: string) => {
-    //levelPromises.push(addLevel(path, dat));
-    return new Promise(res => res());
-});
-
-async function addLevel(path: string, dat: string): Promise<void> {
-    const name = fileNameRegex.exec(path)?.[0];
-    if(!name) return console.error(`File error: "${path}"`);
-    
-    const levelDat: Promise<string> = (await fetch(dat)).text();
-
-    levelTextMap[name] = await levelDat;
-}
-
-export function setCurrentLevel(name: string) {
-    currentLevelName = name;
-
-    const levelDat = levelTextMap[currentLevelName];
-    //if(!levelDat) throw new Error(`Level name "${name}" doesn't exist`);
-
-    //console.log(JSON.stringify(levelmap.GMR(levelDat)))
-
-    levelmap.runRaw(level3);
+export function initLevels(sh: MDshell) {
+    sh.addLevel("1", level3);
 }
