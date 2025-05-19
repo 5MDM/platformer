@@ -10,6 +10,9 @@ export const blockSizeHalf = blockSize / 2;
 export const maxLevelSize = 256;
 
 export const wc = new Container();
+wc.interactive = false;
+wc.interactiveChildren = false;
+
 export const pw = new PW({
     gx: 0,
     gy: 0,
@@ -26,4 +29,4 @@ wc.addChild(staticContainer);
 export const player = new Player(wc, 30, 63);
 pw.addDynamic(player);
 
-export const blocksEl = $("#ui > #editor #block-row") as HTMLDivElement;
+export const blocksEl = $("#ui > #editor .block-row") as HTMLDivElement;

@@ -35,6 +35,15 @@ interface MDshellOpts {
     app: Application;
 }
 
+interface BgObj extends XYWH {
+    sprite: Container;
+    type: string;
+}
+
+interface FgObj extends BgObj {
+    pwb: PWS;
+}
+
 export class MDshell {
     levels: Record<string, GMOutput[]> = {};
 
@@ -52,8 +61,8 @@ export class MDshell {
     blocks: Record<string, BlockInfo> = {};
     imageBlobSize: number;
 
-    pwObjects: Record<number, PWS> = {};
-    bgObjects: Record<number, Container> = {};
+    pwObjects: Record<number, FgObj> = {};
+    bgObjects: Record<number, BgObj> = {};
 
     internalCanvas = new OffscreenCanvas(256, 256);
     ictx: OffscreenCanvasRenderingContext2D;
@@ -62,6 +71,10 @@ export class MDshell {
         document.title = "ERROR DETECTED";
         if(typeof msg == "string") console.error(new Error("MD shell: " + msg));
         else console.error(msg);
+    }
+
+    getBlockInfo(texture: string): BlockInfo {
+        return this.blocks[texture];
     }
     
     constructor(o: MDshellOpts) {
@@ -175,23 +188,41 @@ export class MDshell {
     createBlock(x: number, y: number, w: number, h: number, name: string, isPassable: boolean = false) {
         const t = this.getTexture(name);
         const s = this.createMergedSprite(x * this.blockSize, y * this.blockSize, w, h, t);
+        const type =  this.blocks[name].character;
 
         this.game.container.addChild(s);
 
         if(isPassable) {
             const id = this.game.getNewId();
-            this.bgObjects[id] = s;
+            this.bgObjects[id] = {
+                sprite: s,
+                x,
+                y,
+                w,
+                h,
+                type,
+            };
 
             Keymap.IterateGMrect(x, y, w, h, (x, y) => {
                 this.game.grids.bg.set(x, y, {
                     name,
                     id,
-                    type: this.blocks[name].character,
+                    type,
                 });
             });
         } else {
-            const pws = new PWS(s.x, s.y, s.width, s.height);
-            this.pwObjects[pws.id] = pws;
+            const pws = 
+            new PWS(x * this.blockSize, y * this.blockSize, w * this.blockSize, h * this.blockSize, type);
+
+            this.pwObjects[pws.id] = {
+                x,
+                y,
+                w,
+                h,
+                type,
+                sprite: pws.sprite!,
+                pwb: pws,
+            };
 
             pws.sprite = s;
 

@@ -21,19 +21,8 @@
                     "texture": {
                         "type": "string"
                     },
-                    "textureCreator": {
-                        "type": "object",
-                        "required": ["color"],
-                        "properties": {
-                            "color": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "character": {
-                        "type": "string",
-                        "maxLength": 1,
-                        "minLength": 1
+                    "isPassable": {
+                        "type": "boolean"
                     }
                 }
             },

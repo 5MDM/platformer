@@ -46,8 +46,9 @@ export const mdshell = new MDshell({
 });
 
 // using await breaks production build
+// 129fff
 app.init({
-    background: "#129fff",
+    background: "#000",
     resizeTo: window,
     antialias: false,
     autoDensity: true,

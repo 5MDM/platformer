@@ -8,13 +8,14 @@
     height: auto;
     padding: 10px;
     pointer-events: all;
+    gap: 10px;
 }
 
 #ui > #editor img {
     cursor: pointer;
 }
 
-#ui > #editor > div {
+#ui > #editor > div:not(.block-row) {
     display: flex;
     flex-direction: row;
 }
@@ -27,8 +28,7 @@
     flex-grow: 1;
 }
 
-#ui > #editor #block-row {
-    display: flex;
+#ui > #editor .block-row {
     flex-direction: row;
     --img-size: 32px;
     gap: 16px;
@@ -36,11 +36,22 @@
     padding: 10px;
 }
 
-#ui > #editor #block-row > img {
+#ui > #editor .block-row > img {
     box-sizing: content-box;
     border: 3px outset black;
 }
 
-#ui > #editor #block-row > img.toggled {
+#ui > #editor .block-row > img.toggled {
     border: 4px inset black;
+}
+
+#ui > #editor > :not(.block-row) button {
+    padding: 4px;
+    border: 4px solid blue;
+    margin-right: 10px;
+    border-radius: 10px;
+}
+
+#ui > #editor button.toggled:not(.block-row) {
+    border-color: darkblue;
 }

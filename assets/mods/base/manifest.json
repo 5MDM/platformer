@@ -4,7 +4,7 @@
     "version": [0, 0, 0],
     "blocks": [
         {
-            "name": "brick",
+            "name": "Brick",
             "texture": "brick.png",
             "character": "#"
         },
@@ -12,6 +12,12 @@
             "name": "Grass Block",
             "texture": "grass_block_1.png",
             "character": "g"
+        },
+        {
+            "name": "Floor",
+            "texture": "floor.png",
+            "character": ".",
+            "isPassable": true
         }
     ]
 }

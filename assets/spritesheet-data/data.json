@@ -8,6 +8,14 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
+"floor.png":
+{
+	"frame": {"x":62,"y":63,"w":32,"h":32},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
+	"sourceSize": {"w":32,"h":32}
+},
 "grass_block_1.png":
 {
 	"frame": {"x":0,"y":126,"w":256,"h":256},
@@ -116,6 +124,6 @@
 	"format": "RGBA8888",
 	"size": {"w":256,"h":382},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:2c0ccddb9ec7b247ab8acd4e4a825b3f:a577af6a2ef7851c2114f2488fc9673d:9157e326ab292468473525d456d5b553$"
+	"smartupdate": "$TexturePacker:SmartUpdate:c0cf1411e01b504ef99c59ce7fde328e:037f639b27feab844ce854a726e3c14b:9157e326ab292468473525d456d5b553$"
 }
 }

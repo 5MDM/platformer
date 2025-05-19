@@ -78,7 +78,10 @@ function placeHover(x: number, y: number) {
     selectedSprite.position.set(fx, fy);
 }
 
-const editorEl = $("#ui > #editor") as HTMLElement;
+export var selectedBlockIsPassable = false;
+
+const bgRow = $("#ui > #editor > #bg-row") as HTMLDivElement;
+export const editorEl = $("#ui > #editor") as HTMLElement;
 
 var isOnPlacementMode = false;
 export var selectedBlock: string | undefined;
@@ -91,22 +94,57 @@ export const selectedSprite: Sprite = new Sprite({
 });
 
 var list: ToggleList;
+var bgList: ToggleList;
 
 export function initStudio(images: HTMLImageElement[]) {
-    list = new ToggleList(images, (el) => {
+    const fgImages: HTMLImageElement[] = [];
+    const bgImages: HTMLImageElement[] = [];
+
+    for(const image of images) {
+        const name = image.getAttribute("data-name")!;
+        const {isPassable} = mdshell.getBlockInfo(name);
+
+        if(isPassable) bgImages.push(image);
+        else fgImages.push(image);
+    }
+
+    list = new ToggleList(fgImages, (el) => {
         enablePlacementMode();
         selectedBlock = el.getAttribute("data-name")!;
         el.classList.add("toggled");
+        selectedBlockIsPassable = false;
 
         selectedSprite.texture = mdshell.getTexture(selectedBlock!);
     }, (el) => {
         el.classList.remove("toggled");
     }, blocksEl);
 
+    bgList = new ToggleList(bgImages, (el) => {
+        enablePlacementMode();
+        selectedBlock = el.getAttribute("data-name")!;
+        el.classList.add("toggled");
+
+        selectedBlockIsPassable = true;
+
+        selectedSprite.texture = mdshell.getTexture(selectedBlock!);
+    }, (el) => {
+        el.classList.remove("toggled");
+    }, bgRow);
+
     blocksEl.prepend($$("button", {
         text: "Pan",
         up() {
             list.clear();
+            bgList.clear();
+            disablePlacementMode();
+        },
+    }));
+
+    bgRow.prepend($$("button", {
+        text: "Pan",
+        up() {
+            list.clear();
+            bgList.clear();
             disablePlacementMode();
         },
     }));
@@ -114,6 +152,7 @@ export function initStudio(images: HTMLImageElement[]) {
 
 editorDrag.downElement.addEventListener("mousemove", ({x, y}) => {
     if(!isOnPlacementMode) return;
+    console.log(0)
     placeHover(x, y);
 });
 
@@ -133,9 +172,10 @@ function disablePlacementMode() {
     isOnPlacementMode = false;
 
     editorDrag.onDrag = pan;
-    editorDrag.changeGrab("grab");
-    editorDrag.grabbing = "grabbing";
     app.stage.removeChild(selectedSprite);
+
+    editorDrag.changeDefualtandNormalGrab("grab");
+    editorDrag.changeDefaultAndNormalGrabbing("grabbing");
 }
 
 function enableEditor() {
@@ -146,10 +186,14 @@ function enableEditor() {
     editorEl.style.display = "flex";
     
     disablePlacementMode();
+
+    //editorDrag.changeGrabbingAndCurrentCursor("grab");
+    editorDrag.changeDefualtandNormalGrab("grab");
+    editorDrag.changeDefaultAndNormalGrabbing("grabbing");
+    //editorDrag.grabbing = "grabbing";
 }
 
 function disableEditor() {
-    isOnPlacementMode = false;
     pw.startClock();
     app.stage.scale = 1;
     editorDrag.disable();

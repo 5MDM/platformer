@@ -1,8 +1,8 @@
 import { Container, Sprite } from "pixi.js";
-import { floorToMultiples, MDmatrix, removeContainerChildren, snapToGrid } from "../../lib/util";
+import { $, $$, floorToMultiples, MDmatrix, removeContainerChildren, snapToGrid, ToggleList } from "../../lib/util";
 import { PWS } from "../../lib/pw-objects";
 import { blockSize, maxLevelSize, player, pw, staticContainer } from "../../constants";
-import { editorDrag, selectedBlock, selectedSprite } from "./studio";
+import { editorDrag, editorEl, selectedBlock, selectedBlockIsPassable, selectedSprite } from "./studio";
 import { GMOutput, Keymap } from "../../lib/keymap";
 import { app, mdshell } from "../../main";
 
@@ -62,7 +62,8 @@ export function finalizeEdits() {
         const t = mdshell.getTexture(blockName);
 
         for(const {x, y, w, h} of boxes) {
-            mdshell.createBlock(x, y, w, h, blockName);
+            if(selectedBlockIsPassable) mdshell.createBlock(x, y, w, h, blockName, true);
+            else mdshell.createBlock(x, y, w, h, blockName, false);
         }
     }
     
@@ -73,14 +74,59 @@ export function finalizeEdits() {
 export function copyLevel() {
     const arr: GMOutput[] = [];
 
-    mdshell.game.grids.fg.forEach(({id, type}) => {
-        const {x, y, w, h} = mdshell.pwObjects[id];
+    console.log(mdshell.game.grids.fg.matrix)
+
+    /*mdshell.game.grids.fg.forEach(({id, type}) => {
+        var {x, y, w, h} = mdshell.pwObjects[id];
+        x = Math.floor(x);
+        y = Math.floor(y);
+        w = Math.floor(w);
+        h = Math.floor(h);
         
         arr.push({x, y, w, h, type});
-    });
+    });*/
+
+    for(const id in mdshell.pwObjects) {
+        const {x, y, w, h, type} = mdshell.pwObjects[id];
+
+        arr.push({x, y, w, h, type});
+    }
+
+    for(const id in mdshell.bgObjects) {
+        const {x, y, w, h, type} = mdshell.bgObjects[id];
+
+        arr.push({x, y, w, h, type});
+    }
+
 
     navigator.clipboard.writeText(JSON.stringify(arr))
     .then(() => alert("Copied level json"))
     .catch(err => alert(err));
 }
 
+const cat = $("#ui > #editor > #cat") as HTMLDivElement;
+
+const catList = new ToggleList([
+    $$("button", {
+        text: "Foreground",
+        attrs: {"data-type": "fg-row"},
+    }),
+    $$("button", {
+        text: "Background",
+        attrs: {"data-type": "bg-row"},
+    }),
+], el => {
+    const type = el.getAttribute("data-type")!;
+    const row = $("#ui > #editor > #" + type) as HTMLDivElement;
+    row.style.display = "flex";
+
+    el.classList.add("toggled");
+}, el => {
+    const type = el.getAttribute("data-type")!;
+    const row = $("#ui > #editor > #" + type) as HTMLDivElement;
+    row.style.display = "none";
+
+    el.classList.remove("toggled");
+}, cat);
+
+// 303
