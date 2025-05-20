@@ -1,6 +1,6 @@
 import { Container, Cursor, Sprite, Texture } from "pixi.js";
 import { playerCollisionAmnt } from "../../lib/physics";
-import { $, $$, attatchToggle, floorToMultiples, round, snapToGrid, stopAnimLoop, ToggleList } from "../../lib/util";
+import { $, $$, attatchToggle, floorToMultiples, round, snapToGrid, ToggleList } from "../../lib/util";
 import { Graph } from "../../lib/graph";
 import { app, mdshell } from "../../main";
 import { DragController } from "../../lib/drag";
@@ -8,20 +8,11 @@ import { disableControls, enableControls } from "../controls";
 import { c } from "../../canvas";
 import { copyLevel, finalizeEdits, placeBlock } from "./level-editor";
 import { blocksEl, blockSize, player, pw, wc } from "../../constants";
-
-export var RDtime = 0;
-export var deltaTime = 0;
-var fps = 1;
-
-const scale = 1;
-const studio = $("#ui > #studio") as HTMLDivElement;
-const px = $("#ui > #studio .bottom #px");
-const py = $("#ui > #studio .bottom #py");
-const col = $("#ui > #studio .bottom #col");
-const fpsEl = $("#ui > #studio .bottom #fps");
+import { scale, startStats, studio } from "./stats";
+import { disableDevMove, toggleDevMove } from "./move";
 
 var isStudioEnabled = false;
-var isEditorEnabled = false;
+export var isEditorEnabled = false;
 function enableStudio() {
     studio.style.display = "block";
 }
@@ -40,13 +31,17 @@ export function toggleLevelEditor() {
     if(isEditorEnabled) enableEditor(); else disableEditor();
 }
 
-addEventListener("keypress", e => {
+addEventListener("keydown", e => {
     if(e.key == "p") {
         toggleStudio();
     } else if(e.key == "l") {
         toggleLevelEditor();
     } else if(e.key == "C") {
         copyLevel();
+    } else if(e.key == "m") {
+        toggleDevMove();
+    } else if(e.key == "Escape") {
+        disableDevMove();
     }
 });
 
@@ -58,9 +53,9 @@ export const editorDrag = new DragController({
 
 editorDrag.defaultGrab = "grab";
 editorDrag.defaultGrabbing = "grabbing";
-editorDrag.onDrag = pan;
+editorDrag.onDrag = editorPan;
 
-function pan(x: number, y: number) {
+export function editorPan(x: number, y: number) {
     app.stage.position.x -= x;
     app.stage.position.y -= y;
 }
@@ -132,7 +127,7 @@ export function initStudio(images: HTMLImageElement[]) {
     }, bgRow);
 
     blocksEl.prepend($$("button", {
-        text: "Pan",
+        text: "editorPan",
         up() {
             list.clear();
             bgList.clear();
@@ -141,7 +136,7 @@ export function initStudio(images: HTMLImageElement[]) {
     }));
 
     bgRow.prepend($$("button", {
-        text: "Pan",
+        text: "editorPan",
         up() {
             list.clear();
             bgList.clear();
@@ -152,7 +147,6 @@ export function initStudio(images: HTMLImageElement[]) {
 
 editorDrag.downElement.addEventListener("mousemove", ({x, y}) => {
     if(!isOnPlacementMode) return;
-    console.log(0)
     placeHover(x, y);
 });
 
@@ -162,7 +156,7 @@ export function enablePlacementMode() {
     editorDrag.onDrag = placeBlock;
 
     editorDrag.changeDefaultAndNormalGrabbing("pointer");
-    editorDrag.changeDefualtandNormalGrab("crosshair");
+    editorDrag.changeDefaultandNormalGrab("crosshair");
 
     app.stage.addChild(selectedSprite);
 }
@@ -171,10 +165,10 @@ function disablePlacementMode() {
     if(!isOnPlacementMode) return;
     isOnPlacementMode = false;
 
-    editorDrag.onDrag = pan;
+    editorDrag.onDrag = editorPan;
     app.stage.removeChild(selectedSprite);
 
-    editorDrag.changeDefualtandNormalGrab("grab");
+    editorDrag.changeDefaultandNormalGrab("grab");
     editorDrag.changeDefaultAndNormalGrabbing("grabbing");
 }
 
@@ -187,10 +181,8 @@ function enableEditor() {
     
     disablePlacementMode();
 
-    //editorDrag.changeGrabbingAndCurrentCursor("grab");
-    editorDrag.changeDefualtandNormalGrab("grab");
+    editorDrag.changeDefaultandNormalGrab("grab");
     editorDrag.changeDefaultAndNormalGrabbing("grabbing");
-    //editorDrag.grabbing = "grabbing";
 }
 
 function disableEditor() {
@@ -206,69 +198,15 @@ function disableEditor() {
     app.stage.removeChild(selectedSprite);
 
     editorDrag.changeDefaultAndNormalGrabbing("default");
-    editorDrag.changeDefualtandNormalGrab("default");
+    editorDrag.changeDefaultandNormalGrab("default");
     editorDrag.setCursorToDefault();
 
     finalizeEdits();
     list!.clear();
+
+    disableDevMove();
 }
 
 export function startStudioLoop() {
-    setInterval(loop, 1000 / 10);
-    fpsLoop();
-}
-
-function loop() {
-    fps = 1000 / RDtime;
-    px.textContent = round(player.x, 10).toString();
-    py.textContent = round(player.y, 10).toString();
-    col.textContent = playerCollisionAmnt.toString();
-    fpsEl.textContent = Math.round(fps).toString();
-}
-
-const expectedFPS = 1000 / 60;
-var lastTime = 0;
-
-function fpsLoop() {
-    const currentTime = performance.now();
-    RDtime = currentTime - lastTime;
-    deltaTime = RDtime / expectedFPS;
-    lastTime = currentTime;
-
-    requestAnimationFrame(fpsLoop);
-}
-
-const graphW = Math.min(innerWidth / 2, 500 + 500/2);
-const fpsC = new Container();
-
-const graph = new Graph(graphW, innerHeight - 155, 500, 100, 5, fpsC);
-const graphLoop = stopAnimLoop(() => {
-    graph.plot(fps);
-}, 3);
-
-fpsC.addChild(new Sprite({
-    texture: Texture.WHITE,
-    x: graphW,
-    y: innerHeight - 155,
-    width: 500,
-    height: 100,
-    tint: 0,
-    alpha: .5,
-    anchor: {x: 0.5, y: 0},
-}))
-
-const fpsGraphBtn = $("#ui > #studio #show-fps-graph") as HTMLButtonElement;
-attatchToggle(fpsGraphBtn, 
-    () => {
-        app.stage.addChild(fpsC);
-        fpsGraphBtn.textContent = "-";
-        graphLoop.start();
-    },
-    disableGraph
-);
-
-function disableGraph() {
-    app.stage.removeChild(fpsC);
-    fpsGraphBtn.textContent = "+";
-    graphLoop.stop();
+    startStats();
 }

@@ -114,7 +114,7 @@ export class DragController {
         this.downElement.style.cursor = val;
     }
 
-    changeDefualtandNormalGrab(val: Cursor) {
+    changeDefaultandNormalGrab(val: Cursor): void {
         this.changeGrab(val);
         this.defaultGrab = val;
     }

@@ -55,3 +55,11 @@
 #ui > #editor button.toggled:not(.block-row) {
     border-color: darkblue;
 }
+
+#ui > #move-arrow {
+    position: fixed;
+    top: calc(var(--h) / 2 - 32px);
+    left: calc(var(--w) / 2 - 32px);
+    border-radius: 20px;
+    background-color: rgba(40, 40, 100, .4);
+}
