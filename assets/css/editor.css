@@ -20,10 +20,6 @@
     flex-direction: row;
 }
 
-#ui > #editor > #mode {
-    margin-bottom: 20px;
-}
-
 #ui > #editor > #mode > img {
     flex-grow: 1;
 }

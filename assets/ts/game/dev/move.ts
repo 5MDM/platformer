@@ -1,23 +1,12 @@
 import { c } from "../../canvas";
 import { MDshell } from "../../lib/md-framework/shell";
-import { $ } from "../../lib/util";
-import { editorDrag, editorPan, isEditorEnabled } from "./studio";
+import { $, ToggleState } from "../../lib/util";
+import { editorDrag, editorPan, editorState } from "./studio";
 
 const moveImg = $("#ui > #move-arrow") as HTMLImageElement;
 
-var isEnabled = false;
-export function toggleDevMove() {
-    if(!isEditorEnabled) return;
-    isEnabled = !isEnabled;
-    if(isEnabled) enable();
-    else disable();
-}
-
-function onMove({movementX, movementY}: MouseEvent) {
-    editorPan(-movementX, -movementY);
-}
-
-function enable() {
+export const devMoveModeState = new ToggleState(() => {
+    if(!editorState.isToggled) return;
     editorDrag.changeGrab("none");
     editorDrag.changeGrabbingAndCurrentCursor("none");
     moveImg.style.display = "block";
@@ -26,22 +15,18 @@ function enable() {
     .catch(err => MDshell.Err(err));
 
     document.documentElement.addEventListener("mousemove", onMove);
-}
-
-function disable() {
+}, () => {
     editorDrag.setCursorToDefault();
     moveImg.style.display = "none";
 
     document.exitPointerLock();
     document.documentElement.removeEventListener("mousemove", onMove);
-}
+});
 
-export function disableDevMove() {
-    if(!isEnabled) return;
-    isEnabled = false;
-    disable();
+function onMove({movementX, movementY}: MouseEvent) {
+    editorPan(-movementX, -movementY);
 }
 
 document.addEventListener("pointerlockchange", e => {
-    if(!document.pointerLockElement) disableDevMove();
+    if(!document.pointerLockElement && devMoveModeState.isToggled) devMoveModeState.toggle(); 
 });

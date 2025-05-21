@@ -354,3 +354,22 @@ export function snapToGrid(n: number, gridPos: number, blockSize: number): numbe
 export function removeContainerChildren(c: Container) {
   while(c.children[0]) c.removeChild(c.children[0]);
 }
+
+export class ToggleState {
+  isToggled: boolean;
+
+  constructor(onEnable: () => void, onDisable: () => void, isToggled: boolean = false) {
+    this.isToggled = isToggled;
+    this.onEnable = onEnable;
+    this.onDisable = onDisable;
+  }
+
+  toggle() {
+    this.isToggled = !this.isToggled;
+    if(this.isToggled) this.onEnable();
+    else this.onDisable();
+  }
+
+  private onEnable: () => void = () => undefined;
+  private onDisable: () => void = () => undefined;
+}

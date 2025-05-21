@@ -1,6 +1,6 @@
 import { $, toggleElement } from "../../lib/util";
 import { copyLevel } from "./level-editor";
-import { toggleLevelEditor, toggleStudio } from "./studio";
+import { editorState, studioState } from "./studio";
 
 const menuBtn = $("#ui > #menu > #menu-btn") as HTMLButtonElement;
 const editorBtn = $("#ui > #menu > #editor-btn") as HTMLButtonElement;
@@ -38,8 +38,8 @@ Shift + C - Copy level data. Notice: You must add player spawn manually
 
 m - Toggle movement mode. This only works when the level editor is open`], {type: "text/plain"});
 
-diagBtn.onpointerup = () => toggleStudio();
-editorBtn.onpointerup = () => toggleLevelEditor();
+diagBtn.onpointerup = () => studioState.toggle();
+editorBtn.onpointerup = () => editorState.toggle();
 copyLevelBtn.onpointerup = copyLevel;
 shortcutsBtn.onpointerup = function() {
     const url = URL.createObjectURL(msgBlob);

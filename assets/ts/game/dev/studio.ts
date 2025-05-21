@@ -1,7 +1,5 @@
-import { Container, Cursor, Sprite, Texture } from "pixi.js";
-import { playerCollisionAmnt } from "../../lib/physics";
-import { $, $$, attatchToggle, floorToMultiples, round, snapToGrid, ToggleList } from "../../lib/util";
-import { Graph } from "../../lib/graph";
+import { Cursor, Sprite, Texture } from "pixi.js";
+import { $, $$, floorToMultiples, snapToGrid, ToggleList, ToggleState } from "../../lib/util";
 import { app, mdshell } from "../../main";
 import { DragController } from "../../lib/drag";
 import { disableControls, enableControls } from "../controls";
@@ -9,39 +7,58 @@ import { c } from "../../canvas";
 import { copyLevel, finalizeEdits, placeBlock } from "./level-editor";
 import { blocksEl, blockSize, player, pw, wc } from "../../constants";
 import { scale, startStats, studio } from "./stats";
-import { disableDevMove, toggleDevMove } from "./move";
+import { devMoveModeState } from "./move";
 
-var isStudioEnabled = false;
-export var isEditorEnabled = false;
-function enableStudio() {
+export const studioState = new ToggleState(() => {
     studio.style.display = "block";
-}
-
-function disableStudio() {
+}, () => {
     studio.style.display = "none";
-}
+});
 
-export function toggleStudio() {
-    isStudioEnabled = !isStudioEnabled;
-    if(isStudioEnabled) enableStudio(); else disableStudio();
-}
+export const editorState = new ToggleState(() => {
+    pw.stopClock();
+    app.stage.scale = scale;
+    disableControls();
+    editorDrag.enable();
+    editorEl.style.display = "flex";
+    
+    if(!placementModeState.isToggled) placementModeState.toggle();
 
-export function toggleLevelEditor() {
-    isEditorEnabled = !isEditorEnabled;
-    if(isEditorEnabled) enableEditor(); else disableEditor();
-}
+    editorDrag.changeDefaultandNormalGrab("grab");
+    editorDrag.changeDefaultAndNormalGrabbing("grabbing");
+}, () => {
+    pw.startClock();
+    app.stage.scale = 1;
+    editorDrag.disable();
+    app.stage.position.x = 0;
+    app.stage.position.y = 0;
+    enableControls();
+    editorEl.style.display = "none";
+
+    if(!selectedSprite) throw new Error("What did you do");
+    app.stage.removeChild(selectedSprite);
+
+    editorDrag.changeDefaultAndNormalGrabbing("default");
+    editorDrag.changeDefaultandNormalGrab("default");
+    editorDrag.setCursorToDefault();
+
+    finalizeEdits();
+    list!.clear();
+
+    if(devMoveModeState.isToggled) devMoveModeState.toggle();
+});
 
 addEventListener("keydown", e => {
     if(e.key == "p") {
-        toggleStudio();
+        studioState.toggle();
     } else if(e.key == "l") {
-        toggleLevelEditor();
+        editorState.toggle();
     } else if(e.key == "C") {
         copyLevel();
     } else if(e.key == "m") {
-        toggleDevMove();
+        if(!devMoveModeState.isToggled) devMoveModeState.toggle();
     } else if(e.key == "Escape") {
-        disableDevMove();
+        if(devMoveModeState.isToggled) devMoveModeState.toggle();
     }
 });
 
@@ -104,7 +121,8 @@ export function initStudio(images: HTMLImageElement[]) {
     }
 
     list = new ToggleList(fgImages, (el) => {
-        enablePlacementMode();
+        if(!placementModeState.isToggled) placementModeState.toggle();
+
         selectedBlock = el.getAttribute("data-name")!;
         el.classList.add("toggled");
         selectedBlockIsPassable = false;
@@ -115,7 +133,8 @@ export function initStudio(images: HTMLImageElement[]) {
     }, blocksEl);
 
     bgList = new ToggleList(bgImages, (el) => {
-        enablePlacementMode();
+        if(!placementModeState.isToggled) placementModeState.toggle();
+        
         selectedBlock = el.getAttribute("data-name")!;
         el.classList.add("toggled");
 
@@ -127,20 +146,20 @@ export function initStudio(images: HTMLImageElement[]) {
     }, bgRow);
 
     blocksEl.prepend($$("button", {
-        text: "editorPan",
+        text: "Pan",
         up() {
             list.clear();
             bgList.clear();
-            disablePlacementMode();
+            if(placementModeState.isToggled) placementModeState.toggle();
         },
     }));
 
     bgRow.prepend($$("button", {
-        text: "editorPan",
+        text: "Pan",
         up() {
             list.clear();
             bgList.clear();
-            disablePlacementMode();
+            if(placementModeState.isToggled) placementModeState.toggle();
         },
     }));
 }
@@ -150,62 +169,20 @@ editorDrag.downElement.addEventListener("mousemove", ({x, y}) => {
     placeHover(x, y);
 });
 
-export function enablePlacementMode() {
-    if(isOnPlacementMode) return;
-    isOnPlacementMode = true;
+export const placementModeState = new ToggleState(() => {
     editorDrag.onDrag = placeBlock;
 
     editorDrag.changeDefaultAndNormalGrabbing("pointer");
     editorDrag.changeDefaultandNormalGrab("crosshair");
 
     app.stage.addChild(selectedSprite);
-}
-
-function disablePlacementMode() {
-    if(!isOnPlacementMode) return;
-    isOnPlacementMode = false;
-
+}, () => {
     editorDrag.onDrag = editorPan;
     app.stage.removeChild(selectedSprite);
 
     editorDrag.changeDefaultandNormalGrab("grab");
     editorDrag.changeDefaultAndNormalGrabbing("grabbing");
-}
-
-function enableEditor() {
-    pw.stopClock();
-    app.stage.scale = scale;
-    disableControls();
-    editorDrag.enable();
-    editorEl.style.display = "flex";
-    
-    disablePlacementMode();
-
-    editorDrag.changeDefaultandNormalGrab("grab");
-    editorDrag.changeDefaultAndNormalGrabbing("grabbing");
-}
-
-function disableEditor() {
-    pw.startClock();
-    app.stage.scale = 1;
-    editorDrag.disable();
-    app.stage.position.x = 0;
-    app.stage.position.y = 0;
-    enableControls();
-    editorEl.style.display = "none";
-
-    if(!selectedSprite) throw new Error("What did you do");
-    app.stage.removeChild(selectedSprite);
-
-    editorDrag.changeDefaultAndNormalGrabbing("default");
-    editorDrag.changeDefaultandNormalGrab("default");
-    editorDrag.setCursorToDefault();
-
-    finalizeEdits();
-    list!.clear();
-
-    disableDevMove();
-}
+});
 
 export function startStudioLoop() {
     startStats();
