@@ -1,9 +1,10 @@
 import { AnimatedSprite, Application, Sprite } from "pixi.js";
 import { startControlLoop } from "./controls";
-import { startStudioLoop } from "./dev/studio";
+import { editorState, startStudioLoop } from "./dev/studio";
 import { player, pw, wc } from "../constants";
 
 import "./dev/menu";
+import "./dev/modes";
 import { MDshell } from "../lib/md-framework/shell";
 import { mdshell } from "../main";
 
@@ -29,10 +30,12 @@ export async function startGame(sh: MDshell) {
     sh.app.stage.addChild(wc);
     player.display(sh.app);
 
-    sh.setCurrentLevel("1");
+    sh.setCurrentLevel("2");
     player.teleport(sh.game.spawnX, sh.game.spawnY);
     
     pw.startClock();
     startControlLoop();
     startStudioLoop();
+
+    editorState.toggle();
 }

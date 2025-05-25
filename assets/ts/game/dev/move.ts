@@ -1,12 +1,12 @@
 import { c } from "../../canvas";
 import { MDshell } from "../../lib/md-framework/shell";
 import { $, ToggleState } from "../../lib/util";
+import { app } from "../../main";
 import { editorDrag, editorPan, editorState } from "./studio";
 
 const moveImg = $("#ui > #move-arrow") as HTMLImageElement;
 
 export const devMoveModeState = new ToggleState(() => {
-    if(!editorState.isToggled) return;
     editorDrag.changeGrab("none");
     editorDrag.changeGrabbingAndCurrentCursor("none");
     moveImg.style.display = "block";
@@ -21,6 +21,11 @@ export const devMoveModeState = new ToggleState(() => {
 
     document.exitPointerLock();
     document.documentElement.removeEventListener("mousemove", onMove);
+
+    if(!editorState.isToggled) {
+        app.stage.position.x = 0;
+        app.stage.position.y = 0;
+    }
 });
 
 function onMove({movementX, movementY}: MouseEvent) {

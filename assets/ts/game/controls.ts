@@ -116,20 +116,3 @@ joystick.onReset = function() {
     isJumping = false;
     isGoingDown = false;
 };
-
-/*
-joystick.parent.addEventListener("pointerup", () => {
-    isMovingLeft = false;
-    isMovingRight = false;
-    isJumping = false;
-    isGoingDown = false;
-});
-
-joystick.parent.addEventListener("pointercancel", () => {
-    isMovingLeft = false;
-    isMovingRight = false;
-    isJumping = false;
-    isGoingDown = false;
-});
-*/
-

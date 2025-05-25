@@ -11,17 +11,32 @@
     gap: 10px;
 }
 
+#ui > #editor > #mode button {
+    width: 34px;
+    height: 34px;
+    background-color: rgba(60, 60, 180, .8);
+    border: 2px solid blue;
+    padding: 4px;
+    border-radius: 10px;
+}
+
+#ui > #editor > #mode button img {
+    width: 24px;
+    height: 24px;
+}
+
+#ui > #editor > #mode button.selected {
+    border: 2px solid white;
+}
+
 #ui > #editor img {
     cursor: pointer;
+    image-rendering: pixelated;
 }
 
 #ui > #editor > div:not(.block-row) {
     display: flex;
     flex-direction: row;
-}
-
-#ui > #editor > #mode > img {
-    flex-grow: 1;
 }
 
 #ui > #editor .block-row {

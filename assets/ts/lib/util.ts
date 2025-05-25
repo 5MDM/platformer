@@ -1,6 +1,6 @@
 import {Container, Sprite, Texture } from "pixi.js";
 
-export const UTIL_VERSION: number = 1.4;
+export const UTIL_VERSION: number = 1.5;
 
 export const RADIAN_QUARTER = 28.6479;
 
@@ -10,8 +10,8 @@ export function throwErr(file: string, msg: string): never {
   throw err.stack;
 }
 
-export function $(e: string): Element {
-  const el = document.querySelector(e);
+export function $(e: string): HTMLElement {
+  const el = document.querySelector(e) as HTMLElement;
   if(el === null) throwErr(
     "util",
     `Can't find element "${e}"`
@@ -20,7 +20,7 @@ export function $(e: string): Element {
   return el;
 }
 
-interface $$Opts {
+export interface $$Opts {
   text?: string;
   children?: Element[];
   up?: () => void;
@@ -59,34 +59,6 @@ export function $$
       el.style.setProperty(name, opts.style[name]);
 
   return el;
-}
-
-
-export interface HideableInterface {
-  el: Element;
-  show: () => void;
-  hide: () => void;
-  toggle: () => void;
-}
-
-export function hideable(el: HTMLElement, type?: string): HideableInterface {
-  type ||= "flex";
-  return {
-    el,
-    show() {
-      el.style.display = type;
-    },
-    hide() {
-      el.style.display = "none";
-    },
-    toggle() {
-      if(el.style.display == "none") {
-        el.style.display = type;
-      } else {
-        el.style.display = "none";
-      }
-    }
-  };
 }
 
 export function getRandom(array: any[]): any {
@@ -368,6 +340,10 @@ export class ToggleState {
     this.isToggled = !this.isToggled;
     if(this.isToggled) this.onEnable();
     else this.onDisable();
+  }
+
+  triggerEnable(): void {
+    this.onEnable();
   }
 
   private onEnable: () => void = () => undefined;

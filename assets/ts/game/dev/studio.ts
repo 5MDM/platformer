@@ -1,4 +1,4 @@
-import { Cursor, Sprite, Texture } from "pixi.js";
+import { Container, Cursor, Sprite, Texture, TilingSprite } from "pixi.js";
 import { $, $$, floorToMultiples, snapToGrid, ToggleList, ToggleState } from "../../lib/util";
 import { app, mdshell } from "../../main";
 import { DragController } from "../../lib/drag";
@@ -8,6 +8,7 @@ import { copyLevel, finalizeEdits, placeBlock } from "./level-editor";
 import { blocksEl, blockSize, player, pw, wc } from "../../constants";
 import { scale, startStats, studio } from "./stats";
 import { devMoveModeState } from "./move";
+import { enableRowEditMode, rowEditHover, rowEditState } from "./row-edit";
 
 export const studioState = new ToggleState(() => {
     studio.style.display = "block";
@@ -22,8 +23,8 @@ export const editorState = new ToggleState(() => {
     editorDrag.enable();
     editorEl.style.display = "flex";
     
-    if(!placementModeState.isToggled) placementModeState.toggle();
-
+    if(placementModeState.isToggled) placementModeState.toggle();
+    
     editorDrag.changeDefaultandNormalGrab("grab");
     editorDrag.changeDefaultAndNormalGrabbing("grabbing");
 }, () => {
@@ -95,14 +96,14 @@ export var selectedBlockIsPassable = false;
 const bgRow = $("#ui > #editor > #bg-row") as HTMLDivElement;
 export const editorEl = $("#ui > #editor") as HTMLElement;
 
-var isOnPlacementMode = false;
 export var selectedBlock: string | undefined;
-export const selectedSprite: Sprite = new Sprite({
+export const selectedSprite: TilingSprite = new TilingSprite({
+    x: 0,
+    y: 0,
     width: blockSize,
     height: blockSize,
-    scale,
     texture: Texture.WHITE,
-    alpha: .6,
+    zIndex: -1,
 });
 
 var list: ToggleList;
@@ -128,6 +129,11 @@ export function initStudio(images: HTMLImageElement[]) {
         selectedBlockIsPassable = false;
 
         selectedSprite.texture = mdshell.getTexture(selectedBlock!);
+        selectedSprite.tileScale = {
+            x: blockSize / selectedSprite.texture.width,
+            y: blockSize / selectedSprite.texture.height,
+        };
+
     }, (el) => {
         el.classList.remove("toggled");
     }, blocksEl);
@@ -141,6 +147,10 @@ export function initStudio(images: HTMLImageElement[]) {
         selectedBlockIsPassable = true;
 
         selectedSprite.texture = mdshell.getTexture(selectedBlock!);
+        selectedSprite.tileScale = {
+            x: blockSize / selectedSprite.texture.width,
+            y: blockSize / selectedSprite.texture.height,
+        };
     }, (el) => {
         el.classList.remove("toggled");
     }, bgRow);
@@ -165,12 +175,17 @@ export function initStudio(images: HTMLImageElement[]) {
 }
 
 editorDrag.downElement.addEventListener("mousemove", ({x, y}) => {
-    if(!isOnPlacementMode) return;
-    placeHover(x, y);
+    if(!placementModeState.isToggled) return;
+    if(rowEditState.isToggled) rowEditHover(x, y);
+    else placeHover(x, y);
 });
 
 export const placementModeState = new ToggleState(() => {
-    editorDrag.onDrag = placeBlock;
+    if(rowEditState.isToggled) {
+        enableRowEditMode();
+    } else {
+        editorDrag.onDrag = placeBlock;
+    }
 
     editorDrag.changeDefaultAndNormalGrabbing("pointer");
     editorDrag.changeDefaultandNormalGrab("crosshair");

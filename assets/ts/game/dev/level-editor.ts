@@ -1,8 +1,8 @@
 import { Container, Sprite } from "pixi.js";
-import { $, $$, floorToMultiples, MDmatrix, removeContainerChildren, snapToGrid, ToggleList } from "../../lib/util";
+import { $, $$, floorToMultiples, MDmatrix, removeContainerChildren, ToggleList } from "../../lib/util";
 import { PWS } from "../../lib/pw-objects";
 import { blockSize, maxLevelSize, player, pw, staticContainer } from "../../constants";
-import { editorDrag, editorEl, selectedBlock, selectedBlockIsPassable, selectedSprite } from "./studio";
+import { editorDrag, selectedBlock, selectedBlockIsPassable, selectedSprite } from "./studio";
 import { GMOutput, Keymap } from "../../lib/keymap";
 import { app, mdshell } from "../../main";
 
@@ -20,7 +20,6 @@ export function placeBlock(rx: number, ry: number, x: number, y: number) {
     const fy = floorToMultiples(player.y + y - player.halfHS - app.stage.position.y, blockSize) / blockSize;
 
     if(mdshell.game.editGrid.isOOB(fx, fy)) return editorDrag.CAD(true);
-
     if(mdshell.game.editGrid.place(fx, fy, selectedBlock!)) return;
 
     try {
@@ -50,7 +49,6 @@ export function placeBlock(rx: number, ry: number, x: number, y: number) {
     }));
 }
 
-
 export function finalizeEdits() {
     if(!hasEdited) return;
     hasEdited = false;
@@ -59,15 +57,12 @@ export function finalizeEdits() {
 
     for(const blockName in blockRecord) {
         const boxes: GMOutput[] = Keymap.GMBool(blockRecord[blockName].matrix, selectedBlock!);
-        const t = mdshell.getTexture(blockName);
-
+        
         for(const {x, y, w, h} of boxes) {
             if(selectedBlockIsPassable) mdshell.createBlock(x, y, w, h, blockName, true);
             else mdshell.createBlock(x, y, w, h, blockName, false);
         }
-    }
-    
-    //editGrid.clear();
+    }    
 }
 
 
@@ -75,16 +70,6 @@ export function copyLevel() {
     const arr: GMOutput[] = [];
 
     console.log(mdshell.game.grids.fg.matrix)
-
-    /*mdshell.game.grids.fg.forEach(({id, type}) => {
-        var {x, y, w, h} = mdshell.pwObjects[id];
-        x = Math.floor(x);
-        y = Math.floor(y);
-        w = Math.floor(w);
-        h = Math.floor(h);
-        
-        arr.push({x, y, w, h, type});
-    });*/
 
     for(const id in mdshell.pwObjects) {
         const {x, y, w, h, type} = mdshell.pwObjects[id];
@@ -97,7 +82,6 @@ export function copyLevel() {
 
         arr.push({x, y, w, h, type});
     }
-
 
     navigator.clipboard.writeText(JSON.stringify(arr))
     .then(() => alert("Copied level json"))
@@ -128,5 +112,3 @@ const catList = new ToggleList([
 
     el.classList.remove("toggled");
 }, cat);
-
-// 303

@@ -36,7 +36,7 @@ L - Toggle level editor
 
 Shift + C - Copy level data. Notice: You must add player spawn manually
 
-m - Toggle movement mode. This only works when the level editor is open`], {type: "text/plain"});
+m - Toggle movement mode. If the level editor isn't open, then it resets to the default position after being turned off`], {type: "text/plain"});
 
 diagBtn.onpointerup = () => studioState.toggle();
 editorBtn.onpointerup = () => editorState.toggle();
