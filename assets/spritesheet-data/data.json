@@ -18,7 +18,7 @@
 },
 "grass_block_1.png":
 {
-	"frame": {"x":0,"y":126,"w":256,"h":256},
+	"frame": {"x":0,"y":127,"w":256,"h":256},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":256,"h":256},
@@ -111,6 +111,14 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":63},
 	"sourceSize": {"w":30,"h":63}
+},
+"wall.png":
+{
+	"frame": {"x":94,"y":63,"w":64,"h":64},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":64},
+	"sourceSize": {"w":64,"h":64}
 }},
 "animations": {
 	"player-down-walk": ["player-down-walk-1.png","player-down-walk-2.png"],
@@ -122,8 +130,8 @@
 	"version": "1.1",
 	"image": "atlas.png",
 	"format": "RGBA8888",
-	"size": {"w":256,"h":382},
+	"size": {"w":256,"h":383},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:c0cf1411e01b504ef99c59ce7fde328e:037f639b27feab844ce854a726e3c14b:9157e326ab292468473525d456d5b553$"
+	"smartupdate": "$TexturePacker:SmartUpdate:395aea26c74b4fbee41a87f784f7dd87:0dc0dd149bc63349ec579547deac950b:9157e326ab292468473525d456d5b553$"
 }
 }

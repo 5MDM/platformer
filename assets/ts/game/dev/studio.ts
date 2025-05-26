@@ -8,7 +8,7 @@ import { copyLevel, finalizeEdits, placeBlock } from "./level-editor";
 import { blocksEl, blockSize, player, pw, wc } from "../../constants";
 import { scale, startStats, studio } from "./stats";
 import { devMoveModeState } from "./move";
-import { enableRowEditMode, rowEditHover, rowEditState } from "./row-edit";
+import { disableRowEditMode, enableRowEditMode, rowEditHover, rowEditState } from "./row-edit";
 
 export const studioState = new ToggleState(() => {
     studio.style.display = "block";
@@ -43,8 +43,11 @@ export const editorState = new ToggleState(() => {
     editorDrag.changeDefaultandNormalGrab("default");
     editorDrag.setCursorToDefault();
 
+    disableRowEditMode();
+
     finalizeEdits();
     list!.clear();
+    bgList!.clear();
 
     if(devMoveModeState.isToggled) devMoveModeState.toggle();
 });

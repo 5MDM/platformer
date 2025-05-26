@@ -9,6 +9,15 @@ body {
     overflow: hidden;
     user-select: none;
     -webkit-touch-callout: none;
+    -webkit-user-select: none;
+}
+
+img {
+    -webkit-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    -ms-user-drag: none;
+    user-drag: none;
 }
 
 #c {

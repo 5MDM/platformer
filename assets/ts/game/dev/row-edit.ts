@@ -11,7 +11,10 @@ export function enableRowEditMode() {
 }
 
 export function disableRowEditMode() {
+    console.log("off")
     editorDrag.touchEl.removeEventListener("pointerdown", down);
+    initialP = false;
+    if(placementModeState.isToggled) editorDrag.onDrag = placeBlock;
 }
 
 export const rowEditState = new ToggleState(() => {
@@ -19,7 +22,6 @@ export const rowEditState = new ToggleState(() => {
         enableRowEditMode();
     }
 }, () => {
-    if(placementModeState.isToggled) editorDrag.onDrag = placeBlock;
     disableRowEditMode();
 });
 
@@ -32,6 +34,7 @@ function down(e: PointerEvent) {
 }
 
 export function placeRow(rx: number, ry: number, x: number, y: number) {
+    console.log(0)
     const cursorX = floorToMultiples(player.x + x - player.halfWS - app.stage.position.x, blockSize) / blockSize;
     const cursorY = floorToMultiples(player.y + y - player.halfHS - app.stage.position.y, blockSize) / blockSize;
 

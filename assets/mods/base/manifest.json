@@ -18,6 +18,11 @@
             "texture": "floor.png",
             "character": ".",
             "isPassable": true
+        },
+        {
+            "name": "Wall",
+            "texture": "wall.png",
+            "character": "|"
         }
     ]
 }
