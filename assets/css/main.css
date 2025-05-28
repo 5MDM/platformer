@@ -17,7 +17,7 @@ img {
     -moz-user-drag: none;
     -o-user-drag: none;
     -ms-user-drag: none;
-    user-drag: none;
+    image-rendering: crisp-edges;
 }
 
 #c {

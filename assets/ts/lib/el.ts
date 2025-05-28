@@ -1,3 +1,4 @@
+import { $$ } from "./util";
 
 export class ElList<T> {
     selectClassName: string;
@@ -28,5 +29,93 @@ export class ElList<T> {
             element.addEventListener("pointerup", () => this.onUp(element))
             parent.appendChild(element);
         }
+    }
+}
+
+type InputF = ((num: number) => string) | true;
+
+interface MDsliderOpts {
+    min: number;
+    max: number;
+    default: number;
+    step?: number;
+    markers?: number[];
+    id: string;
+    inputF?: InputF;
+}
+
+export class MDslider {
+    el: HTMLInputElement;
+    defaultValue: number;
+
+    markerEl?: HTMLDataListElement;
+    inputValueEl?: HTMLParagraphElement;
+
+    constructor(o: MDsliderOpts) {
+        this.defaultValue = o.default;
+
+        this.el = $$("input", {
+            attrs: {
+                type: "range",
+                min: o.min.toString(),
+                max: o.max.toString(),
+                value: o.default.toString(),
+                step: o.step?.toString() || "1",
+                id: o.id,
+                
+            },
+        });
+
+        if(o.markers) 
+            this.setupMarker(o.id + "-marker", o.markers);
+        
+        if(o.inputF)
+            this.setupInputF(o.inputF, o.default);
+    }
+
+    private setupInputF(f: InputF, defaultVal: number) {
+        if(f === true) {
+            this.inputValueEl = $$("p", {
+                text: defaultVal.toString(),
+            });
+
+            this.el.addEventListener("input", () => {
+                this.inputValueEl!.textContent = this.el.value;
+            });
+        } else {
+            this.inputValueEl = $$("p", {
+                text: f(defaultVal),
+            });
+
+            this.el.addEventListener("input", () => {
+                this.inputValueEl!.textContent = f(Number(this.el.value));
+            });
+        }
+    }
+
+    private setupMarker(markerId: string, markers: number[]) {
+        const children: HTMLOptionElement[] = [];
+
+        for(const num of markers) children.push($$("option", {
+            attrs: {
+                value: num.toString(),
+            }
+        }));
+
+        this.markerEl = $$("datalist", {
+            attrs: {
+                id: markerId,
+            },
+            children,
+        });
+
+        this.el.setAttribute("list", markerId);
+
+    }
+
+    appendTo(el: HTMLElement) {
+        el.appendChild(this.el);
+        if(this.markerEl) el.appendChild(this.markerEl);
+        if(this.inputValueEl) el.appendChild(this.inputValueEl);
     }
 }

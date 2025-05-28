@@ -31,7 +31,6 @@
 
 #ui > #editor img {
     cursor: pointer;
-    image-rendering: pixelated;
 }
 
 #ui > #editor > div:not(.block-row) {
@@ -45,6 +44,7 @@
     gap: 16px;
     border: 5px inset rgba(50, 50, 100, 1);
     padding: 10px;
+    image-rendering: pixelated;
 }
 
 #ui > #editor .block-row > img {

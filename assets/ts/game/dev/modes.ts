@@ -2,24 +2,35 @@ import { ElList } from "../../lib/el";
 import { MDshell } from "../../lib/md-framework/shell";
 import { $, $$, ToggleState } from "../../lib/util";
 import { rowEditState } from "./row-edit";
+import { zoomState } from "./zoom";
 
-const modes: Record<string, ToggleState> = {
-    "row-edit": rowEditState,
-};
+const modes: Record<string, ToggleState> = {};
 
-const modeArr = [
+interface Elt {
+    src: string;
+    name: string;
+    state: ToggleState;
+    isToggled?: boolean;
+}
+
+const modeArr: Elt[] = [
     {
         name: "row-edit",
         src: "row-edit.png",
+        state: rowEditState,
         isToggled: true,
-    }
+    },
+    {
+        name: "zoom",
+        src: "zoom.png",
+        state: zoomState,
+        isToggled: false,
+    },
 ];
 
-const list = new ElList<{
-    src: string;
-    name: string;
-    isToggled?: boolean;
-}>("selected", opts => {
+const list = new ElList<Elt>("selected", opts => {
+    modes[opts.name] = opts.state;
+
     const el = $$("button", {
         attrs: {
             "data-name": opts.name,
@@ -35,11 +46,9 @@ const list = new ElList<{
     });
 
     if(opts.isToggled) {
-        const name: string = el.getAttribute("data-name")!;
-        const toggleState = modes[name];
-        if(!toggleState) MDshell.Err("toggle state is undefined in modes.ts");
+        //const name: string = el.getAttribute("data-name")!;
 
-        toggleState.toggle();
+        opts.state.toggle();
         el.classList.add("selected");
     }
 
@@ -47,7 +56,7 @@ const list = new ElList<{
 }, (el: HTMLElement) => {
     const name: string = el.getAttribute("data-name")!;
     const toggleState = modes[name];
-    if(!toggleState) MDshell.Err("toggle state is undefined in modes.ts");
+    if(!toggleState) return MDshell.Err("toggle state is undefined in modes.ts");
 
     toggleState.toggle();
     if(toggleState.isToggled) {
