@@ -9,6 +9,7 @@ import { blocksEl, blockSize, player, pw, wc } from "../../constants";
 import { scale, startStats, studio } from "./stats";
 import { devMoveModeState } from "./move";
 import { disableRowEditMode, enableRowEditMode, rowEditHover, rowEditState } from "./row-edit";
+import { setGameScale } from "./zoom";
 
 export const studioState = new ToggleState(() => {
     studio.style.display = "block";
@@ -30,6 +31,7 @@ export const editorState = new ToggleState(() => {
 }, () => {
     pw.startClock();
     app.stage.scale = 1;
+    setGameScale(0);
     editorDrag.disable();
     app.stage.position.x = 0;
     app.stage.position.y = 0;

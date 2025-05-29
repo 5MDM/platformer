@@ -24,7 +24,6 @@ const modeArr: Elt[] = [
         name: "zoom",
         src: "zoom.png",
         state: zoomState,
-        isToggled: false,
     },
 ];
 

@@ -59,7 +59,6 @@ app.init({
     canvas: c,
     roundPixels: true,
 }).then(async () => {
-
     initLevels(mdshell);
 
     mdshell.init()

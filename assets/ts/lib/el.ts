@@ -47,6 +47,7 @@ interface MDsliderOpts {
 export class MDslider {
     el: HTMLInputElement;
     defaultValue: number;
+    private inputF?: (n: number) => string;
 
     markerEl?: HTMLDataListElement;
     inputValueEl?: HTMLParagraphElement;
@@ -83,6 +84,7 @@ export class MDslider {
                 this.inputValueEl!.textContent = this.el.value;
             });
         } else {
+            this.inputF = f;
             this.inputValueEl = $$("p", {
                 text: f(defaultVal),
             });
@@ -91,6 +93,10 @@ export class MDslider {
                 this.inputValueEl!.textContent = f(Number(this.el.value));
             });
         }
+    }
+
+    setValue(n: number) {
+        this.el.value = this.inputF ? this.inputF(n) : n.toString();
     }
 
     private setupMarker(markerId: string, markers: number[]) {

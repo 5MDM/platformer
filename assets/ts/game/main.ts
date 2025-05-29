@@ -26,7 +26,7 @@ async function loadAnimations() {
 
 export async function startGame(sh: MDshell) {    
     await loadAnimations();
-
+    
     sh.app.stage.addChild(wc);
     player.display(sh.app);
 
@@ -38,4 +38,5 @@ export async function startGame(sh: MDshell) {
     startStudioLoop();
 
     editorState.toggle();
+
 }
