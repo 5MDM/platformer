@@ -96,7 +96,9 @@ export class MDslider {
     }
 
     setValue(n: number) {
-        this.el.value = this.inputF ? this.inputF(n) : n.toString();
+        this.el.value = n.toString();
+        if(this.inputValueEl) this.inputValueEl.textContent = this.inputF ? this.inputF(n) : n.toString();
+        //this.el.value = this.inputF ? this.inputF(n) : n.toString();
     }
 
     private setupMarker(markerId: string, markers: number[]) {

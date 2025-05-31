@@ -4,6 +4,7 @@ import { floorToMultiples, snapToGrid, ToggleState } from "../../lib/util";
 import { app, mdshell } from "../../main";
 import { placeBlock } from "./level-editor";
 import { editorDrag, placementModeState, selectedBlock, selectedBlockIsPassable, selectedSprite } from "./studio";
+import { gameScale } from "./zoom";
 
 export function enableRowEditMode() {
     //editorDrag.onDrag = placeRow;
@@ -11,7 +12,6 @@ export function enableRowEditMode() {
 }
 
 export function disableRowEditMode() {
-    console.log("off")
     editorDrag.touchEl.removeEventListener("pointerdown", down);
     initialP = false;
     if(placementModeState.isToggled) editorDrag.onDrag = placeBlock;
@@ -34,15 +34,16 @@ function down(e: PointerEvent) {
 }
 
 export function placeRow(rx: number, ry: number, x: number, y: number) {
-    console.log(0)
+    x *= gameScale.x;
+    y *= gameScale.y;
     const cursorX = floorToMultiples(player.x + x - player.halfWS - app.stage.position.x, blockSize) / blockSize;
     const cursorY = floorToMultiples(player.y + y - player.halfHS - app.stage.position.y, blockSize) / blockSize;
 
     const bool = mdshell.pw.staticGrid.isOOB(cursorX, cursorY);
     if(bool) return editorDrag.CAD(true);
 
-    const fx = snapToGrid(x - app.stage.position.x, mdshell.pw.wc.position.x, blockSize);
-    const fy = snapToGrid(y - app.stage.position.y, mdshell.pw.wc.position.y, blockSize);
+    const fx = snapToGrid(x - app.stage.position.x * gameScale.x, mdshell.pw.wc.position.x, blockSize);
+    const fy = snapToGrid(y - app.stage.position.y * gameScale.y, mdshell.pw.wc.position.y, blockSize);
 
     if(!initialP) {
         initialP = true;
@@ -61,8 +62,11 @@ export function placeRow(rx: number, ry: number, x: number, y: number) {
 }
 
 export function rowEditHover(x: number, y: number) {
-    const fx = snapToGrid(x - app.stage.position.x, mdshell.pw.wc.position.x, blockSize);
-    const fy = snapToGrid(y - app.stage.position.y, mdshell.pw.wc.position.y, blockSize);
+    x *= gameScale.x;
+    y *= gameScale.y;
+
+    const fx = snapToGrid(x - app.stage.position.x * gameScale.x, mdshell.pw.wc.position.x, blockSize);
+    const fy = snapToGrid(y - app.stage.position.y * gameScale.y, mdshell.pw.wc.position.y, blockSize);
 
     const cursorX = floorToMultiples(player.x + x - player.halfWS - app.stage.position.x, blockSize) / blockSize;
     const cursorY = floorToMultiples(player.y + y - player.halfHS - app.stage.position.y, blockSize) / blockSize;

@@ -5,6 +5,7 @@ import { blockSize, maxLevelSize, player, pw, staticContainer } from "../../cons
 import { editorDrag, selectedBlock, selectedBlockIsPassable, selectedSprite } from "./studio";
 import { GMOutput, Keymap } from "../../lib/keymap";
 import { app, mdshell } from "../../main";
+import { gameScale } from "./zoom";
 
 var hasEdited = false;
 
@@ -16,8 +17,11 @@ staticContainer.addChild(editorC);
 const blockRecord: Record<string, MDmatrix<true>> = {};
 
 export function placeBlock(rx: number, ry: number, x: number, y: number) {
-    const fx = floorToMultiples(player.x + x - player.halfWS - app.stage.position.x, blockSize) / blockSize;
-    const fy = floorToMultiples(player.y + y - player.halfHS - app.stage.position.y, blockSize) / blockSize;
+    x *= gameScale.x;
+    y *= gameScale.y;
+
+    const fx = floorToMultiples(player.x + x - player.halfWS - app.stage.position.x * gameScale.x, blockSize) / blockSize;
+    const fy = floorToMultiples(player.y + y - player.halfHS - app.stage.position.y * gameScale.y, blockSize) / blockSize;
 
     if(mdshell.game.editGrid.isOOB(fx, fy)) return editorDrag.CAD(true);
     if(mdshell.game.editGrid.place(fx, fy, selectedBlock!)) return;
@@ -68,8 +72,6 @@ export function finalizeEdits() {
 
 export function copyLevel() {
     const arr: GMOutput[] = [];
-
-    console.log(mdshell.game.grids.fg.matrix)
 
     for(const id in mdshell.pwObjects) {
         const {x, y, w, h, type} = mdshell.pwObjects[id];

@@ -9,7 +9,7 @@ import { blocksEl, blockSize, player, pw, wc } from "../../constants";
 import { scale, startStats, studio } from "./stats";
 import { devMoveModeState } from "./move";
 import { disableRowEditMode, enableRowEditMode, rowEditHover, rowEditState } from "./row-edit";
-import { setGameScale } from "./zoom";
+import { gameScale, setGameScale } from "./zoom";
 
 export const studioState = new ToggleState(() => {
     studio.style.display = "block";
@@ -84,8 +84,10 @@ export function editorPan(x: number, y: number) {
 }
 
 function placeHover(x: number, y: number) {
-    const fx = snapToGrid(x - app.stage.position.x, wc.position.x, blockSize);
-    const fy = snapToGrid(y - app.stage.position.y, wc.position.y, blockSize);
+    x *= gameScale.x;
+    y *= gameScale.y;
+    const fx = snapToGrid(x - app.stage.position.x * gameScale.x, wc.position.x, blockSize);
+    const fy = snapToGrid(y - app.stage.position.y * gameScale.y, wc.position.y, blockSize);
 
     const cursorX = floorToMultiples(player.x + x - player.halfWS - app.stage.position.x, blockSize) / blockSize;
     const cursorY = floorToMultiples(player.y + y - player.halfHS - app.stage.position.y, blockSize) / blockSize;
