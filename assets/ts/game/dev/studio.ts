@@ -1,11 +1,12 @@
 import { Container, Cursor, Sprite, Texture, TilingSprite } from "pixi.js";
 import { $, $$, floorToMultiples, snapToGrid, ToggleList, ToggleState } from "../../lib/util";
-import { app, mdshell } from "../../main";
+import { app } from "../../constants";
+import { mdshell } from "../../constants";
 import { DragController } from "../../lib/drag";
 import { disableControls, enableControls } from "../controls";
 import { c } from "../../canvas";
 import { copyLevel, finalizeEdits, placeBlock } from "./level-editor";
-import { blocksEl, blockSize, player, pw, wc } from "../../constants";
+import { blocksEl, blockSize, player, pw } from "../../constants";
 import { scale, startStats, studio } from "./stats";
 import { devMoveModeState } from "./move";
 import { disableRowEditMode, enableRowEditMode, rowEditHover, rowEditState } from "./row-edit";
@@ -30,11 +31,10 @@ export const editorState = new ToggleState(() => {
     editorDrag.changeDefaultAndNormalGrabbing("grabbing");
 }, () => {
     pw.startClock();
-    app.stage.scale = 1;
     setGameScale(0);
     editorDrag.disable();
-    app.stage.position.x = 0;
-    app.stage.position.y = 0;
+    mdshell.game.groups.world.x = 0;
+    mdshell.game.groups.world.y = 0;
     enableControls();
     editorEl.style.display = "none";
 
@@ -52,6 +52,8 @@ export const editorState = new ToggleState(() => {
     bgList!.clear();
 
     if(devMoveModeState.isToggled) devMoveModeState.toggle();
+
+    selectedSprite.visible = false;
 });
 
 addEventListener("keydown", e => {
@@ -79,18 +81,21 @@ editorDrag.defaultGrabbing = "grabbing";
 editorDrag.onDrag = editorPan;
 
 export function editorPan(x: number, y: number) {
-    app.stage.position.x -= x;
-    app.stage.position.y -= y;
+    mdshell.game.groups.world.x -= x * gameScale.x;
+    mdshell.game.groups.world.y -= y * gameScale.y;
 }
 
 function placeHover(x: number, y: number) {
     x *= gameScale.x;
     y *= gameScale.y;
-    const fx = snapToGrid(x - app.stage.position.x * gameScale.x, wc.position.x, blockSize);
-    const fy = snapToGrid(y - app.stage.position.y * gameScale.y, wc.position.y, blockSize);
 
-    const cursorX = floorToMultiples(player.x + x - player.halfWS - app.stage.position.x, blockSize) / blockSize;
-    const cursorY = floorToMultiples(player.y + y - player.halfHS - app.stage.position.y, blockSize) / blockSize;
+    const fx = 
+    snapToGrid(x - player.halfWS - mdshell.game.container.x * gameScale.x - mdshell.game.groups.world.x + player.x, 0, blockSize);
+    const fy = 
+    snapToGrid(y - player.halfHS - mdshell.game.container.y * gameScale.y - mdshell.game.groups.world.y + player.y, 0, blockSize);
+    
+    const cursorX = floorToMultiples(player.x + x - player.halfWS - mdshell.game.groups.world.x - mdshell.game.container.x * gameScale.x, blockSize) / blockSize;
+    const cursorY = floorToMultiples(player.y + y - player.halfHS - mdshell.game.groups.world.y - mdshell.game.container.y * gameScale.y, blockSize) / blockSize;
 
     const bool = pw.staticGrid.isOOB(cursorX, cursorY);
     editorDrag.CAD(bool);
@@ -110,8 +115,11 @@ export const selectedSprite: TilingSprite = new TilingSprite({
     width: blockSize,
     height: blockSize,
     texture: Texture.WHITE,
-    zIndex: -1,
+    zIndex: 3,
+    visible: false
 });
+
+mdshell.game.groups.view.addChild(selectedSprite);
 
 var list: ToggleList;
 var bgList: ToggleList;
@@ -197,13 +205,13 @@ export const placementModeState = new ToggleState(() => {
     editorDrag.changeDefaultAndNormalGrabbing("pointer");
     editorDrag.changeDefaultandNormalGrab("crosshair");
 
-    app.stage.addChild(selectedSprite);
+    selectedSprite.visible = true;
 }, () => {
     editorDrag.onDrag = editorPan;
-    app.stage.removeChild(selectedSprite);
-
+    selectedSprite.visible = false;
     editorDrag.changeDefaultandNormalGrab("grab");
     editorDrag.changeDefaultAndNormalGrabbing("grabbing");
+    selectedSprite.visible = false;
 });
 
 export function startStudioLoop() {

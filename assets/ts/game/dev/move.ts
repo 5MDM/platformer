@@ -1,7 +1,7 @@
 import { c } from "../../canvas";
 import { MDshell } from "../../lib/md-framework/shell";
 import { $, ToggleState } from "../../lib/util";
-import { app } from "../../main";
+import { app, mdshell } from "../../constants";
 import { editorDrag, editorPan, editorState } from "./studio";
 
 const moveImg = $("#ui > #move-arrow") as HTMLImageElement;
@@ -23,8 +23,8 @@ export const devMoveModeState = new ToggleState(() => {
     document.documentElement.removeEventListener("mousemove", onMove);
 
     if(!editorState.isToggled) {
-        app.stage.position.x = 0;
-        app.stage.position.y = 0;
+        mdshell.game.groups.world.x = 0;
+        mdshell.game.groups.world.y = 0;
     }
 });
 

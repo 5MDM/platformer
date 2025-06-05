@@ -1,6 +1,6 @@
 import { Container, Sprite, Texture } from "pixi.js";
 import { $, attatchToggle, round, stopAnimLoop } from "../../lib/util";
-import { mdshell } from "../../main";
+import { mdshell } from "../../constants";
 import { Graph } from "../../lib/graph";
 import { player } from "../../constants";
 import { playerCollisionAmnt } from "../../lib/physics";

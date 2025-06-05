@@ -18,13 +18,11 @@ const modeArr: Elt[] = [
         name: "row-edit",
         src: "row-edit.png",
         state: rowEditState,
-        isToggled: true,
     },
     {
         name: "zoom",
         src: "zoom.png",
         state: zoomState,
-        isToggled: true,
     },
 ];
 

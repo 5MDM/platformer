@@ -1,12 +1,9 @@
-//import { blockSize } from "../main";
-import { Container } from "pixi.js";
-import { MovingObjs, NotDynamicObj, PWD, PWS } from "./pw-objects";
+import { NotDynamicObj, PWD, PWS } from "./pw-objects";
 import { $, MDmatrix, resizeDebounce } from "./util";
 
 const colEl = $("#ui > #studio .bottom #col");
 
 interface PWopts {
-    world: Container;
     gx: number;
     gy: number;
     simSpeed: number;
@@ -30,7 +27,6 @@ addEventListener("resize", resizeDebounce(() => {
 }, 200));
 
 export class PW {
-    wc: Container;
     blockSize: number;
     blockSizeHalf: number;
     size: number;
@@ -56,13 +52,6 @@ export class PW {
         this.blockSize = opts.blockSize;
         this.blockSizeHalf = opts.blockSize / 2;
         this.size = opts.maxLevelSize;
-
-        PW.OnResizeChange((x, y) => {
-            opts.world.x += x;
-            opts.world.y += y;
-        });
-
-        this.wc = opts.world;
     }
 
     private tick() {

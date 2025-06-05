@@ -1,12 +1,12 @@
 import { AnimatedSprite, Application, Sprite } from "pixi.js";
 import { startControlLoop } from "./controls";
 import { editorState, startStudioLoop } from "./dev/studio";
-import { player, pw, wc } from "../constants";
+import { player, pw } from "../constants";
 
 import "./dev/menu";
 import "./dev/modes";
 import { MDshell } from "../lib/md-framework/shell";
-import { mdshell } from "../main";
+import { mdshell } from "../constants";
 
 async function loadAnimations() {
     const spritesheet = await mdshell.spritesheet;
@@ -27,8 +27,7 @@ async function loadAnimations() {
 export async function startGame(sh: MDshell) {    
     await loadAnimations();
     
-    sh.app.stage.addChild(wc);
-    player.display(sh.app);
+    player.displayTo(mdshell.game.groups.world);
 
     sh.setCurrentLevel("2");
     player.teleport(sh.game.spawnX, sh.game.spawnY);
@@ -36,7 +35,4 @@ export async function startGame(sh: MDshell) {
     pw.startClock();
     startControlLoop();
     startStudioLoop();
-
-    editorState.toggle();
-
 }

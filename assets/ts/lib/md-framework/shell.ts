@@ -91,7 +91,6 @@ export class MDshell {
             gameType: o.gameType,
             maxLevelWidth: o.pw.size,
             maxLevelHeight: o.pw.size,
-            c: o.pw.wc,
         });
 
         this.atlasImgURL = o.atlasImgURL;
@@ -190,9 +189,9 @@ export class MDshell {
         const s = this.createMergedSprite(x * this.blockSize, y * this.blockSize, w, h, t);
         const type =  this.blocks[name].character;
 
-        this.game.container.addChild(s);
-
         if(isPassable) {
+            this.game.groups.bg.addChild(s);
+
             const id = this.game.getNewId();
             this.bgObjects[id] = {
                 sprite: s,
@@ -211,6 +210,8 @@ export class MDshell {
                 });
             });
         } else {
+            this.game.groups.fg.addChild(s);
+
             const pws = 
             new PWS(x * this.blockSize, y * this.blockSize, w * this.blockSize, h * this.blockSize, type);
 

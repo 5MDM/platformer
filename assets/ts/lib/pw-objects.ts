@@ -91,8 +91,8 @@ export class PWB {
         this.sprite!.y = this.y;
     }
 
-    display(app: Application) {
-        app.stage.addChild(this.sprite!);
+    displayTo(c: Container) {
+        c.addChild(this.sprite!);
     }
 
     setTexture(t: Texture) {
@@ -194,8 +194,8 @@ export class PWD extends PWB {
         c.addChild(this.container);
     }
 
-    display(app: Application) {
-        app.stage.addChild(this.container);
+    displayTo(c: Container) {
+        c.addChild(this.container);
     }
 
     updateSprite() {

@@ -1,12 +1,10 @@
-import { isMobile } from "pixi.js";
-import { $, round } from "../lib/util";
+import { $ } from "../lib/util";
 
 import { deltaTime } from "./dev/stats";
 import { Joystick } from "../lib/joystick";
 import { player } from "../constants";
 
 const speed = 5;
-var isPlayingAnim = false;
 var isMovingLeft = false;
 var isMovingRight = false;
 var isJumping = false;

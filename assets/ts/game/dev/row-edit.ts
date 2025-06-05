@@ -1,7 +1,7 @@
 import { blockSize, player } from "../../constants";
-import { GMOutput } from "../../lib/keymap";
 import { floorToMultiples, snapToGrid, ToggleState } from "../../lib/util";
-import { app, mdshell } from "../../main";
+import { app } from "../../constants";
+import { mdshell } from "../../constants";
 import { placeBlock } from "./level-editor";
 import { editorDrag, placementModeState, selectedBlock, selectedBlockIsPassable, selectedSprite } from "./studio";
 import { gameScale } from "./zoom";
@@ -36,14 +36,23 @@ function down(e: PointerEvent) {
 export function placeRow(rx: number, ry: number, x: number, y: number) {
     x *= gameScale.x;
     y *= gameScale.y;
-    const cursorX = floorToMultiples(player.x + x - player.halfWS - app.stage.position.x, blockSize) / blockSize;
-    const cursorY = floorToMultiples(player.y + y - player.halfHS - app.stage.position.y, blockSize) / blockSize;
+    const cursorX = floorToMultiples(player.x + x - player.halfWS - mdshell.game.groups.world.x - mdshell.game.container.x * gameScale.x, blockSize) / blockSize;
+    const cursorY = floorToMultiples(player.y + y - player.halfHS - mdshell.game.groups.world.y - mdshell.game.container.y * gameScale.y, blockSize) / blockSize;
+
+    //const cursorX = floorToMultiples(player.x + x - player.halfWS - app.stage.position.x, blockSize) / blockSize;
+    //const cursorY = floorToMultiples(player.y + y - player.halfHS - app.stage.position.y, blockSize) / blockSize;
 
     const bool = mdshell.pw.staticGrid.isOOB(cursorX, cursorY);
     if(bool) return editorDrag.CAD(true);
 
-    const fx = snapToGrid(x - app.stage.position.x * gameScale.x, mdshell.pw.wc.position.x, blockSize);
-    const fy = snapToGrid(y - app.stage.position.y * gameScale.y, mdshell.pw.wc.position.y, blockSize);
+    //const fx = snapToGrid(x - app.stage.position.x * gameScale.x, mdshell.game.container.position.x, blockSize);
+    //const fy = snapToGrid(y - app.stage.position.y * gameScale.y, mdshell.game.container.position.y, blockSize);
+    
+    const fx = 
+    snapToGrid(x - player.halfWS - mdshell.game.container.x * gameScale.x - mdshell.game.groups.world.x + player.x, 0, blockSize);
+    const fy = 
+    snapToGrid(y - player.halfHS - mdshell.game.container.y * gameScale.y - mdshell.game.groups.world.y + player.y, 0, blockSize);
+    
 
     if(!initialP) {
         initialP = true;
@@ -65,11 +74,18 @@ export function rowEditHover(x: number, y: number) {
     x *= gameScale.x;
     y *= gameScale.y;
 
-    const fx = snapToGrid(x - app.stage.position.x * gameScale.x, mdshell.pw.wc.position.x, blockSize);
-    const fy = snapToGrid(y - app.stage.position.y * gameScale.y, mdshell.pw.wc.position.y, blockSize);
+    //const fx = snapToGrid(x, mdshell.game.container.position.x, blockSize);
+    //const fy = snapToGrid(y, mdshell.game.container.position.y, blockSize);
+    const fx = 
+    snapToGrid(x - player.halfWS - mdshell.game.container.x * gameScale.x - mdshell.game.groups.world.x + player.x, 0, blockSize);
+    const fy = 
+    snapToGrid(y - player.halfHS - mdshell.game.container.y * gameScale.y - mdshell.game.groups.world.y + player.y, 0, blockSize);
+    
 
-    const cursorX = floorToMultiples(player.x + x - player.halfWS - app.stage.position.x, blockSize) / blockSize;
-    const cursorY = floorToMultiples(player.y + y - player.halfHS - app.stage.position.y, blockSize) / blockSize;
+    //const cursorX = floorToMultiples(player.x + x - player.halfWS - app.stage.position.x, blockSize) / blockSize;
+    //const cursorY = floorToMultiples(player.y + y - player.halfHS - app.stage.position.y, blockSize) / blockSize;
+    const cursorX = floorToMultiples(player.x + x - player.halfWS - mdshell.game.groups.world.x - mdshell.game.container.x * gameScale.x, blockSize) / blockSize;
+    const cursorY = floorToMultiples(player.y + y - player.halfHS - mdshell.game.groups.world.y - mdshell.game.container.y * gameScale.y, blockSize) / blockSize;
 
     const bool = mdshell.pw.staticGrid.isOOB(cursorX, cursorY);
     editorDrag.CAD(bool);
@@ -103,12 +119,22 @@ function resize(fx: number, fy: number) {
 
 function finalize() {
     const x = 
-    floorToMultiples(player.x + selectedSprite.x - player.halfWS, blockSize) / blockSize;
+    floorToMultiples(selectedSprite.x - mdshell.game.container.x + gameScale.nx + player.halfW, blockSize) / blockSize;
     const y = 
-    floorToMultiples(player.y + selectedSprite.y - player.halfHS, blockSize) / blockSize;
+    floorToMultiples(selectedSprite.y - mdshell.game.container.y + gameScale.ny + player.halfH, blockSize) / blockSize;
+
+/*const fx = 
+    snapToGrid(x - player.halfWS - mdshell.game.container.x * gameScale.x - mdshell.game.groups.world.x + player.x, 0, blockSize);
+    const fy = 
+    snapToGrid(y - player.halfHS - mdshell.game.container.y * gameScale.y - mdshell.game.groups.world.y + player.y, 0,a blockSize);
+    */
+
     const w = Math.floor(selectedSprite.width / blockSize);
     const h = Math.floor(selectedSprite.height / blockSize);
 
     if(selectedBlockIsPassable) mdshell.createBlock(x, y, w, h, selectedBlock!, true);
     else mdshell.createBlock(x, y, w, h, selectedBlock!, false);
+    
+    selectedSprite.width = blockSize;
+    selectedSprite.height = blockSize;
 }
