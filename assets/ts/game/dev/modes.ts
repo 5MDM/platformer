@@ -1,8 +1,11 @@
+import { mdshell } from "../../constants";
 import { ElList } from "../../lib/el";
 import { MDshell } from "../../lib/md-framework/shell";
 import { $, $$, ToggleState } from "../../lib/util";
 import { rowEditState } from "./row-edit";
 import { zoomState } from "./zoom";
+
+const imgs = import.meta.glob<{default: string}>("/assets/images/*.png");
 
 const modes: Record<string, ToggleState> = {};
 
@@ -26,7 +29,7 @@ const modeArr: Elt[] = [
     },
 ];
 
-const list = new ElList<Elt>("selected", opts => {
+const list = new ElList<Elt>("selected", async opts => {
     modes[opts.name] = opts.state;
 
     const el = $$("button", {
@@ -37,7 +40,7 @@ const list = new ElList<Elt>("selected", opts => {
             $$("img", {
                 attrs: {
                     alt: opts.name,
-                    src: "assets/images/" + opts.src,
+                    src: (await imgs["/assets/images/" + opts.src]()).default,
                 }
             }),
         ],

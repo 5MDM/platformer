@@ -3,7 +3,7 @@ import { $$ } from "./util";
 export class ElList<T> {
     selectClassName: string;
 
-    elementCreator: (opts: T) => HTMLElement;
+    elementCreator: (opts: T) => Promise<HTMLElement>;
 
     flags: Record<string, boolean> = {};
 
@@ -11,7 +11,7 @@ export class ElList<T> {
 
     constructor(
         selectClassName: string, 
-        elementCreator: (opts: T) => HTMLElement, 
+        elementCreator: (opts: T) => Promise<HTMLElement>, 
         onUp: (el: HTMLElement) => void
     ) {
         this.elementCreator = elementCreator;
@@ -19,11 +19,11 @@ export class ElList<T> {
         this.onUp = onUp;
     }
 
-    parse(arr: T[], parent: HTMLElement) {
+    async parse(arr: T[], parent: HTMLElement) {
         const elements: HTMLElement[] = [];
 
         for(const i of arr)
-            elements.push(this.elementCreator(i));
+            elements.push(await this.elementCreator(i));
 
         for(const element of elements) {
             element.addEventListener("pointerup", () => this.onUp(element))
