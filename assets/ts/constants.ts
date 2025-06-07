@@ -5,7 +5,7 @@ import { Player } from "./lib/player";
 import { MDshell, ModInfo } from "./lib/md-framework/shell";
 
 export const chunkSize = 16;
-export const blockSize = 64;
+export const blockSize = 2**6;
 export const blockSizeHalf = blockSize / 2;
 
 export const maxLevelSize = 256;

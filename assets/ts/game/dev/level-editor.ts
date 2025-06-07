@@ -37,7 +37,6 @@ export function placeBlock(rx: number, ry: number, x: number, y: number) {
         if(got) {
             if(!editedBlocks[got.id]) {
                 editedBlocks[got.id] = got;
-                got.sprite!.tint = 0xfff000;
             }
         }
     } catch(err: unknown) {
@@ -69,7 +68,7 @@ export function finalizeEdits() {
         const boxes: GMOutput[] = Keymap.GMBool(blockRecord[blockName].matrix, selectedBlock!);
         
         for(const {x, y, w, h} of boxes) {
-            if(selectedBlockIsPassable) mdshell.createBlock(x, y, w, h, blockName, true);
+            if(mdshell.blocks[blockName].isPassable) mdshell.createBlock(x, y, w, h, blockName, true);
             else mdshell.createBlock(x, y, w, h, blockName, false);
         }
 

@@ -1,5 +1,45 @@
 {"frames": {
 
+"bluestone-bottom-left.png":
+{
+	"frame": {"x":0,"y":127,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+"bluestone-bottom.png":
+{
+	"frame": {"x":128,"y":127,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+"bluestone-left.png":
+{
+	"frame": {"x":0,"y":255,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+"bluestone-top-left.png":
+{
+	"frame": {"x":128,"y":255,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+"bluestone.png":
+{
+	"frame": {"x":0,"y":383,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
 "brick.png":
 {
 	"frame": {"x":30,"y":63,"w":32,"h":32},
@@ -18,11 +58,19 @@
 },
 "grass_block_1.png":
 {
-	"frame": {"x":0,"y":127,"w":256,"h":256},
+	"frame": {"x":0,"y":511,"w":256,"h":256},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":256,"h":256},
 	"sourceSize": {"w":256,"h":256}
+},
+"invis.png":
+{
+	"frame": {"x":128,"y":383,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
 },
 "player-down-stand.png":
 {
@@ -130,8 +178,8 @@
 	"version": "1.1",
 	"image": "atlas.png",
 	"format": "RGBA8888",
-	"size": {"w":256,"h":383},
+	"size": {"w":256,"h":767},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:395aea26c74b4fbee41a87f784f7dd87:0dc0dd149bc63349ec579547deac950b:9157e326ab292468473525d456d5b553$"
+	"smartupdate": "$TexturePacker:SmartUpdate:76ed34ba30e328510f0f70294cd1a885:2a24d9dd60fa53765d4399bb1cd26866:9157e326ab292468473525d456d5b553$"
 }
 }

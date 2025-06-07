@@ -41,9 +41,10 @@ var lastMoveUDwasUp = false;
 
 export function startControlLoop() {
     var isMoving = false;
+
     function loop() {
         if(!areControlsEnabled) return requestAnimationFrame(loop);
-        player.container.scale.x = 1;
+        //player.container.scale.x = 1;
         isMoving = false;
 
         const calcSpeed = (speed * deltaTime);
@@ -79,6 +80,12 @@ export function startControlLoop() {
         if(!isMoving) {
             if(lastMoveUDwasUp) player.playSprite("stand-ud-up");
             else player.playSprite("stand-ud-down");
+        }
+
+        if(player.vx != 0 && player.vy != 0) {
+            // Math.sqrt(2) is the actual thing, not 1.3
+            player.vx = player.vx / 1.3;
+            player.vy = player.vy / 1.3;
         }
 
         requestAnimationFrame(loop);

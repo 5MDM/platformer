@@ -23,6 +23,42 @@
             "name": "Wall",
             "texture": "wall.png",
             "character": "|"
+        },
+        {
+            "name": "bluestone",
+            "isPassable": true,
+            "texture": "bluestone.png",
+            "character": "b"
+        },
+        {
+            "name": "bluestone left",
+            "isPassable": false,
+            "texture": "bluestone-left.png",
+            "character": "l"
+        },
+        {
+            "name": "bluestone top left",
+            "isPassable": false,
+            "texture": "bluestone-top-left.png",
+            "character": "t"
+        },
+        {
+            "name": "invis",
+            "isPassable": false,
+            "texture": "invis.png",
+            "character": "i"
+        },
+        {
+            "name": "bluestone bottom left",
+            "isPassable": false,
+            "texture": "bluestone-bottom-left.png",
+            "character": "c"
+        },
+        {
+            "name": "bluestone bottom",
+            "isPassable": false,
+            "texture": "bluestone-bottom.png",
+            "character": "d"
         }
     ]
 }
