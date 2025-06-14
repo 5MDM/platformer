@@ -5,60 +5,71 @@
     "blocks": [
         {
             "name": "Brick",
-            "texture": "brick.png",
-            "character": "#"
+            "texture": "brick.png"
         },
         {
             "name": "Grass Block",
-            "texture": "grass_block_1.png",
-            "character": "g"
+            "texture": "grass_block_1.png"
         },
         {
             "name": "Floor",
             "texture": "floor.png",
-            "character": ".",
             "isPassable": true
         },
         {
             "name": "Wall",
-            "texture": "wall.png",
-            "character": "|"
+            "texture": "wall.png"
         },
         {
             "name": "bluestone",
             "isPassable": true,
-            "texture": "bluestone.png",
-            "character": "b"
+            "texture": "bluestone.png"
         },
         {
             "name": "bluestone left",
             "isPassable": false,
-            "texture": "bluestone-left.png",
-            "character": "l"
+            "texture": "bluestone-left.png"
         },
         {
             "name": "bluestone top left",
             "isPassable": false,
-            "texture": "bluestone-top-left.png",
-            "character": "t"
+            "texture": "bluestone-top-left.png"
         },
         {
             "name": "invis",
             "isPassable": false,
-            "texture": "invis.png",
-            "character": "i"
+            "texture": "invis.png"
         },
         {
             "name": "bluestone bottom left",
             "isPassable": false,
-            "texture": "bluestone-bottom-left.png",
-            "character": "c"
+            "texture": "bluestone-bottom-left.png"
         },
         {
             "name": "bluestone bottom",
             "isPassable": false,
-            "texture": "bluestone-bottom.png",
-            "character": "d"
+            "texture": "bluestone-bottom.png"
+        },
+        {
+            "name": "floor tile",
+            "isPassable": true,
+            "texture": "floor-tile.png"
+        },
+        {
+            "name": "white wall",
+            "texture": "white-wall.png"
+        },
+        {
+            "name": "white wall left",
+            "texture": "white-wall-left.png"
+        },
+        {
+            "name": "white wall top",
+            "texture": "white-wall-top.png"
+        },
+        {
+            "name": "white wall top left",
+            "texture": "white-wall-top-left.png"
         }
     ]
 }

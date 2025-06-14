@@ -14,7 +14,6 @@ export interface XYWH {
 export interface BlockInfo {
     isPassable?: boolean;
     name: string;
-    character: string;
     texture: string;
 }
 
@@ -38,13 +37,17 @@ interface MDshellOpts {
 interface BgObj extends XYWH {
     sprite: Container;
     type: string;
+    rotation?: number;
 }
 
 interface FgObj extends BgObj {
     pwb: PWS;
 }
 
+const pi180 = Math.PI/180;
+
 export class MDshell {
+    playerSpawnString = "@";
     levels: Record<string, GMOutput[]> = {};
 
     blockSize: number;
@@ -113,7 +116,7 @@ export class MDshell {
             } else this.mods[mod.name] = mod;
         }
 
-        this.levelGenerator.key("@", (x, y) => this.game.setSpawn(x * this.blockSize, y * this.blockSize));
+        this.levelGenerator.key(this.playerSpawnString, (x, y) => this.game.setSpawn(x * this.blockSize, y * this.blockSize));
         this.pw = o.pw;
 
         this.spritesheet = new Promise(async res => {
@@ -169,25 +172,37 @@ export class MDshell {
         }
     }
 
-    createMergedSprite(x: number, y: number, w: number, h: number, t: Texture): TilingSprite {
+    createMergedSprite(x: number, y: number, w: number, h: number, t: Texture, rotation: number = 0): TilingSprite {
+        w *= this.blockSize;
+        h *= this.blockSize;
+        x += w / 2;
+        y += h / 2;
+
         const s = new TilingSprite({
             texture: t,
-            width: this.blockSize * w + .1,
-            height: this.blockSize * h + .1,
+            width: w + .1,
+            height: h + .1,
             position: {x, y},
             roundPixels: true,
             tileScale: {x: this.blockSize / t.width, y: this.blockSize / t.height},
+            pivot: {
+                x: w / 2,
+                y: h / 2,
+            },
+
+            tileRotation: rotation,
         });
-        
+
         s.clampMargin = 0;
 
         return s;
     }
 
-    createBlock(x: number, y: number, w: number, h: number, name: string, isPassable: boolean = false) {
+    createBlock(x: number, y: number, w: number, h: number, name: string, rotation: number = 0): Container {
         const t = this.getTexture(name);
-        const s = this.createMergedSprite(x * this.blockSize, y * this.blockSize, w, h, t);
-        const type =  this.blocks[name].character;
+        const s = this.createMergedSprite(x * this.blockSize, y * this.blockSize, w, h, t, rotation);
+        const type =  this.blocks[name].texture;
+        const isPassable = this.blocks[name].isPassable;
 
         if(isPassable) {
             this.game.groups.bg.addChild(s);
@@ -200,6 +215,7 @@ export class MDshell {
                 w,
                 h,
                 type,
+                rotation,
             };
 
             Keymap.IterateGMrect(x, y, w, h, (x, y) => {
@@ -231,21 +247,23 @@ export class MDshell {
                 this.game.grids.fg.set(x, y, {
                     name,
                     id: pws.id,
-                    type: this.blocks[name].character,
+                    type: this.blocks[name].texture,
                 });
 
                 this.pw.addStatic(x, y, pws);
             });
         }
+
+        return s;
     }
 
     private registerBlock(name: string, block: BlockInfo) {
         block.isPassable ??= false;
         this.blocks[name] = block;
 
-        this.levelGenerator.key(block.character, 
+        this.levelGenerator.key(block.texture, 
             (x, y, w, h) => {
-                this.createBlock(x, y, w, h, block.texture, block.isPassable);
+                this.createBlock(x, y, w, h, block.texture);
             }
         );
     }

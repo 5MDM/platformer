@@ -7,6 +7,7 @@ import { MDshell, ModInfo } from "./lib/md-framework/shell";
 export const chunkSize = 16;
 export const blockSize = 2**6;
 export const blockSizeHalf = blockSize / 2;
+export const blockSizeQuarter = blockSizeHalf / 2;
 
 export const maxLevelSize = 256;
 
@@ -45,8 +46,8 @@ export const mdshell = new MDshell({
 });
 
 PW.OnResizeChange((x, y) => {
-    app.stage.x += x;
-    app.stage.y += y;
+    mdshell.game.groups.view.x += x;
+    mdshell.game.groups.view.y += y;
 });
 
 export const player = new Player(mdshell.game.groups.view, 30, 63);

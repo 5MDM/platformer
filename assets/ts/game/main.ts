@@ -29,10 +29,12 @@ export async function startGame(sh: MDshell) {
     
     player.displayTo(mdshell.game.groups.world);
 
-    sh.setCurrentLevel("2");
+    sh.setCurrentLevel("1");
     player.teleport(sh.game.spawnX, sh.game.spawnY);
     
     pw.startClock();
     startControlLoop();
     startStudioLoop();
+
+    editorState.toggle();
 }

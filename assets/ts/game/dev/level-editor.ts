@@ -1,11 +1,12 @@
 import { Container, Sprite } from "pixi.js";
-import { $, $$, floorToMultiples, MDmatrix, removeContainerChildren, ToggleList } from "../../lib/util";
+import { $, $$, degToRad, floorToMultiples, MDmatrix, removeContainerChildren, ToggleList } from "../../lib/util";
 import { PWS } from "../../lib/pw-objects";
-import { blockSize, maxLevelSize, player, pw } from "../../constants";
-import { editorDrag, selectedBlock, selectedBlockIsPassable, selectedSprite } from "./studio";
+import { blockSize, blockSizeHalf, blockSizeQuarter, maxLevelSize, player, pw } from "../../constants";
+import { editorDrag, selectedBlock, selectedSprite } from "./studio";
 import { GMOutput, Keymap } from "../../lib/keymap";
 import { mdshell } from "../../constants";
 import { gameScale } from "./zoom";
+import { blockRotation } from "./rotate";
 
 var hasEdited = false;
 
@@ -23,12 +24,6 @@ export function placeBlock(rx: number, ry: number, x: number, y: number) {
     const fx = floorToMultiples(player.x + x - player.halfWS - mdshell.game.container.x * gameScale.x - mdshell.game.groups.world.x, blockSize) / blockSize;
     const fy = floorToMultiples(player.y + y - player.halfHS - mdshell.game.container.y * gameScale.y - mdshell.game.groups.world.y, blockSize) / blockSize;
 
-    /*const fx = 
-    floorToMultiples(player.x + x - player.halfWS + blockSize - mdshell.game.container.x * gameScale.x - mdshell.game.groups.world.x, blockSize);
-    const fy = 
-    floorToMultiples(player.y + y - player.halfHS + blockSize - mdshell.game.container.y * gameScale.y - mdshell.game.groups.world.y, blockSize);
-    */
-
     if(mdshell.game.editGrid.isOOB(fx, fy)) return editorDrag.CAD(true);
     if(mdshell.game.editGrid.place(fx, fy, selectedBlock!)) return;
 
@@ -44,17 +39,23 @@ export function placeBlock(rx: number, ry: number, x: number, y: number) {
     }
 
     hasEdited = true;
+    const blockId = selectedBlock! + "," + blockRotation;
+    const rotationRad = degToRad(blockRotation);
 
-    if(!blockRecord[selectedBlock!]) blockRecord[selectedBlock!] = new MDmatrix<true>(maxLevelSize, maxLevelSize);
-    const map = blockRecord[selectedBlock!];
+    if(!blockRecord[blockId]) 
+        blockRecord[blockId] = new MDmatrix<true>(maxLevelSize, maxLevelSize);
+
+    const map = blockRecord[blockId];
     map.set(fx, fy, true);
 
     editorC.addChild(new Sprite({
-        x: fx * blockSize,
-        y: fy * blockSize,
+        x: fx * blockSize + blockSizeHalf,
+        y: fy * blockSize + blockSizeHalf,
         width: blockSize,
         height: blockSize,
         texture: selectedSprite.texture,
+        pivot: blockSizeHalf,
+        rotation: rotationRad,
     }));
 }
 
@@ -64,15 +65,17 @@ export function finalizeEdits() {
 
     removeContainerChildren(editorC);
 
-    for(const blockName in blockRecord) {
-        const boxes: GMOutput[] = Keymap.GMBool(blockRecord[blockName].matrix, selectedBlock!);
+    for(const blockId in blockRecord) {
+        const [blockName, rotationDeg] = blockId.split(",");
+        const rotationRad = degToRad(Number(rotationDeg));
+
+        const boxes: GMOutput[] = Keymap.GMBool(blockRecord[blockId].matrix, selectedBlock!);
         
         for(const {x, y, w, h} of boxes) {
-            if(mdshell.blocks[blockName].isPassable) mdshell.createBlock(x, y, w, h, blockName, true);
-            else mdshell.createBlock(x, y, w, h, blockName, false);
+            mdshell.createBlock(x, y, w, h, blockName, rotationRad);
         }
 
-        delete blockRecord[blockName];
+        delete blockRecord[blockId];
     } 
 }
 

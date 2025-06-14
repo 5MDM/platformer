@@ -13,7 +13,7 @@
             "type": "array",
             "items": {
                 "type": "object",
-                "required": ["name", "character"],
+                "required": ["name"],
                 "properties": {
                     "name": {
                         "type": "string"

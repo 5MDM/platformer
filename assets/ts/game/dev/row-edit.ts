@@ -1,10 +1,11 @@
-import { blockSize, player } from "../../constants";
-import { floorToMultiples, snapToGrid, ToggleState } from "../../lib/util";
-import { app } from "../../constants";
+import { blockSize, blockSizeHalf, blockSizeQuarter, player } from "../../constants";
+import { degToRad, floorToMultiples, rotatePoints90, snapToGrid, ToggleState } from "../../lib/util";
 import { mdshell } from "../../constants";
 import { placeBlock } from "./level-editor";
-import { editorDrag, placementModeState, selectedBlock, selectedBlockIsPassable, selectedSprite } from "./studio";
+import { editorDrag, placementModeState, selectedBlock, selectedSprite, setSelectedSpritePos } from "./studio";
 import { gameScale } from "./zoom";
+import { blockRotation } from "./rotate";
+import { Ticker } from "pixi.js";
 
 export function enableRowEditMode() {
     //editorDrag.onDrag = placeRow;
@@ -39,32 +40,24 @@ export function placeRow(rx: number, ry: number, x: number, y: number) {
     const cursorX = floorToMultiples(player.x + x - player.halfWS - mdshell.game.groups.world.x - mdshell.game.container.x * gameScale.x, blockSize) / blockSize;
     const cursorY = floorToMultiples(player.y + y - player.halfHS - mdshell.game.groups.world.y - mdshell.game.container.y * gameScale.y, blockSize) / blockSize;
 
-    //const cursorX = floorToMultiples(player.x + x - player.halfWS - app.stage.position.x, blockSize) / blockSize;
-    //const cursorY = floorToMultiples(player.y + y - player.halfHS - app.stage.position.y, blockSize) / blockSize;
-
     const bool = mdshell.pw.staticGrid.isOOB(cursorX, cursorY);
     if(bool) return editorDrag.CAD(true);
 
-    //const fx = snapToGrid(x - app.stage.position.x * gameScale.x, mdshell.game.container.position.x, blockSize);
-    //const fy = snapToGrid(y - app.stage.position.y * gameScale.y, mdshell.game.container.position.y, blockSize);
-    
     const fx = 
     snapToGrid(x - player.halfWS - mdshell.game.container.x * gameScale.x - mdshell.game.groups.world.x + player.x, 0, blockSize);
     const fy = 
     snapToGrid(y - player.halfHS - mdshell.game.container.y * gameScale.y - mdshell.game.groups.world.y + player.y, 0, blockSize);
     
-
     if(!initialP) {
         initialP = true;
         ix = fx;
         iy = fy;
-        selectedSprite.position.set(fx, fy);
+        setSelectedSpritePos(fx, fy);
     } else {
         // placing
         finalize();
         initialP = false;
-        selectedSprite.x = 0;
-        selectedSprite.y = 0;
+        setSelectedSpritePos(0 , 0);
         selectedSprite.width = blockSize;
         selectedSprite.height = blockSize;
     }
@@ -74,16 +67,11 @@ export function rowEditHover(x: number, y: number) {
     x *= gameScale.x;
     y *= gameScale.y;
 
-    //const fx = snapToGrid(x, mdshell.game.container.position.x, blockSize);
-    //const fy = snapToGrid(y, mdshell.game.container.position.y, blockSize);
     const fx = 
     snapToGrid(x - player.halfWS - mdshell.game.container.x * gameScale.x - mdshell.game.groups.world.x + player.x, 0, blockSize);
     const fy = 
     snapToGrid(y - player.halfHS - mdshell.game.container.y * gameScale.y - mdshell.game.groups.world.y + player.y, 0, blockSize);
     
-
-    //const cursorX = floorToMultiples(player.x + x - player.halfWS - app.stage.position.x, blockSize) / blockSize;
-    //const cursorY = floorToMultiples(player.y + y - player.halfHS - app.stage.position.y, blockSize) / blockSize;
     const cursorX = floorToMultiples(player.x + x - player.halfWS - mdshell.game.groups.world.x - mdshell.game.container.x * gameScale.x, blockSize) / blockSize;
     const cursorY = floorToMultiples(player.y + y - player.halfHS - mdshell.game.groups.world.y - mdshell.game.container.y * gameScale.y, blockSize) / blockSize;
 
@@ -91,49 +79,143 @@ export function rowEditHover(x: number, y: number) {
     editorDrag.CAD(bool);
 
     if(!initialP) {
-        selectedSprite.x = fx;
-        selectedSprite.y = fy;
+        setSelectedSpritePos(fx, fy);
     } else resize(fx, fy);
 }
 
-function resize(fx: number, fy: number) {
-    var dx = fx - ix;
-    var dy = fy - iy;
+function resize0(ix: number, iy: number, fx: number, fy: number) {
+    const dx = fx - ix;
+    const dy = fy - iy;
 
-    if(dx < 0) {
-        selectedSprite.x = fx;
-        selectedSprite.width = ix - fx + blockSize;
-    } else {
+    if(dx > 0) {
+        selectedSprite.x = ix + blockSizeHalf;
         selectedSprite.width = dx + blockSize;
-        selectedSprite.x = ix;
+    } else {
+        selectedSprite.x = fx + blockSizeHalf;
+        selectedSprite.width = -dx + blockSize;
     }
 
-    if(dy < 0) {
-        selectedSprite.y = fy;
-        selectedSprite.height = iy - fy + blockSize;
-    } else {
+    if(dy > 0) {
         selectedSprite.height = dy + blockSize;
-        selectedSprite.y = iy;
+        selectedSprite.y = iy + blockSizeHalf;
+    } else {
+        selectedSprite.y = fy + blockSizeHalf;
+        selectedSprite.height = -dy + blockSize;
     }
 }
 
+function resize90(ix: number, iy: number, fx: number, fy: number) {
+    const right = ix - fx; // left
+    const up = fy - iy; // up
+
+    if(up > 0) {
+        selectedSprite.width = up + blockSize;
+        selectedSprite.y = iy + blockSizeHalf;
+    } else {
+        selectedSprite.width = -up + blockSize;
+        selectedSprite.y = fy + blockSizeHalf;
+    }
+
+    if(right > 0) {
+        selectedSprite.height = right + blockSize;
+        selectedSprite.x = ix + blockSizeHalf;
+    } else {
+        selectedSprite.height = -right + blockSize;
+        selectedSprite.x = fx + blockSizeHalf;
+    }
+}
+
+function resize180(ix: number, iy: number, fx: number, fy: number) {
+    const up = iy - fy;
+    const left = ix - fx;
+
+    if(left > 0) {
+        selectedSprite.x = ix + blockSizeHalf;
+        selectedSprite.width = left + blockSize;
+    } else {
+        selectedSprite.x = fx + blockSizeHalf;
+        selectedSprite.width = -left + blockSize;
+    }
+
+    if(up > 0) {
+        selectedSprite.height = up + blockSize;
+        selectedSprite.y = iy + blockSizeHalf;
+    } else {
+        selectedSprite.y = fy + blockSizeHalf;
+        selectedSprite.height = -up + blockSize;
+    }
+}
+
+function resize270(ix: number, iy: number, fx: number, fy: number) {
+    const right = fx - ix; // left
+    const up = iy - fy; // up
+
+    if(up > 0) {
+        selectedSprite.width = up + blockSize;
+        selectedSprite.y = iy + blockSizeHalf;
+    } else {
+        selectedSprite.width = -up + blockSize;
+        selectedSprite.y = fy + blockSizeHalf;
+    }
+
+    if(right > 0) {
+        selectedSprite.height = right + blockSize;
+        selectedSprite.x = ix + blockSizeHalf;
+    } else {
+        selectedSprite.height = -right + blockSize;
+        selectedSprite.x = fx + blockSizeHalf;
+    }
+}
+
+function resize(fx: number, fy: number) {
+    if(blockRotation == 0) resize0(ix, iy, fx, fy);
+    else if(blockRotation == 90) resize90(ix, iy, fx, fy);
+    else if(blockRotation == 180) resize180(ix, iy, fx, fy);
+    else if(blockRotation == 270) resize270(ix, iy, fx, fy);
+}
+
 function finalize() {
+    var xx = 0;
+    var yy = 0;
+    var w = 0;
+    var h = 0;
+
+    if(blockRotation == 0) {
+        w = Math.round(selectedSprite.width / blockSize);
+        h = Math.round(selectedSprite.height / blockSize);
+        xx = selectedSprite.x;
+        yy = selectedSprite.y;
+    } else if(blockRotation == 90) {
+        h = Math.round(selectedSprite.width / blockSize);
+        w = Math.round(selectedSprite.height / blockSize);
+        xx = selectedSprite.x - selectedSprite.height + blockSize;
+        yy = selectedSprite.y;
+    } else if(blockRotation == 180) {
+        w = Math.round(selectedSprite.width / blockSize);
+        h = Math.round(selectedSprite.height / blockSize);
+        xx = selectedSprite.x - selectedSprite.width + blockSize;
+        yy = selectedSprite.y - selectedSprite.height + blockSize;
+    } else if(blockRotation == 270) {
+        h = Math.round(selectedSprite.width / blockSize);
+        w = Math.round(selectedSprite.height / blockSize);
+        xx = selectedSprite.x;
+        yy = selectedSprite.y - selectedSprite.width + blockSize;
+    }
+
     const x = 
-    floorToMultiples(selectedSprite.x - mdshell.game.container.x + gameScale.nx + player.halfW, blockSize) / blockSize;
+    floorToMultiples(xx - mdshell.game.container.x + gameScale.nx + player.halfW, blockSize) / blockSize;
     const y = 
-    floorToMultiples(selectedSprite.y - mdshell.game.container.y + gameScale.ny + player.halfH, blockSize) / blockSize;
+    floorToMultiples(yy - mdshell.game.container.y + gameScale.ny + player.halfH, blockSize) / blockSize;
 
-/*const fx = 
-    snapToGrid(x - player.halfWS - mdshell.game.container.x * gameScale.x - mdshell.game.groups.world.x + player.x, 0, blockSize);
-    const fy = 
-    snapToGrid(y - player.halfHS - mdshell.game.container.y * gameScale.y - mdshell.game.groups.world.y + player.y, 0,a blockSize);
-    */
+    const s = mdshell.createBlock(x, y, w, h, selectedBlock!, degToRad(blockRotation));
 
-    const w = Math.floor(selectedSprite.width / blockSize);
-    const h = Math.floor(selectedSprite.height / blockSize);
-
-    if(selectedBlockIsPassable) mdshell.createBlock(x, y, w, h, selectedBlock!, true);
-    else mdshell.createBlock(x, y, w, h, selectedBlock!, false);
+    /*if(blockRotation == 270) {
+        var i = 0;
+        Ticker.shared.add(() => {
+            i += .1;
+            s.y += 3 * Math.sin(i);
+        });
+    }*/
     
     selectedSprite.width = blockSize;
     selectedSprite.height = blockSize;

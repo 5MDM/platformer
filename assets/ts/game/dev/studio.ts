@@ -1,6 +1,6 @@
 import { Container, Cursor, Sprite, Texture, TilingSprite } from "pixi.js";
 import { $, $$, floorToMultiples, snapToGrid, ToggleList, ToggleState } from "../../lib/util";
-import { app } from "../../constants";
+import { app, blockSizeHalf } from "../../constants";
 import { mdshell } from "../../constants";
 import { DragController } from "../../lib/drag";
 import { disableControls, enableControls } from "../controls";
@@ -100,7 +100,7 @@ function placeHover(x: number, y: number) {
     const bool = pw.staticGrid.isOOB(cursorX, cursorY);
     editorDrag.CAD(bool);
 
-    selectedSprite.position.set(fx, fy);
+    setSelectedSpritePos(fx, fy);
 }
 
 export var selectedBlockIsPassable = false;
@@ -116,8 +116,13 @@ export const selectedSprite: TilingSprite = new TilingSprite({
     height: blockSize,
     texture: Texture.WHITE,
     zIndex: 3,
-    visible: false
+    visible: false,
+    pivot: blockSizeHalf,
 });
+
+export function setSelectedSpritePos(x: number, y: number) {
+    selectedSprite.position.set(x + blockSizeHalf, y + blockSizeHalf);
+}
 
 mdshell.game.groups.view.addChild(selectedSprite);
 

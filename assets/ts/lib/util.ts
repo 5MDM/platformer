@@ -4,6 +4,9 @@ export const UTIL_VERSION: number = 1.5;
 
 export const RADIAN_QUARTER = 28.6479;
 
+const pi180 = Math.PI / 180;
+export function degToRad(n: number) {return n * pi180}
+
 export function throwErr(file: string, msg: string): never {
   const err = new Error(`${file}.ts: ${msg}`);
   console.error(err);
@@ -348,4 +351,14 @@ export class ToggleState {
 
   private onEnable: () => void = () => undefined;
   private onDisable: () => void = () => undefined;
+}
+
+export function rotatePoints90(x: number, y: number, deg: number): [number, number] {
+  if(deg == 0) return [x, y];
+  if(deg == 90) return [-y, x];
+  if(deg == 180) return [-x, -y];
+  if(deg == 270) return [y, -x];
+
+  throw new Error("util.ts: Invalid rotation");
+  return [x, y];
 }
