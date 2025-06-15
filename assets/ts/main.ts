@@ -1,9 +1,8 @@
-import "./levels/main";
 import { startGame } from "./game/main";
 import { c } from "./canvas";
 import { initStudio } from "./game/dev/studio";
 import { app, mdshell, pw } from "./constants";
-import { initLevels } from "./levels/main";
+import { initLevels } from "./game/levels";
 
 export const mainPromises: Promise<any>[] = [];
 export function addMainPromise(...pr: Promise<any>[]) {

@@ -1,4 +1,4 @@
-import { AnimatedSprite, Application, Sprite } from "pixi.js";
+import { AnimatedSprite, Sprite } from "pixi.js";
 import { startControlLoop } from "./controls";
 import { editorState, startStudioLoop } from "./dev/studio";
 import { player, pw } from "../constants";
@@ -35,6 +35,4 @@ export async function startGame(sh: MDshell) {
     pw.startClock();
     startControlLoop();
     startStudioLoop();
-
-    editorState.toggle();
 }

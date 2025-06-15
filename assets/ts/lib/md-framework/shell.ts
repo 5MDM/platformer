@@ -1,7 +1,7 @@
 import { Application, Assets, BindableTexture, Container, Sprite, Spritesheet, SpritesheetData, Texture, TilingSprite } from "pixi.js";
 import { MDgame, MDgameOpts, MDgameType } from "./game";
 import { GMOutput, Keymap } from "../keymap";
-import { PWB, PWS } from "../pw-objects";
+import { PWS } from "../pw-objects";
 import { PW } from "../physics";
 
 export interface XYWH {
@@ -9,6 +9,10 @@ export interface XYWH {
     w: number;
     y: number;
     h: number;
+}
+
+export interface LevelJSONoutput extends GMOutput {
+    rotation: number;
 }
 
 export interface BlockInfo {
@@ -37,18 +41,16 @@ interface MDshellOpts {
 interface BgObj extends XYWH {
     sprite: Container;
     type: string;
-    rotation?: number;
+    rotation: number;
 }
 
 interface FgObj extends BgObj {
     pwb: PWS;
 }
 
-const pi180 = Math.PI/180;
-
 export class MDshell {
     playerSpawnString = "@";
-    levels: Record<string, GMOutput[]> = {};
+    levels: Record<string, LevelJSONoutput[]> = {};
 
     blockSize: number;
     app: Application;
@@ -238,6 +240,7 @@ export class MDshell {
                 h,
                 type,
                 sprite: pws.sprite!,
+                rotation: rotation,
                 pwb: pws,
             };
 
@@ -262,8 +265,8 @@ export class MDshell {
         this.blocks[name] = block;
 
         this.levelGenerator.key(block.texture, 
-            (x, y, w, h) => {
-                this.createBlock(x, y, w, h, block.texture);
+            (x, y, w, h, rotation) => {
+                this.createBlock(x, y, w, h, block.texture, rotation);
             }
         );
     }
@@ -291,12 +294,12 @@ export class MDshell {
         return images;
     }
 
-    addLevel(name: string, data: GMOutput[]): void {
+    addLevel(name: string, data: LevelJSONoutput[]): void {
         this.levels[name] = data;
     }
 
     setCurrentLevel(name: string) {
-        const arr: GMOutput[] = this.levels[name];
+        const arr: LevelJSONoutput[] = this.levels[name];
 
         this.levelGenerator.runRaw(arr);
     }

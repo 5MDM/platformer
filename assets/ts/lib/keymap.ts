@@ -1,3 +1,4 @@
+import { LevelJSONoutput } from "./md-framework/shell";
 import { MDmatrix } from "./util";
 
 export interface GMOutput {
@@ -19,10 +20,10 @@ interface GMBoxes {
 
 export class Keymap {
     onEnd: () => void = () => undefined;
-    keys: {[index: string]: (x: number, y: number, w: number, h: number) => void} = {};
+    keys: {[index: string]: (x: number, y: number, w: number, h: number, rotation: number) => void} = {};
 
-    private static GreedyMesh(bounds: GMBoxes, matrix: MDmatrix<true>): GMOutput[] {
-        const output: GMOutput[] = [];
+    private static GreedyMesh(bounds: GMBoxes, matrix: MDmatrix<true>): LevelJSONoutput[] {
+        const output: LevelJSONoutput[] = [];
 
         for(let y = bounds.ymin; y < bounds.ymax; y++) {
             for(let x = bounds.xmin; x < bounds.xmax; x++) {
@@ -69,7 +70,7 @@ export class Keymap {
                 }
             }
 
-            output.push({x: x + bounds.xmin, y: y + bounds.ymin, w, h, type: bounds.type});
+            output.push({x: x + bounds.xmin, y: y + bounds.ymin, w, h, type: bounds.type, rotation: 0});
         }
         
         return output;
@@ -83,9 +84,9 @@ export class Keymap {
         }
     }
 
-    runRaw(arr: GMOutput[]) {
-        for(const {x, y, w, h, type} of arr) {
-            this.keys[type]?.(x, y, w, h);
+    runRaw(arr: LevelJSONoutput[]) {
+        for(const {x, y, w, h, rotation, type} of arr) {
+            this.keys[type]?.(x, y, w, h, rotation);
         }
     }
 
@@ -161,8 +162,8 @@ export class Keymap {
     }
 
     // greedy mesh and run
-    GMR(txt: string): GMOutput[] {
-        const output: GMOutput[] = [];
+    GMR(txt: string): LevelJSONoutput[] {
+        const output: LevelJSONoutput[] = [];
         const types: {[typeName: string]: GMBoxes} = {};
 
         for(const key in this.keys) {
@@ -265,7 +266,7 @@ export class Keymap {
         this.onEnd();
     }*/
 
-    key(char: string, f: (x: number, y: number, w: number, h: number) => void) {
+    key(char: string, f: (x: number, y: number, w: number, h: number, rotation: number) => void) {
         this.keys[char] = f;
     }
 

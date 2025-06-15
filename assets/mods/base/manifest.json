@@ -56,20 +56,20 @@
             "texture": "floor-tile.png"
         },
         {
-            "name": "white wall",
-            "texture": "white-wall.png"
-        },
-        {
             "name": "white wall left",
             "texture": "white-wall-left.png"
         },
         {
-            "name": "white wall top",
-            "texture": "white-wall-top.png"
+            "name": "white wall tube",
+            "texture": "white-wall-tube.png"
         },
         {
-            "name": "white wall top left",
-            "texture": "white-wall-top-left.png"
+            "name": "white wall corner",
+            "texture": "white-wall-corner.png"
+        },
+        {
+            "name": "white wall end",
+            "texture": "white-wall-end.png"
         }
     ]
 }

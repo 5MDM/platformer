@@ -24,7 +24,6 @@ const modeArr: Elt[] = [
         name: "row-edit",
         src: "row-edit.png",
         state: rowEditState,
-        isToggled: true,
     },
     {
         name: "zoom",
@@ -32,14 +31,14 @@ const modeArr: Elt[] = [
         state: zoomState,
     },
     {
-        name: "rotate-left",
-        src: "rotate-left.png",
-        f: () => devRotate(-90),
-    },
-    {
         name: "rotate-right",
         src: "rotate-right.png",
         f: () => devRotate(90),
+    },
+    {
+        name: "rotate-left",
+        src: "rotate-left.png",
+        f: () => devRotate(-90),
     },
 ];
 

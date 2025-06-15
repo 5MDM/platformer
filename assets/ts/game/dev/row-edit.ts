@@ -2,10 +2,9 @@ import { blockSize, blockSizeHalf, blockSizeQuarter, player } from "../../consta
 import { degToRad, floorToMultiples, rotatePoints90, snapToGrid, ToggleState } from "../../lib/util";
 import { mdshell } from "../../constants";
 import { placeBlock } from "./level-editor";
-import { editorDrag, placementModeState, selectedBlock, selectedSprite, setSelectedSpritePos } from "./studio";
+import { editorDrag, editorPan, placementModeState, selectedBlock, selectedSprite, setSelectedSpritePos } from "./studio";
 import { gameScale } from "./zoom";
 import { blockRotation } from "./rotate";
-import { Ticker } from "pixi.js";
 
 export function enableRowEditMode() {
     //editorDrag.onDrag = placeRow;
@@ -31,7 +30,7 @@ var ix = 0;
 var iy = 0;
 
 function down(e: PointerEvent) {
-    placeRow(0, 0, e.x, e.y);
+    if(placementModeState.isToggled) placeRow(0, 0, e.x, e.y);
 }
 
 export function placeRow(rx: number, ry: number, x: number, y: number) {
@@ -208,14 +207,6 @@ function finalize() {
     floorToMultiples(yy - mdshell.game.container.y + gameScale.ny + player.halfH, blockSize) / blockSize;
 
     const s = mdshell.createBlock(x, y, w, h, selectedBlock!, degToRad(blockRotation));
-
-    /*if(blockRotation == 270) {
-        var i = 0;
-        Ticker.shared.add(() => {
-            i += .1;
-            s.y += 3 * Math.sin(i);
-        });
-    }*/
     
     selectedSprite.width = blockSize;
     selectedSprite.height = blockSize;

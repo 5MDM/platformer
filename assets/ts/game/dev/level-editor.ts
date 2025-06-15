@@ -1,12 +1,13 @@
 import { Container, Sprite } from "pixi.js";
 import { $, $$, degToRad, floorToMultiples, MDmatrix, removeContainerChildren, ToggleList } from "../../lib/util";
 import { PWS } from "../../lib/pw-objects";
-import { blockSize, blockSizeHalf, blockSizeQuarter, maxLevelSize, player, pw } from "../../constants";
+import { blockSize, blockSizeHalf, maxLevelSize, player, pw } from "../../constants";
 import { editorDrag, selectedBlock, selectedSprite } from "./studio";
 import { GMOutput, Keymap } from "../../lib/keymap";
 import { mdshell } from "../../constants";
 import { gameScale } from "./zoom";
 import { blockRotation } from "./rotate";
+import { LevelJSONoutput } from "../../lib/md-framework/shell";
 
 var hasEdited = false;
 
@@ -54,7 +55,7 @@ export function placeBlock(rx: number, ry: number, x: number, y: number) {
         width: blockSize,
         height: blockSize,
         texture: selectedSprite.texture,
-        pivot: blockSizeHalf,
+        pivot: selectedSprite.texture.width/2,
         rotation: rotationRad,
     }));
 }
@@ -81,19 +82,28 @@ export function finalizeEdits() {
 
 
 export function copyLevel() {
-    const arr: GMOutput[] = [];
+    const arr: LevelJSONoutput[] = [];
 
     for(const id in mdshell.pwObjects) {
-        const {x, y, w, h, type} = mdshell.pwObjects[id];
+        const {x, y, w, h, rotation, type} = mdshell.pwObjects[id];
 
-        arr.push({x, y, w, h, type});
+        arr.push({x, y, w, h, rotation, type});
     }
 
     for(const id in mdshell.bgObjects) {
-        const {x, y, w, h, type} = mdshell.bgObjects[id];
+        const {x, y, w, h, rotation, type} = mdshell.bgObjects[id];
 
-        arr.push({x, y, w, h, type});
+        arr.push({x, y, w, h, rotation, type});
     }
+
+    arr.push({
+        x: 64,
+        y: 64,
+        w: 1,
+        h: 1,
+        type: "@",
+        rotation: 0,
+    });
 
     navigator.clipboard.writeText(JSON.stringify(arr))
     .then(() => alert("Copied level json"))

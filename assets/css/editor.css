@@ -1,9 +1,10 @@
 
 
 #ui > #editor {
+    --blue-bg-2: rgba(40, 40, 100, 1);
     /* position: absolute; */
     background-color: rgba(50, 50, 100, .95);
-    border-bottom: 6px solid rgba(40, 40, 100, 1);
+    border-bottom: 6px solid var(--blue-bg-2);
     flex-direction: column;
     height: auto;
     padding: 10px;
@@ -45,6 +46,8 @@
     border: 5px inset rgba(50, 50, 100, 1);
     padding: 10px;
     image-rendering: pixelated;
+    overflow-x: scroll;
+    scrollbar-color: rgba(50, 70, 100, 1) var(--blue-bg-2);
 }
 
 #ui > #editor .block-row > img {
