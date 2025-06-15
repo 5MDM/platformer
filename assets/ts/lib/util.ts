@@ -7,6 +7,10 @@ export const RADIAN_QUARTER = 28.6479;
 const pi180 = Math.PI / 180;
 export function degToRad(n: number) {return n * pi180}
 
+export function radToDeg(n: number) {
+  return Math.round(n / pi180);
+}
+
 export function throwErr(file: string, msg: string): never {
   const err = new Error(`${file}.ts: ${msg}`);
   console.error(err);

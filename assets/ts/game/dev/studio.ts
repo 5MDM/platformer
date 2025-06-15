@@ -11,6 +11,8 @@ import { scale, startStats, studio } from "./stats";
 import { devMoveModeState } from "./move";
 import { disableRowEditMode, enableRowEditMode, rowEditHover, rowEditState } from "./row-edit";
 import { gameScale, setGameScale } from "./zoom";
+import { devRotate } from "./rotate";
+import { promptLevelInput } from "./level-inserter";
 
 export const studioState = new ToggleState(() => {
     studio.style.display = "block";
@@ -67,6 +69,12 @@ addEventListener("keydown", e => {
         if(!devMoveModeState.isToggled) devMoveModeState.toggle();
     } else if(e.key == "Escape") {
         if(devMoveModeState.isToggled) devMoveModeState.toggle();
+    } else if(e.key == "r") {
+        if(editorState.isToggled) devRotate(90);
+    } else if(e.key == "R") {
+        if(editorState.isToggled) devRotate(-90);
+    } else if(e.key == "L") {
+        promptLevelInput();
     }
 });
 

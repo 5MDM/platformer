@@ -107,6 +107,18 @@ export class PWB {
     toContainer(c: Container) {
         c.addChild(this.sprite!);
     }
+
+    destroy() {
+        this.sprite = undefined;
+        this.x = 0;
+        this.y = 0;
+        this.w = 1;
+        this.h = 1;
+        this.cx = .5;
+        this.cy =.5;
+        this.halfW = .5;
+        this.halfH = .5;
+    }
 }
 
 export class PWS extends PWB {    

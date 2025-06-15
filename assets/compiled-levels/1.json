@@ -12,7 +12,7 @@
         "y": 62,
         "w": 6,
         "h": 1,
-        "rotation": 1.5707963267948966,
+        "rotation": 90,
         "type": "white-wall-left.png"
     },
     {
@@ -20,7 +20,7 @@
         "y": 62,
         "w": 1,
         "h": 1,
-        "rotation": 1.5707963267948966,
+        "rotation": 90,
         "type": "white-wall-left.png"
     },
     {
@@ -28,7 +28,7 @@
         "y": 63,
         "w": 1,
         "h": 8,
-        "rotation": 3.141592653589793,
+        "rotation": 180,
         "type": "white-wall-left.png"
     },
     {
@@ -36,8 +36,16 @@
         "y": 71,
         "w": 8,
         "h": 1,
-        "rotation": 4.71238898038469,
+        "rotation": 270,
         "type": "white-wall-left.png"
+    },
+    {
+        "x": 61,
+        "y": 71,
+        "w": 1,
+        "h": 1,
+        "rotation": 270,
+        "type": "white-wall-corner.png"
     },
     {
         "x": 61,
@@ -52,7 +60,7 @@
         "y": 62,
         "w": 1,
         "h": 1,
-        "rotation": 1.5707963267948966,
+        "rotation": 90,
         "type": "white-wall-corner.png"
     },
     {
@@ -60,48 +68,24 @@
         "y": 71,
         "w": 1,
         "h": 1,
-        "rotation": 3.141592653589793,
+        "rotation": 180,
         "type": "white-wall-corner.png"
-    },
-    {
-        "x": 61,
-        "y": 71,
-        "w": 1,
-        "h": 1,
-        "rotation": 4.71238898038469,
-        "type": "white-wall-corner.png"
-    },
-    {
-        "x": 62,
-        "y": 66,
-        "w": 4,
-        "h": 1,
-        "rotation": 4.71238898038469,
-        "type": "white-wall-tube.png"
-    },
-    {
-        "x": 62,
-        "y": 66,
-        "w": 1,
-        "h": 1,
-        "rotation": 4.71238898038469,
-        "type": "white-wall-tube.png"
-    },
-    {
-        "x": 65,
-        "y": 66,
-        "w": 1,
-        "h": 1,
-        "rotation": 4.71238898038469,
-        "type": "white-wall-tube.png"
     },
     {
         "x": 66,
         "y": 66,
         "w": 1,
         "h": 1,
-        "rotation": 1.5707963267948966,
+        "rotation": 90,
         "type": "white-wall-end.png"
+    },
+    {
+        "x": 62,
+        "y": 66,
+        "w": 4,
+        "h": 1,
+        "rotation": 90,
+        "type": "white-wall-tube.png"
     },
     {
         "x": 62,

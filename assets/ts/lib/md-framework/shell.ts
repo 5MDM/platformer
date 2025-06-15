@@ -3,6 +3,7 @@ import { MDgame, MDgameOpts, MDgameType } from "./game";
 import { GMOutput, Keymap } from "../keymap";
 import { PWS } from "../pw-objects";
 import { PW } from "../physics";
+import { degToRad } from "../util";
 
 export interface XYWH {
     x: number;
@@ -266,7 +267,7 @@ export class MDshell {
 
         this.levelGenerator.key(block.texture, 
             (x, y, w, h, rotation) => {
-                this.createBlock(x, y, w, h, block.texture, rotation);
+                this.createBlock(x, y, w, h, block.texture, degToRad(rotation));
             }
         );
     }
@@ -302,6 +303,30 @@ export class MDshell {
         const arr: LevelJSONoutput[] = this.levels[name];
 
         this.levelGenerator.runRaw(arr);
+    }
+
+    destroyCurrentLevel() {
+        for(const i in this.bgObjects) {
+            const obj = this.bgObjects[i];
+
+            obj.sprite?.destroy();
+            delete this.bgObjects[i];
+        }
+
+        for(const i in this.pwObjects) {
+            const obj = this.pwObjects[i];
+
+            obj.sprite?.destroy();
+            obj.pwb.destroy();
+            delete this.bgObjects[i];
+        }
+
+        //this.game.groups.static.removeChildren();
+        this.game.groups.bg.removeChildren();
+        this.game.groups.fg.removeChildren();
+
+        this.game.grids.fg.clear();
+        this.game.grids.bg.clear();
     }
 }
 

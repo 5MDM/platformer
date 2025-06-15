@@ -1,5 +1,5 @@
 import { Container, Sprite } from "pixi.js";
-import { $, $$, degToRad, floorToMultiples, MDmatrix, removeContainerChildren, ToggleList } from "../../lib/util";
+import { $, $$, degToRad, floorToMultiples, MDmatrix, radToDeg, removeContainerChildren, ToggleList } from "../../lib/util";
 import { PWS } from "../../lib/pw-objects";
 import { blockSize, blockSizeHalf, maxLevelSize, player, pw } from "../../constants";
 import { editorDrag, selectedBlock, selectedSprite } from "./studio";
@@ -86,14 +86,16 @@ export function copyLevel() {
 
     for(const id in mdshell.pwObjects) {
         const {x, y, w, h, rotation, type} = mdshell.pwObjects[id];
+        const rot = radToDeg(rotation);
 
-        arr.push({x, y, w, h, rotation, type});
+        arr.push({x, y, w, h, rotation: rot, type});
     }
 
     for(const id in mdshell.bgObjects) {
         const {x, y, w, h, rotation, type} = mdshell.bgObjects[id];
+        const rot = radToDeg(rotation);
 
-        arr.push({x, y, w, h, rotation, type});
+        arr.push({x, y, w, h, rotation: rot, type});
     }
 
     arr.push({
