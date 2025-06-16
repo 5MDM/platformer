@@ -70,6 +70,19 @@
         {
             "name": "white wall end",
             "texture": "white-wall-end.png"
+        },
+        {
+            "name": "bed top",
+            "texture": "bed-top.png"
+        },
+        {
+            "name": "bed bottom",
+            "texture": "bed-bottom.png"
+        },
+        {
+            "name": "wood door",
+            "texture": "wood-door.png",
+            "isPassable": true
         }
     ]
 }
