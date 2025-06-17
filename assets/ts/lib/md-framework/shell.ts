@@ -260,6 +260,10 @@ export class MDshell {
                 this.pw.addStatic(x, y, pws);
             });
 
+            if(this.blocks[name].components) {
+                parseBlockComponents(this.game, this.blocks[name].components, pws.id);
+            }
+
             return {isPassable: false, id: pws.id};
         }
     }

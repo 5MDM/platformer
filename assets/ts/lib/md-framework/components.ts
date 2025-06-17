@@ -1,4 +1,3 @@
-import { Texture } from "pixi.js";
 import { MDgame } from "./game";
 import { mdshell } from "../../constants";
 
