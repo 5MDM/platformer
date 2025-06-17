@@ -1,5 +1,7 @@
 import { Container } from "pixi.js";
 import { MDmatrix } from "../util";
+import { PWB, PWS } from "../pw-objects";
+import { BgObj, FgObj, MDshell } from "./shell";
 
 export interface GridBlockData {
     name: string;
@@ -19,6 +21,9 @@ type MDgameGridType = "fg" | "bg";
 // world container -> view -> static -> bg and fg
 
 export class MDgame {
+    pwObjects: Record<number, FgObj> = {};
+    bgObjects: Record<number, BgObj> = {};
+
     container = new Container();
     gameType: MDgameType;
     spawnX: number = 0;

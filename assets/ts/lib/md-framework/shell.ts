@@ -1,9 +1,11 @@
 import { Application, Assets, BindableTexture, Container, Sprite, Spritesheet, SpritesheetData, Texture, TilingSprite } from "pixi.js";
-import { MDgame, MDgameOpts, MDgameType } from "./game";
 import { GMOutput, Keymap } from "../keymap";
 import { PWS } from "../pw-objects";
 import { PW } from "../physics";
 import { degToRad } from "../util";
+import { MDgame, MDgameType } from "./game";
+import { mdshell } from "../../constants";
+import { parseBlockComponents } from "./components";
 
 export interface XYWH {
     x: number;
@@ -20,6 +22,7 @@ export interface BlockInfo {
     isPassable?: boolean;
     name: string;
     texture: string;
+    components?: Record<string, Record<string, any>>;
 }
 
 export interface ModInfo {
@@ -39,13 +42,13 @@ interface MDshellOpts {
     app: Application;
 }
 
-interface BgObj extends XYWH {
+export interface BgObj extends XYWH {
     sprite: Container;
     type: string;
     rotation: number;
 }
 
-interface FgObj extends BgObj {
+export interface FgObj extends BgObj {
     pwb: PWS;
 }
 
@@ -66,9 +69,6 @@ export class MDshell {
     levelGenerator = new Keymap();
     blocks: Record<string, BlockInfo> = {};
     imageBlobSize: number;
-
-    pwObjects: Record<number, FgObj> = {};
-    bgObjects: Record<number, BgObj> = {};
 
     internalCanvas = new OffscreenCanvas(256, 256);
     ictx: OffscreenCanvasRenderingContext2D;
@@ -201,7 +201,8 @@ export class MDshell {
         return s;
     }
 
-    createBlock(x: number, y: number, w: number, h: number, name: string, rotation: number = 0): Container {
+    createBlock
+    (x: number, y: number, w: number, h: number, name: string, rotation: number = 0): {isPassable: boolean, id: number} {
         const t = this.getTexture(name);
         const s = this.createMergedSprite(x * this.blockSize, y * this.blockSize, w, h, t, rotation);
         const type =  this.blocks[name].texture;
@@ -211,7 +212,7 @@ export class MDshell {
             this.game.groups.bg.addChild(s);
 
             const id = this.game.getNewId();
-            this.bgObjects[id] = {
+            this.game.bgObjects[id] = {
                 sprite: s,
                 x,
                 y,
@@ -228,13 +229,15 @@ export class MDshell {
                     type,
                 });
             });
+
+            return {isPassable, id};
         } else {
             this.game.groups.fg.addChild(s);
 
             const pws = 
             new PWS(x * this.blockSize, y * this.blockSize, w * this.blockSize, h * this.blockSize, type);
 
-            this.pwObjects[pws.id] = {
+            this.game.pwObjects[pws.id] = {
                 x,
                 y,
                 w,
@@ -256,20 +259,36 @@ export class MDshell {
 
                 this.pw.addStatic(x, y, pws);
             });
-        }
 
-        return s;
+            return {isPassable: false, id: pws.id};
+        }
     }
 
     private registerBlock(name: string, block: BlockInfo) {
+        var hasComponents = false;
         block.isPassable ??= false;
+
+        if(block.components) {
+            hasComponents = true;
+            if(block.isPassable) return MDshell.Err(
+                `block "${name}" has a component while being passive`
+            );
+        }
+
+        block.components ||= {};
+
         this.blocks[name] = block;
 
-        this.levelGenerator.key(block.texture, 
-            (x, y, w, h, rotation) => {
-                this.createBlock(x, y, w, h, block.texture, degToRad(rotation));
-            }
-        );
+        if(hasComponents) {
+            this.levelGenerator.key(block.texture, (x, y, w, h, rotation) => {
+                const output = this.createBlock(x, y, w, h, block.texture, degToRad(rotation)); 
+                parseBlockComponents(this.game, block.components!, output.id);
+            });
+        } else {
+            this.levelGenerator.key(block.texture, (x, y, w, h, rotation) => {
+                this.createBlock(x, y, w, h, block.texture, degToRad(rotation)); 
+            });
+        }
     }
 
     async getBlocksAsImages() {    
@@ -306,19 +325,19 @@ export class MDshell {
     }
 
     destroyCurrentLevel() {
-        for(const i in this.bgObjects) {
-            const obj = this.bgObjects[i];
+        for(const i in this.game.bgObjects) {
+            const obj = this.game.bgObjects[i];
 
             obj.sprite?.destroy();
-            delete this.bgObjects[i];
+            delete this.game.bgObjects[i];
         }
 
-        for(const i in this.pwObjects) {
-            const obj = this.pwObjects[i];
+        for(const i in this.game.pwObjects) {
+            const obj = this.game.pwObjects[i];
 
             obj.sprite?.destroy();
             obj.pwb.destroy();
-            delete this.bgObjects[i];
+            delete this.game.bgObjects[i];
         }
 
         //this.game.groups.static.removeChildren();

@@ -89,6 +89,8 @@ export class PW {
         }
     }
 
+    private recentCollisions: Record<number, PWS> = {}
+
     private findStaticCollisions(moving: PWD): number {
         var collisionAmnt = 0;
         const x = Math.floor(moving.x / this.blockSize);
@@ -102,13 +104,35 @@ export class PW {
         const bottomRight = this.staticGrid.get(maxX, maxY);
 
         const collision = [topLeft, topRight, bottomRight, bottomLeft];
-        for(const col of collision) 
+        for(const id in this.recentCollisions) {
+            this.recentCollisions[id].hasCollidedRecently = false;
+        }
+
+        loop: for(const col of collision) 
             if(col) {
-                if(col.testAABB(moving)) {
+                if(col.hasCollisionLeaveEvents) {
+                    col.hasCollidedRecently = true;
+                    this.recentCollisions[col.id] = col;
+                }
+                
+                //if(col.testAABB(moving)) {
                     collisionAmnt++;
+                    for(const f of col.onCollide) if(f(col)) continue loop;
+                    
                     this.separate(moving, col);
+                //}
+            }
+
+        for(const id in this.recentCollisions) {
+            const block = this.recentCollisions[id];
+            if(!block.hasCollidedRecently) {
+
+                if(!block.testSmallAABB(moving)) {
+                for(const f of block.onCollisionLeave) f(block);
+                delete this.recentCollisions[id];
                 }
             }
+        }
 
         return collisionAmnt;
     }

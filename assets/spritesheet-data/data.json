@@ -82,7 +82,7 @@
 },
 "grass_block_1.png":
 {
-	"frame": {"x":0,"y":1023,"w":256,"h":256},
+	"frame": {"x":0,"y":1151,"w":256,"h":256},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":256,"h":256},
@@ -224,9 +224,17 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
 	"sourceSize": {"w":128,"h":128}
 },
-"wood-door.png":
+"wood-door-open.png":
 {
 	"frame": {"x":128,"y":895,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+"wood-door.png":
+{
+	"frame": {"x":0,"y":1023,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -242,8 +250,8 @@
 	"version": "1.1",
 	"image": "atlas.png",
 	"format": "RGBA8888",
-	"size": {"w":256,"h":1279},
+	"size": {"w":256,"h":1407},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:f5131817244795f497fda855d1126082:524ef9a924df1d000f10ef4421eb61d6:9157e326ab292468473525d456d5b553$"
+	"smartupdate": "$TexturePacker:SmartUpdate:49f3acd2487f1c7b7cacfebe8e1620c5:db60f6ce56d333348982c043933eb0f3:9157e326ab292468473525d456d5b553$"
 }
 }

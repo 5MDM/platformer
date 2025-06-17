@@ -13,7 +13,7 @@
             "type": "array",
             "items": {
                 "type": "object",
-                "required": ["name"],
+                "required": ["name", "texture"],
                 "properties": {
                     "name": {
                         "type": "string"
@@ -23,6 +23,12 @@
                     },
                     "isPassable": {
                         "type": "boolean"
+                    },
+                    "bgComponents": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "object"
+                        }
                     }
                 }
             },

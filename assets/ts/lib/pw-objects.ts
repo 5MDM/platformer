@@ -56,6 +56,15 @@ export class PWB {
         && this.maxY > o.y;
     }
 
+    private SMALL_VAL = -10;
+
+    testSmallAABB(o: AnyObj) {
+        return this.x+this.SMALL_VAL < o.maxX 
+        && this.maxX-this.SMALL_VAL > o.x
+        && this.y+this.SMALL_VAL < o.maxY 
+        && this.maxY-this.SMALL_VAL > o.y;
+    }
+
     testAABBminX(o: AnyObj): boolean {
         return this.x < o.maxX;
     }
@@ -129,6 +138,12 @@ export class PWS extends PWB {
         this.id = getNewID();
         this.type = type;
     }
+
+    hasCollidedRecently: boolean = false;
+    hasCollisionLeaveEvents: boolean = false;
+
+    onCollisionLeave: ((pws: PWS) => void)[] = [];
+    onCollide: ((pws: PWS) => boolean | void)[] = [];
 }
 
 // export class PWK extends PWB {

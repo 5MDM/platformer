@@ -84,15 +84,15 @@ export function finalizeEdits() {
 export function copyLevel() {
     const arr: LevelJSONoutput[] = [];
 
-    for(const id in mdshell.pwObjects) {
-        const {x, y, w, h, rotation, type} = mdshell.pwObjects[id];
+    for(const id in mdshell.game.pwObjects) {
+        const {x, y, w, h, rotation, type} = mdshell.game.pwObjects[id];
         const rot = radToDeg(rotation);
 
         arr.push({x, y, w, h, rotation: rot, type});
     }
 
-    for(const id in mdshell.bgObjects) {
-        const {x, y, w, h, rotation, type} = mdshell.bgObjects[id];
+    for(const id in mdshell.game.bgObjects) {
+        const {x, y, w, h, rotation, type} = mdshell.game.bgObjects[id];
         const rot = radToDeg(rotation);
 
         arr.push({x, y, w, h, rotation: rot, type});
