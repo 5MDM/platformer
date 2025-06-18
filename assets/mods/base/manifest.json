@@ -73,17 +73,34 @@
         },
         {
             "name": "bed top",
-            "texture": "bed-top.png"
+            "texture": "bed-top.png",
+            "components": {
+                "interact": {
+                    "text": "Hi And bye"
+                }
+            }
         },
         {
             "name": "bed bottom",
-            "texture": "bed-bottom.png"
+            "texture": "bed-bottom.png",
+            "components": {
+                "interact": {
+                    "text": "Hi And bye"
+                }
+            }
+        },
+        {
+            "name": "question",
+            "texture": "question.png",
+            "isPassable": true
         },
         {
             "name": "wood door",
             "texture": "wood-door.png",
             "components": {
-                "door": {}
+                "door": {
+                    "onOpen": "wood-door-open.png"
+                }
             }
         }
     ]

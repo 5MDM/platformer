@@ -24,7 +24,7 @@
                     "isPassable": {
                         "type": "boolean"
                     },
-                    "bgComponents": {
+                    "components": {
                         "type": "object",
                         "additionalProperties": {
                             "type": "object"

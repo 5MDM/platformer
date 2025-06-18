@@ -261,7 +261,7 @@ export class MDshell {
             });
 
             if(this.blocks[name].components) {
-                parseBlockComponents(this.game, this.blocks[name].components, pws.id);
+                parseBlockComponents(this, this.game, this.blocks[name].components, pws.id);
             }
 
             return {isPassable: false, id: pws.id};
@@ -286,7 +286,7 @@ export class MDshell {
         if(hasComponents) {
             this.levelGenerator.key(block.texture, (x, y, w, h, rotation) => {
                 const output = this.createBlock(x, y, w, h, block.texture, degToRad(rotation)); 
-                parseBlockComponents(this.game, block.components!, output.id);
+                parseBlockComponents(this, this.game, block.components!, output.id);
             });
         } else {
             this.levelGenerator.key(block.texture, (x, y, w, h, rotation) => {

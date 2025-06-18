@@ -63,4 +63,8 @@ export class MDgame {
         this.spawnX = x;
         this.spawnY = y;
     }
+
+    startPlayerDialogue(text: string) {
+        alert(text);
+    }
 }

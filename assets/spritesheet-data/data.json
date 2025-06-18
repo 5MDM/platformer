@@ -184,6 +184,14 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":63},
 	"sourceSize": {"w":30,"h":63}
 },
+"question.png":
+{
+	"frame": {"x":128,"y":639,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
 "wall.png":
 {
 	"frame": {"x":94,"y":63,"w":64,"h":64},
@@ -194,7 +202,7 @@
 },
 "white-wall-corner.png":
 {
-	"frame": {"x":128,"y":639,"w":128,"h":128},
+	"frame": {"x":0,"y":767,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -202,7 +210,7 @@
 },
 "white-wall-end.png":
 {
-	"frame": {"x":0,"y":767,"w":128,"h":128},
+	"frame": {"x":128,"y":767,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -210,7 +218,7 @@
 },
 "white-wall-left.png":
 {
-	"frame": {"x":128,"y":767,"w":128,"h":128},
+	"frame": {"x":0,"y":895,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -218,7 +226,7 @@
 },
 "white-wall-tube.png":
 {
-	"frame": {"x":0,"y":895,"w":128,"h":128},
+	"frame": {"x":128,"y":895,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -226,7 +234,7 @@
 },
 "wood-door-open.png":
 {
-	"frame": {"x":128,"y":895,"w":128,"h":128},
+	"frame": {"x":0,"y":1023,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -234,7 +242,7 @@
 },
 "wood-door.png":
 {
-	"frame": {"x":0,"y":1023,"w":128,"h":128},
+	"frame": {"x":128,"y":1023,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -252,6 +260,6 @@
 	"format": "RGBA8888",
 	"size": {"w":256,"h":1407},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:49f3acd2487f1c7b7cacfebe8e1620c5:db60f6ce56d333348982c043933eb0f3:9157e326ab292468473525d456d5b553$"
+	"smartupdate": "$TexturePacker:SmartUpdate:87f06e645dc501a5ff2ce56bac518e0a:2d8aa715398afbf91b3be86dc157a70b:9157e326ab292468473525d456d5b553$"
 }
 }

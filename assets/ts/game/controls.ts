@@ -121,3 +121,5 @@ joystick.onReset = function() {
     isJumping = false;
     isGoingDown = false;
 };
+
+addEventListener("blur", () => joystick.onReset());
