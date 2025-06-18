@@ -1,5 +1,5 @@
 import { Container } from "pixi.js";
-import { MDmatrix } from "../util";
+import { $, MDmatrix } from "../util";
 import { PWB, PWS } from "../pw-objects";
 import { BgObj, FgObj, MDshell } from "./shell";
 
@@ -21,6 +21,9 @@ type MDgameGridType = "fg" | "bg";
 // world container -> view -> static -> bg and fg
 
 export class MDgame {
+    dialogueElement = $("#ui > #dialogue > #dialogue-c");
+    dialogueParagraphElement = $("#ui > #dialogue > #dialogue-c > #text") as HTMLParagraphElement;
+
     pwObjects: Record<number, FgObj> = {};
     bgObjects: Record<number, BgObj> = {};
 
@@ -55,6 +58,13 @@ export class MDgame {
         this.groups.world.addChild(this.groups.view);
         
         this.container.addChild(this.groups.world);       
+
+        addEventListener("keydown", e => {
+            if(e.key == "Enter") {
+                this.dialogueParagraphElement.textContent = "(no text)";
+                this.dialogueElement.style.display = "none";
+            }
+        });
     }
 
     getNewId(): number {return this.idCounter++}
@@ -65,6 +75,7 @@ export class MDgame {
     }
 
     startPlayerDialogue(text: string) {
-        alert(text);
+        this.dialogueParagraphElement.textContent = text;
+        this.dialogueElement.style.display = "block";
     }
 }

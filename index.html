@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/studio.css">
     <link rel="stylesheet" href="assets/css/editor.css">
+    <link rel="stylesheet" href="assets/css/dialogue.css">
     <script defer src="assets/ts/init" type="module"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script> 
@@ -44,7 +45,6 @@
                 <button class="hidden" id="insert-level-btn">Insert Level (Shift + L)</button>
             </div>
             <div id="shortcuts">
-
             </div>
             <div id="studio" class="hidden">
                 <div class="top">
@@ -61,6 +61,16 @@
                 </div>
             </div>
             <div id="joystick"></div>
+            <div id="dialogue">
+                <div id="dialogue-c" class="hidden">
+                    <div id="text">
+                        <p>(No text)</p>
+                    </div>
+                    <div id="footnote">
+                        <p>Press enter to continue</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 </body>

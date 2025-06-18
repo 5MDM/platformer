@@ -1,0 +1,28 @@
+
+#ui > #dialogue {
+    display: flex;
+    position: fixed;
+    height: auto;
+    bottom: 0;
+    color: red;
+    margin-bottom: 30px;
+}
+
+#ui > #dialogue > #dialogue-c {
+    margin: auto;
+}
+
+#ui > #dialogue > #dialogue-c > #text {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(var(--blue-bg-2), blue);
+    width: min(600px, var(--w));
+    border: 5px outset darkblue;
+    font-size: 2em;
+    padding: 5px;
+}
+
+#ui > #dialogue > #dialogue-c > #footnote {
+    color: white;
+    background-color: black;
+    font-size: 1em;
+}

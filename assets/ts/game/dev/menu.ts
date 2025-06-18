@@ -36,7 +36,7 @@ Shift + R - Rotate 90 degrees counterclockwise
 
 Shift + L - Open level inserter
 
-i - interact
+; (semicolon) - interact
 
 `], {type: "text/plain"});
 

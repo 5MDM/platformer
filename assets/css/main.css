@@ -10,6 +10,7 @@ body {
     user-select: none;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
+    --blue-bg-2: rgba(40, 40, 100, 1);
 }
 
 img {
@@ -75,4 +76,11 @@ button {
 
 #ui > #menu {
     height: auto;
+}
+
+#ui > #joystick {
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
 }

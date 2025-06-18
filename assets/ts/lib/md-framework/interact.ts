@@ -4,7 +4,7 @@ import { InteractComponent } from "./components";
 export const touchingBlocks: Record<number, InteractComponent> = {}
 
 addEventListener("keydown", e => {
-    if(e.key != "i") return;
+    if(e.key != ";") return;
 
     for(const id in touchingBlocks) {
         return mdshell.game.startPlayerDialogue(touchingBlocks[id].text);

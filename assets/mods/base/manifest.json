@@ -102,6 +102,28 @@
                     "onOpen": "wood-door-open.png"
                 }
             }
+        },
+        {
+            "name": "sink",
+            "texture": "sink.png",
+            "components": {
+                "interact": {
+                    "text": "It's the kitchen sink. There is no hot water"
+                }
+            }
+        },
+        {
+            "name": "kitchen top",
+            "texture": "kitchen-top.png"
+        },
+        {
+            "name": "TV",
+            "texture": "tv.png",
+            "components": {
+                "interact": {
+                    "text": "It's an old TV"
+                }
+            }
         }
     ]
 }
