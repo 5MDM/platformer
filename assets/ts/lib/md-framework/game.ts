@@ -1,5 +1,5 @@
 import { Container } from "pixi.js";
-import { $, MDmatrix } from "../util";
+import { $, MDmatrix, ToggleState } from "../util";
 import { PWB, PWS } from "../pw-objects";
 import { BgObj, FgObj, MDshell } from "./shell";
 
@@ -59,12 +59,12 @@ export class MDgame {
         
         this.container.addChild(this.groups.world);       
 
-        addEventListener("keydown", e => {
+        /*addEventListener("keydown", e => {
             if(e.key == "Enter") {
                 this.dialogueParagraphElement.textContent = "(no text)";
                 this.dialogueElement.style.display = "none";
             }
-        });
+        });*/
     }
 
     getNewId(): number {return this.idCounter++}
@@ -74,8 +74,27 @@ export class MDgame {
         this.spawnY = y;
     }
 
-    startPlayerDialogue(text: string) {
-        this.dialogueParagraphElement.textContent = text;
-        this.dialogueElement.style.display = "block";
+    currentDialogue = "(no text)";
+
+    toggleDialogue(text: string = "(no text)") {
+        this.currentDialogue = text;
+        this.playerDialogueState.toggle();
     }
+
+    endDialogue(): boolean {
+        if(this.playerDialogueState.isToggled) {
+            this.playerDialogueState.toggle();
+            return true;
+        }
+
+        return false;
+    }
+
+    private playerDialogueState = new ToggleState(() => {
+        this.dialogueParagraphElement.textContent = this.currentDialogue;
+        this.dialogueElement.style.display = "block";
+    }, () => {
+        this.dialogueParagraphElement.textContent = "(no text)";
+        this.dialogueElement.style.display = "none";
+    });
 }

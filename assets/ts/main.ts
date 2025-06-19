@@ -33,6 +33,10 @@ app.init({
 }).then(async () => {
     initLevels(mdshell);
 
+    addEventListener("orientationchange", () => {
+        app.renderer.resize(innerWidth, innerHeight, devicePixelRatio);
+    });
+
     mdshell.init()
     .then(() => {
         app.stage.addChild(mdshell.game.container);

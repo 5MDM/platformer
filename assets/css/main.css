@@ -3,6 +3,10 @@
     padding: 0;
     margin: 0;
     box-sizing: border-box;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
 }
 
 body {

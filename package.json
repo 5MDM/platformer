@@ -8,7 +8,8 @@
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview --host",
-    "serve": "vite build && vite preview --host"
+    "serve": "vite build && vite preview --host",
+    "clean": "vite --force"
   },
   "author": "5MDM",
   "license": "MIT",
@@ -20,5 +21,10 @@
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
     "vite-plugin-checker": "^0.9.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

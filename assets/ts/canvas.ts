@@ -1,11 +1,8 @@
 import { $ } from "./lib/util";
 
+export const c = $("#c") as HTMLCanvasElement;
+
 document.documentElement.style.setProperty("--h", innerHeight + "px");
 document.documentElement.style.setProperty("--w", innerWidth + "px");
 
-addEventListener("resize", () => {
-    document.documentElement.style.setProperty("--h", innerHeight + "px");
-    document.documentElement.style.setProperty("--w", innerWidth + "px");
-});
-
-export const c = $("#c") as HTMLCanvasElement;
+addEventListener("touchend", e => e.preventDefault());

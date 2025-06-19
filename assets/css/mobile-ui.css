@@ -1,0 +1,30 @@
+
+#ui > #mobile-ui {
+    position: absolute;
+    --mui-size: 96px;
+}
+
+#ui > #mobile-ui img {
+    width: var(--mui-size);
+    height: var(--mui-size);
+    touch-action: pan-x;
+}
+
+#ui > #mobile-ui > #interact-btn {
+    position: fixed;
+    bottom: 70px;
+    right: 150px;
+}
+
+/* Portrait phone */
+@media (max-width: 6in) {
+    #ui > #mobile-ui > #interact-btn {
+        bottom: 200px;
+        right: 50px;
+    }
+
+    #ui > #dialogue {
+        top: 0;
+        bottom: auto;
+    }
+}

@@ -4,7 +4,6 @@ import { PWS } from "../pw-objects";
 import { PW } from "../physics";
 import { degToRad } from "../util";
 import { MDgame, MDgameType } from "./game";
-import { mdshell } from "../../constants";
 import { parseBlockComponents } from "./components";
 
 export interface XYWH {

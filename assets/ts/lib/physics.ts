@@ -16,7 +16,8 @@ export var playerCollisionAmnt = 0;
 const resizeFuncs: ((x: number, y: number) => void)[] = [];
 var lastW = innerWidth;
 var lastH = innerHeight;
-addEventListener("resize", resizeDebounce(() => {
+
+function resizeF() {
     const changeX = (innerWidth - lastW)/2;
     const changeY = (innerHeight - lastH)/2;
 
@@ -24,7 +25,13 @@ addEventListener("resize", resizeDebounce(() => {
     lastH = innerHeight;
 
     for(const f of resizeFuncs) f(changeX, changeY);
+}
+
+addEventListener("resize", resizeDebounce(() => {
+    resizeF();
 }, 200));
+
+addEventListener("orientationchange", () => setTimeout(() => resizeF(), 100));
 
 export class PW {
     blockSize: number;
@@ -115,12 +122,12 @@ export class PW {
                     this.recentCollisions[col.id] = col;
                 }
                 
-                //if(col.testAABB(moving)) {
+                if(col.testAABB(moving)) {
                     collisionAmnt++;
                     for(const f of col.onCollide) if(f(col)) continue loop;
                     
                     this.separate(moving, col);
-                //}
+                }
             }
 
         for(const id in this.recentCollisions) {
@@ -129,7 +136,7 @@ export class PW {
 
                 if(!block.testSmallAABB(moving)) {
                 for(const f of block.onCollisionLeave) f(block);
-                delete this.recentCollisions[id];
+                    delete this.recentCollisions[id];
                 }
             }
         }

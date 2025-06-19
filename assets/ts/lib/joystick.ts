@@ -95,7 +95,7 @@ export class Joystick {
             self.onDrag();
         };
 
-        this.controller.touchEl.addEventListener("pointerup", reset);
+        this.controller.downElement.addEventListener("pointerup", reset);
         //this.controller.touchEl.addEventListener("pointerout", reset);
 
         function reset() {

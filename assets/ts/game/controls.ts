@@ -2,7 +2,9 @@ import { $ } from "../lib/util";
 
 import { deltaTime } from "./dev/stats";
 import { Joystick } from "../lib/joystick";
-import { player } from "../constants";
+import { mdshell, player } from "../constants";
+import { playerInteract } from "../lib/md-framework/interact";
+import { isMobile } from "pixi.js";
 
 const speed = 5;
 var isMovingLeft = false;
@@ -123,3 +125,20 @@ joystick.onReset = function() {
 };
 
 addEventListener("blur", () => joystick.onReset());
+
+const interactBtn = $("#ui > #mobile-ui > #interact-btn");
+
+if(!isMobile.any) {
+    interactBtn.style.display = "none";
+    joystick.parent.style.display = "none";
+}
+
+interactBtn.onpointerdown = function() {
+    interactBtn.style.filter = "grayscale()";
+};
+
+interactBtn.onpointerup = function() {
+    interactBtn.style.filter = "";
+    playerInteract();
+};
+
