@@ -1,7 +1,8 @@
 import { AnimatedSprite, Sprite } from "pixi.js";
 import { startControlLoop } from "./controls";
-import { editorState, startStudioLoop } from "./dev/studio";
+import { startStudioLoop } from "./dev/studio";
 import { player, pw } from "../constants";
+import "./audio";
 
 import "./dev/menu";
 import "./dev/modes";
@@ -15,8 +16,8 @@ async function loadAnimations() {
     spritesheet.textureSource.scaleMode = "nearest";
 
     const walkR = new AnimatedSprite(spritesheet.animations["player-side-walk"]);
-    //walkR.scale.x = -1;
-    //walkR.position.x = 30;
+    walkR.scale.x = -1;
+    walkR.position.x = 30;
 
     player.setAnimation("walk-ud-down", new AnimatedSprite(spritesheet.animations["player-down-walk"]));
     player.setAnimation("walk-ud-up", new AnimatedSprite(spritesheet.animations["player-up-walk"]));
@@ -25,19 +26,6 @@ async function loadAnimations() {
     player.setSprite("stand-ud-down", new Sprite(spritesheet.textures["player-down-stand.png"]));
     player.setSprite("stand-ud-up", new Sprite(spritesheet.textures["player-up-stand.png"]));
 }
-
-const mdaudio = new MDaudio();
-const musicArr: string[] = Object.values(await convertPathToObj(
-    import.meta.glob<{ default: string; }>("../../audio/music/*.mp3"),
-));
-
-mdaudio.loadAudio(musicArr)
-.then(() => mdaudio.startListening())
-
-mdaudio.onStart = function() {
-    console.log(1)
-    mdaudio.playAudio("June%207.mp3");
-};
 
 export async function startGame(sh: MDshell) {    
     await loadAnimations();

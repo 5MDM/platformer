@@ -24,14 +24,11 @@ export class MDaudio {
         this.onStart();
     }
 
-    async loadAudio(arr: string[]): Promise<void> {
+    async loadAudio(arr: Record<string, string>): Promise<void> {
         const pr = new Promise<void>(
             res => {
-                for(const url of arr) {
-                    const name = url.split("/").pop();
-                    if(!name) throw MDshell.Err(`Audio "${url}" has invalid name`);
-
-                    fetch(url)
+                for(const name in arr) {
+                    fetch(arr[name])
                     .then(e => e.arrayBuffer())
                     .then(buffer => this.audioContext.decodeAudioData(buffer))
                     .then(audioBuffer => {
