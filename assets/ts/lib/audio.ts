@@ -5,6 +5,8 @@ export class MDaudio {
     audios: Record<string, AudioBufferSourceNode> = {};
     isReady = false;
 
+    private listenerIDs: Record<string, () => void> = {};
+
     constructor() {
     }
 
@@ -12,16 +14,27 @@ export class MDaudio {
 
     startListening() {
         if(this.isReady) return;
-        addEventListener("pointerdown", () => this.prime(), {once: true});
-        addEventListener("focus", () => this.prime(), {once: true});
-        addEventListener("keydown", () => this.prime(), {once: true});
+
+        this.DOMlisten("keydown", () => this.prime());
+        this.DOMlisten("touchend", () => this.prime());
+        this.DOMlisten("mousedown", () => this.prime());
+        this.DOMlisten("click", () => this.prime());
     }
 
-    private prime() {
-        if(this.isReady) return;
+    private DOMlisten<K extends keyof WindowEventMap>(type: K, f: () => void) {
+        this.listenerIDs[type] = f;
+        addEventListener(type, f);
+    }
 
+    private removeDOMlisteners() {
+        for(const type in this.listenerIDs) removeEventListener(type, this.listenerIDs[type]);
+    }
+
+    private prime() {    
+        if(this.isReady) return;
         this.isReady = true;
         this.onStart();
+        this.removeDOMlisteners();
     }
 
     async loadAudio(arr: Record<string, string>): Promise<void> {
@@ -57,6 +70,7 @@ export class MDaudio {
         const val = this.audios[name];
         if(!val) return MDshell.Err(`Can't find audio "${name}"`);
 
+        
         val.start();
     }
 }

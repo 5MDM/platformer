@@ -15,8 +15,10 @@
     <link rel="stylesheet" href="assets/css/mobile-ui.css">
     <script defer src="assets/ts/init" type="module"></script>
 
-    <!-- <script src="https://cdn.jsdelivr.net/npm/eruda"></script>  -->
-    <script>//eruda.init();</script>
+    <meta http-equiv="Cache-Control" content="no-cache">
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/eruda"></script> 
+    <script>eruda.init();</script> -->
 </head>
 <body>
     <main>
@@ -24,6 +26,14 @@
             Game not supported
         </canvas>
         <div id="ui">
+            <div id="audio-popup" class="hidden">
+                <p>
+                    Mobile browsers block audio automatically. 
+                    <br>
+                    Click this useless button so audio gets unblocked.
+                </p>
+                <button id="btn">Start Game</button>
+            </div>
             <div id="mobile-ui">
                 <img id="interact-btn" src="assets/images/interact-btn.png">
             </div>

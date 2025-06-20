@@ -1,4 +1,4 @@
-import { AnimatedSprite, Sprite } from "pixi.js";
+import { AnimatedSprite, isMobile, Sprite } from "pixi.js";
 import { startControlLoop } from "./controls";
 import { startStudioLoop } from "./dev/studio";
 import { player, pw } from "../constants";
@@ -8,8 +8,7 @@ import "./dev/menu";
 import "./dev/modes";
 import { MDshell } from "../lib/md-framework/shell";
 import { mdshell } from "../constants";
-import { MDaudio } from "../lib/audio";
-import { convertPathToObj } from "../lib/util";
+import { $ } from "../lib/util";
 
 async function loadAnimations() {
     const spritesheet = await mdshell.spritesheet;
@@ -38,4 +37,13 @@ export async function startGame(sh: MDshell) {
     pw.startClock();
     startControlLoop();
     startStudioLoop();
+}
+
+if(isMobile.any) {
+    const popup = $("#ui > #audio-popup");
+    popup.style.display = "flex";
+
+    popup.addEventListener("touchend", () => {
+        popup.style.display = "none";
+    }, {once: true});
 }

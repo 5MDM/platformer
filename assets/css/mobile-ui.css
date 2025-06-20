@@ -2,6 +2,7 @@
 #ui > #mobile-ui {
     position: absolute;
     --mui-size: 96px;
+    pointer-events: none;
 }
 
 #ui > #mobile-ui img {
@@ -22,9 +23,8 @@
         bottom: 200px;
         right: 50px;
     }
+}
 
-    #ui > #dialogue {
-        top: 0;
-        bottom: auto;
-    }
+@media (min-width: 5.7in) and (max-width: 8in) {
+    
 }

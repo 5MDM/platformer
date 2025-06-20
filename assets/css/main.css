@@ -15,6 +15,7 @@ body {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     --blue-bg-2: rgba(40, 40, 100, 1);
+    background-color: darkcyan;
 }
 
 img {
@@ -87,4 +88,27 @@ button {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     touch-action: manipulation;
+}
+
+#ui > #audio-popup {
+    flex-direction: column;
+    position: absolute;
+    background-color: rgba(50, 80, 50, .9);
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    font-size: 1em;
+    color: wheat;
+    z-index: 5;
+}
+
+#ui > #audio-popup #btn {
+    padding: 50px;
+    font-size: 1em;
+}
+
+@media (min-width: 5.7in) and (max-width: 8in) {
+    #ui > #joystick {
+        padding-left: 5px;
+    }
 }

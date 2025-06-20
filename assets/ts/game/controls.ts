@@ -101,7 +101,7 @@ const joystick = new Joystick({
     outerColor: "rgba(50,50,50,.8)",
     innerColor: "white",
     size: 40,
-    max: 90,
+    max: 95,
 });
 
 joystick.onDrag = function() {
