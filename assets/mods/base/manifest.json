@@ -14,7 +14,7 @@
         {
             "name": "Floor",
             "texture": "floor.png",
-            "isPassable": true
+            "type": "bg"
         },
         {
             "name": "Wall",
@@ -22,37 +22,32 @@
         },
         {
             "name": "bluestone",
-            "isPassable": true,
-            "texture": "bluestone.png"
+            "texture": "bluestone.png",
+            "type": "bg"
         },
         {
             "name": "bluestone left",
-            "isPassable": false,
             "texture": "bluestone-left.png"
         },
         {
             "name": "bluestone top left",
-            "isPassable": false,
             "texture": "bluestone-top-left.png"
         },
         {
             "name": "invis",
-            "isPassable": false,
             "texture": "invis.png"
         },
         {
             "name": "bluestone bottom left",
-            "isPassable": false,
             "texture": "bluestone-bottom-left.png"
         },
         {
             "name": "bluestone bottom",
-            "isPassable": false,
             "texture": "bluestone-bottom.png"
         },
         {
             "name": "floor tile",
-            "isPassable": true,
+            "type": "bg",
             "texture": "floor-tile.png"
         },
         {
@@ -92,7 +87,7 @@
         {
             "name": "question",
             "texture": "question.png",
-            "isPassable": true
+            "type": "overlay"
         },
         {
             "name": "wood door",
@@ -122,6 +117,26 @@
             "components": {
                 "interact": {
                     "text": "It's an old TV"
+                }
+            }
+        },
+        {
+            "name": "apartment windows",
+            "texture": "apt-windows.png",
+            "type": "overlay"
+        },
+        {
+            "name": "apartment windows with flowers",
+            "texture": "apt-windows-flowers.png",
+            "type": "overlay"
+        },
+        {
+            "name": "doorpoint",
+            "texture": "doorpoint.png",
+            "type": "fg",
+            "components": {
+                "doorpoint": {
+                    "toLevel": "2"
                 }
             }
         }

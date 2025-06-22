@@ -1,8 +1,6 @@
 import { NotDynamicObj, PWD, PWS } from "./pw-objects";
 import { $, MDmatrix, resizeDebounce } from "./util";
 
-const colEl = $("#ui > #studio .bottom #col");
-
 interface PWopts {
     gx: number;
     gy: number;
@@ -38,7 +36,6 @@ export class PW {
     blockSizeHalf: number;
     size: number;
 
-    static PartitionSize: number = 8;
     clockLoopId: number = NaN;
     readonly simSpeed: number;
     private dynamicObjs: PWD[] = [];
@@ -97,14 +94,18 @@ export class PW {
     }
 
     private recentCollisions: Record<number, PWS> = {}
+    private endForNow = false;
 
     private findStaticCollisions(moving: PWD): number {
+        if(this.endForNow) return 0;
+
         var collisionAmnt = 0;
         const x = Math.floor(moving.x / this.blockSize);
         const maxX = Math.floor(moving.maxX / this.blockSize);
         const y = Math.floor(moving.y / this.blockSize);
         const maxY = Math.floor(moving.maxY / this.blockSize);
         
+        if(this.endForNow) this.staticGrid.clear();
         const topLeft = this.staticGrid.get(x, y);
         const topRight = this.staticGrid.get(maxX, y);
         const bottomLeft = this.staticGrid.get(x, maxY);
@@ -115,7 +116,7 @@ export class PW {
             this.recentCollisions[id].hasCollidedRecently = false;
         }
 
-        loop: for(const col of collision) 
+        loop: for(const col of collision) {
             if(col) {
                 if(col.hasCollisionLeaveEvents) {
                     col.hasCollidedRecently = true;
@@ -124,12 +125,15 @@ export class PW {
                 
                 if(col.testAABB(moving)) {
                     collisionAmnt++;
-                    for(const f of col.onCollide) if(f(col)) continue loop;
+                    for(const f of col.onCollide) {
+                        if(f(col)) continue loop;
+                    }
                     
                     this.separate(moving, col);
                 }
             }
-
+        }
+        
         for(const id in this.recentCollisions) {
             const block = this.recentCollisions[id];
             if(!block.hasCollidedRecently) {
@@ -153,8 +157,8 @@ export class PW {
             
             const playerCollisionAmnt = this.findStaticCollisions(moving);
 
-            if(moving.isPlayer) colEl.textContent = playerCollisionAmnt.toString();
-
+            //if(moving.isPlayer) colEl.textContent = playerCollisionAmnt.toString();
+            
             if(moving.sprite) moving.updateSprite();
             moving.vx = 0;
             moving.vy = 0;
@@ -182,8 +186,15 @@ export class PW {
         this.staticGrid.set(x, y, obj);
     }
 
-    removeStatic(x: number, y: number) {
-        const got = this.staticGrid.get(x, y);
-        got
+    clear() {
+        this.endForNow = true;
+
+        this.staticGrid.clear()
+        .then(() => {
+            this.endForNow = false;
+
+            for(const id in this.recentCollisions)
+                delete this.recentCollisions[id];
+        });
     }
 }

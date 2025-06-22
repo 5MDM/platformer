@@ -68,7 +68,7 @@ export function $$
   return el;
 }
 
-export function getRandom(array: any[]): any {
+export function getRandom<T>(array: T[]): T {
   return array[Math.floor(Math.random() * array.length)];
 }
 
@@ -302,12 +302,18 @@ export class MDmatrix<T> {
     }
   }
 
-  clear() {
-    for(const y in this.matrix) {
-      const yo = this.matrix[y];
+  clear(): Promise<void> {
+    return new Promise(res => {
+      for(const y in this.matrix) {
+        const yo = this.matrix[y];
 
-      for(const x in yo) delete yo[x];
-    }
+        for(const x in yo) {
+          delete yo[x];
+        }
+      }
+
+      res();
+    });
   }
 }
 
@@ -328,10 +334,6 @@ export function snapToGrid(n: number, gridPos: number, blockSize: number): numbe
   const offset = gridPos % blockSize;
     
   return floorToMultiples(n - offset, blockSize) + offset;
-}
-
-export function removeContainerChildren(c: Container) {
-  while(c.children[0]) c.removeChild(c.children[0]);
 }
 
 export class ToggleState {

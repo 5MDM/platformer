@@ -26,17 +26,20 @@ async function loadAnimations() {
     player.setSprite("stand-ud-up", new Sprite(spritesheet.textures["player-up-stand.png"]));
 }
 
-export async function startGame(sh: MDshell) {    
+export async function startGame(sh: MDshell) { 
     await loadAnimations();
     
     player.displayTo(mdshell.game.groups.world);
 
     sh.setCurrentLevel("1");
+    
     player.teleport(sh.game.spawnX, sh.game.spawnY);
     
     pw.startClock();
+    
     startControlLoop();
-    startStudioLoop();
+    
+    startStudioLoop(); 
 }
 
 if(isMobile.any) {

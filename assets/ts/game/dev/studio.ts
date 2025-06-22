@@ -111,8 +111,6 @@ function placeHover(x: number, y: number) {
     setSelectedSpritePos(fx, fy);
 }
 
-export var selectedBlockIsPassable = false;
-
 const bgRow = $("#ui > #editor > #bg-row") as HTMLDivElement;
 export const editorEl = $("#ui > #editor") as HTMLElement;
 
@@ -143,9 +141,9 @@ export function initStudio(images: HTMLImageElement[]) {
 
     for(const image of images) {
         const name = image.getAttribute("data-name")!;
-        const {isPassable} = mdshell.getBlockInfo(name);
+        const {type} = mdshell.getBlockInfo(name);
 
-        if(isPassable) bgImages.push(image);
+        if(type != "fg") bgImages.push(image);
         else fgImages.push(image);
     }
 
@@ -154,7 +152,6 @@ export function initStudio(images: HTMLImageElement[]) {
 
         selectedBlock = el.getAttribute("data-name")!;
         el.classList.add("toggled");
-        selectedBlockIsPassable = false;
 
         selectedSprite.texture = mdshell.getTexture(selectedBlock!);
         selectedSprite.tileScale = {
@@ -171,8 +168,6 @@ export function initStudio(images: HTMLImageElement[]) {
         
         selectedBlock = el.getAttribute("data-name")!;
         el.classList.add("toggled");
-
-        selectedBlockIsPassable = true;
 
         selectedSprite.texture = mdshell.getTexture(selectedBlock!);
         selectedSprite.tileScale = {

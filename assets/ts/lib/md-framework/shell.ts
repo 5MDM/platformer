@@ -2,8 +2,8 @@ import { Application, Assets, BindableTexture, Container, Sprite, Spritesheet, S
 import { GMOutput, Keymap } from "../keymap";
 import { PWS } from "../pw-objects";
 import { PW } from "../physics";
-import { degToRad } from "../util";
-import { MDgame, MDgameType } from "./game";
+import { degToRad, getRandom } from "../util";
+import { MDgame, MDgameGridType, MDgameType } from "./game";
 import { parseBlockComponents } from "./components";
 
 export interface XYWH {
@@ -18,8 +18,8 @@ export interface LevelJSONoutput extends GMOutput {
 }
 
 export interface BlockInfo {
-    isPassable?: boolean;
     name: string;
+    type?: MDgameGridType;
     texture: string;
     components?: Record<string, Record<string, any>>;
 }
@@ -45,10 +45,22 @@ export interface BgObj extends XYWH {
     sprite: Container;
     type: string;
     rotation: number;
+    overlay: boolean;
 }
 
 export interface FgObj extends BgObj {
     pwb: PWS;
+}
+
+// name: the id of the block
+// display: the displayed name of a block
+// texture: texture url
+// recode needed because the code sucks
+
+export interface BlockCreationOpts extends XYWH {
+    name: string;
+    rotation?: number;
+    overlay?: boolean;
 }
 
 export class MDshell {
@@ -78,8 +90,8 @@ export class MDshell {
         else console.error(msg);
     }
 
-    getBlockInfo(texture: string): BlockInfo {
-        return this.blocks[texture];
+    getBlockInfo(name: string): BlockInfo {
+        return this.blocks[name];
     }
     
     constructor(o: MDshellOpts) {
@@ -200,80 +212,113 @@ export class MDshell {
         return s;
     }
 
-    createBlock
-    (x: number, y: number, w: number, h: number, name: string, rotation: number = 0): {isPassable: boolean, id: number} {
-        const t = this.getTexture(name);
-        const s = this.createMergedSprite(x * this.blockSize, y * this.blockSize, w, h, t, rotation);
-        const type =  this.blocks[name].texture;
-        const isPassable = this.blocks[name].isPassable;
+    createBlock(o: BlockCreationOpts): {isPassable: boolean, id: number} {
+        o.overlay ??= false;
+        o.rotation ??= 0;
 
-        if(isPassable) {
-            this.game.groups.bg.addChild(s);
+        const info = this.getBlockInfo(o.name);
+        info.type ??= "fg";
 
-            const id = this.game.getNewId();
-            this.game.bgObjects[id] = {
-                sprite: s,
-                x,
-                y,
-                w,
-                h,
-                type,
-                rotation,
-            };
+        const s = this.createMergedSprite(
+            o.x * this.blockSize,
+            o.y * this.blockSize,
+            o.w, 
+            o.h, 
+            this.getTexture(o.name), 
+            o.rotation,
+        );
 
-            Keymap.IterateGMrect(x, y, w, h, (x, y) => {
-                this.game.grids.bg.set(x, y, {
-                    name,
-                    id,
-                    type,
-                });
-            });
+        this.game.groups[info.type].addChild(s);
 
-            return {isPassable, id};
-        } else {
-            this.game.groups.fg.addChild(s);
-
+        if(info.type == "fg") {
             const pws = 
-            new PWS(x * this.blockSize, y * this.blockSize, w * this.blockSize, h * this.blockSize, type);
+            new PWS(o.x * this.blockSize, o.y * this.blockSize, o.w * this.blockSize, o.h * this.blockSize, info.texture);
 
-            this.game.pwObjects[pws.id] = {
-                x,
-                y,
-                w,
-                h,
-                type,
+            this.game.blocks.fg[pws.id] = {
+                x: o.x,
+                y: o.y,
+                w: o.w,
+                h: o.h,
+                type: info.texture,
                 sprite: pws.sprite!,
-                rotation: rotation,
+                rotation: o.rotation,
                 pwb: pws,
+                overlay: false,
             };
 
             pws.sprite = s;
 
-            Keymap.IterateGMrect(x, y, w, h, (x, y) => {
+            Keymap.IterateGMrect(o.x, o.y, o.w, o.h, (x, y) => {
                 this.game.grids.fg.set(x, y, {
-                    name,
+                    name: o.name,
                     id: pws.id,
-                    type: this.blocks[name].texture,
+                    type: this.blocks[o.name].texture,
                 });
 
                 this.pw.addStatic(x, y, pws);
             });
 
-            if(this.blocks[name].components) {
-                parseBlockComponents(this, this.game, this.blocks[name].components, pws.id);
+            const components = this.blocks[o.name].components || {};
+
+            if(Object.keys(components).length != 0) {
+                parseBlockComponents(this, this.game, this.blocks[o.name].components!, pws.id);
             }
 
             return {isPassable: false, id: pws.id};
+        } else if(info.type == "bg") {
+            const id = this.game.getNewId();
+            this.game.blocks.bg[id] = {
+                sprite: s,
+                x: o.x,
+                y: o.y,
+                w: o.w,
+                h: o.h,
+                type: info.texture,
+                rotation: o.rotation,
+                overlay: false,
+            };
+
+            Keymap.IterateGMrect(o.x, o.y, o.w, o.h, (x, y) => {
+                this.game.grids.bg.set(x, y, {
+                    name: o.name,
+                    id,
+                    type: info.texture,
+                });
+            });
+
+            return {isPassable: true, id};
+        } else {
+            const id = this.game.getNewId();
+            this.game.blocks.overlay[id] = {
+                sprite: s,
+                x: o.x,
+                y: o.y,
+                w: o.w,
+                h: o.h,
+                type: info.texture,
+                rotation: o.rotation,
+                overlay: true,
+            };
+
+            Keymap.IterateGMrect(o.x, o.y, o.w, o.h, (x, y) => {
+                this.game.grids.bg.set(x, y, {
+                    name: o.name,
+                    id,
+                    type: info.texture,
+                });
+            });
+
+            return {isPassable: true, id};
         }
     }
 
     private registerBlock(name: string, block: BlockInfo) {
         var hasComponents = false;
-        block.isPassable ??= false;
+        block.type ??= "fg";
 
         if(block.components) {
             hasComponents = true;
-            if(block.isPassable) return MDshell.Err(
+            if(block.type != "fg") return MDshell.Err(
                 `block "${name}" has a component while being passive`
             );
         }
@@ -284,12 +329,19 @@ export class MDshell {
 
         if(hasComponents) {
             this.levelGenerator.key(block.texture, (x, y, w, h, rotation) => {
-                const output = this.createBlock(x, y, w, h, block.texture, degToRad(rotation)); 
-                parseBlockComponents(this, this.game, block.components!, output.id);
+                const output = this.createBlock({
+                    x, y, w, h,
+                    name: block.texture,
+                    rotation: degToRad(rotation),
+                });
             });
         } else {
             this.levelGenerator.key(block.texture, (x, y, w, h, rotation) => {
-                this.createBlock(x, y, w, h, block.texture, degToRad(rotation)); 
+                const output = this.createBlock({
+                    x, y, w, h,
+                    name: block.texture,
+                    rotation: degToRad(rotation),
+                });
             });
         }
     }
@@ -322,33 +374,35 @@ export class MDshell {
     }
 
     setCurrentLevel(name: string) {
-        const arr: LevelJSONoutput[] = this.levels[name];
+        const arr: LevelJSONoutput[] | undefined = this.levels[name];
+        if(!arr) return MDshell.Err(`Couldn't find level "${name}"`);
 
         this.levelGenerator.runRaw(arr);
     }
 
     destroyCurrentLevel() {
-        for(const i in this.game.bgObjects) {
-            const obj = this.game.bgObjects[i];
+        this.game.clearAndDestroyItems();
+        this.pw.clear();
 
-            obj.sprite?.destroy();
-            delete this.game.bgObjects[i];
-        }
-
-        for(const i in this.game.pwObjects) {
-            const obj = this.game.pwObjects[i];
-
-            obj.sprite?.destroy();
-            obj.pwb.destroy();
-            delete this.game.bgObjects[i];
-        }
-
-        //this.game.groups.static.removeChildren();
         this.game.groups.bg.removeChildren();
         this.game.groups.fg.removeChildren();
+    }
 
-        this.game.grids.fg.clear();
-        this.game.grids.bg.clear();
+    devCreateRandomCreate(ix: number, iy: number, n: number) {
+        const nameArr = Object.keys(this.blocks);
+
+        for(let yy = -n; yy != n; yy++) {
+            for(let xx = -n; xx != n; xx++) {
+                const randomBlockName = getRandom<string>(nameArr);
+                this.createBlock({
+                    x: xx + ix,
+                    y: yy + iy,
+                    w: 1,
+                    h: 1,
+                    name: randomBlockName
+                });
+            }
+        }
     }
 }
 

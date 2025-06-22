@@ -7,7 +7,7 @@ import { gameScale } from "./zoom";
 import { blockRotation } from "./rotate";
 
 export function enableRowEditMode() {
-    //editorDrag.onDrag = placeRow;
+    editorDrag.onDrag = editorPan;
     editorDrag.touchEl.addEventListener("pointerdown", down);
 }
 
@@ -206,7 +206,10 @@ function finalize() {
     const y = 
     floorToMultiples(yy - mdshell.game.container.y + gameScale.ny + player.halfH, blockSize) / blockSize;
 
-    const s = mdshell.createBlock(x, y, w, h, selectedBlock!, degToRad(blockRotation));
+    const s = mdshell.createBlock({
+        x, y, w, h, name: selectedBlock!, 
+        rotation: degToRad(blockRotation),
+    });
     
     selectedSprite.width = blockSize;
     selectedSprite.height = blockSize;

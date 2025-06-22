@@ -14,6 +14,7 @@
             "items": {
                 "type": "object",
                 "required": ["name", "texture"],
+                "additionalProperties": false,
                 "properties": {
                     "name": {
                         "type": "string"
@@ -21,18 +22,19 @@
                     "texture": {
                         "type": "string"
                     },
-                    "isPassable": {
-                        "type": "boolean"
-                    },
                     "components": {
                         "type": "object",
                         "additionalProperties": {
                             "type": "object"
                         }
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": ["fg", "bg", "overlay"],
+                        "default": "fg"
                     }
                 }
-            },
-            "maxItems": 32766
+            }
         },
         "version": {
             "type": "array",

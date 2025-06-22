@@ -3,7 +3,7 @@ import { $, attatchToggle, round, stopAnimLoop } from "../../lib/util";
 import { mdshell } from "../../constants";
 import { Graph } from "../../lib/graph";
 import { player } from "../../constants";
-import { playerCollisionAmnt } from "../../lib/physics";
+import { studioState } from "./studio";
 
 export function startStats() {
     setInterval(loop, 1000 / 10);
@@ -12,10 +12,13 @@ export function startStats() {
 
 function loop() {
     fps = 1000 / RDtime;
+
+    if(!studioState.isToggled) return;
     px.textContent = round(player.x, 10).toString();
     py.textContent = round(player.y, 10).toString();
-    col.textContent = playerCollisionAmnt.toString();
     fpsEl.textContent = Math.round(fps).toString();
+
+    fpsLoop();
 }
 
 const expectedFPS = 1000 / 60;
@@ -70,6 +73,5 @@ export const scale = 1;
 export const studio = $("#ui > #studio") as HTMLDivElement;
 const px = $("#ui > #studio .bottom #px");
 const py = $("#ui > #studio .bottom #py");
-const col = $("#ui > #studio .bottom #col");
 const fpsEl = $("#ui > #studio .bottom #fps");
 

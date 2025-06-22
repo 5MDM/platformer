@@ -2,6 +2,7 @@ import { mdshell } from "../../constants";
 import { ElList } from "../../lib/el";
 import { MDshell } from "../../lib/md-framework/shell";
 import { $, $$, ToggleState } from "../../lib/util";
+import { blockEditState } from "./edit";
 import { devRotate } from "./rotate";
 import { rowEditState } from "./row-edit";
 import { zoomState } from "./zoom";
@@ -33,13 +34,18 @@ const modeArr: Elt[] = [
     {
         name: "rotate-right",
         src: "rotate-right.png",
-        f: () => devRotate(90),
+        f() {devRotate(90)},
     },
     {
         name: "rotate-left",
         src: "rotate-left.png",
-        f: () => devRotate(-90),
+        f() {devRotate(-90)},
     },
+    {
+        name: "edit",
+        src: "interact-btn.png",
+        state: blockEditState,
+    }
 ];
 
 const list = new ElList<Elt>("selected", async opts => {

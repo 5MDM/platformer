@@ -1,5 +1,5 @@
 import { Container, Sprite } from "pixi.js";
-import { $, $$, degToRad, floorToMultiples, MDmatrix, radToDeg, removeContainerChildren, ToggleList } from "../../lib/util";
+import { $, $$, degToRad, floorToMultiples, MDmatrix, radToDeg, ToggleList } from "../../lib/util";
 import { PWS } from "../../lib/pw-objects";
 import { blockSize, blockSizeHalf, maxLevelSize, player, pw } from "../../constants";
 import { editorDrag, selectedBlock, selectedSprite } from "./studio";
@@ -11,6 +11,7 @@ import { LevelJSONoutput } from "../../lib/md-framework/shell";
 
 var hasEdited = false;
 
+const spriteArr: Sprite[] = [];
 const editedBlocks: {[id: number]: PWS} = {};
 const editorC = new Container();
 editorC.zIndex = 1;
@@ -49,7 +50,7 @@ export function placeBlock(rx: number, ry: number, x: number, y: number) {
     const map = blockRecord[blockId];
     map.set(fx, fy, true);
 
-    editorC.addChild(new Sprite({
+    const s = new Sprite({
         x: fx * blockSize + blockSizeHalf,
         y: fy * blockSize + blockSizeHalf,
         width: blockSize,
@@ -57,14 +58,18 @@ export function placeBlock(rx: number, ry: number, x: number, y: number) {
         texture: selectedSprite.texture,
         pivot: selectedSprite.texture.width/2,
         rotation: rotationRad,
-    }));
+    });
+
+    spriteArr.push(s);
+    editorC.addChild(s);
 }
 
 export function finalizeEdits() {
     if(!hasEdited) return;
     hasEdited = false;
 
-    removeContainerChildren(editorC);
+    for(const s of spriteArr) s.destroy();
+    while(spriteArr.length != 0) spriteArr.pop();
 
     for(const blockId in blockRecord) {
         const [blockName, rotationDeg] = blockId.split(",");
@@ -73,7 +78,9 @@ export function finalizeEdits() {
         const boxes: GMOutput[] = Keymap.GMBool(blockRecord[blockId].matrix, selectedBlock!);
         
         for(const {x, y, w, h} of boxes) {
-            mdshell.createBlock(x, y, w, h, blockName, rotationRad);
+            mdshell.createBlock({
+                x, y, w, h, name: blockName, rotation: rotationRad,
+            });
         }
 
         delete blockRecord[blockId];
@@ -82,21 +89,7 @@ export function finalizeEdits() {
 
 
 export function copyLevel() {
-    const arr: LevelJSONoutput[] = [];
-
-    for(const id in mdshell.game.pwObjects) {
-        const {x, y, w, h, rotation, type} = mdshell.game.pwObjects[id];
-        const rot = radToDeg(rotation);
-
-        arr.push({x, y, w, h, rotation: rot, type});
-    }
-
-    for(const id in mdshell.game.bgObjects) {
-        const {x, y, w, h, rotation, type} = mdshell.game.bgObjects[id];
-        const rot = radToDeg(rotation);
-
-        arr.push({x, y, w, h, rotation: rot, type});
-    }
+    const arr: LevelJSONoutput[] =  mdshell.game.getBlocksAsArray();
 
     arr.push({
         x: 64,

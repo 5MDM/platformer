@@ -1,3 +1,4 @@
+import { disableControls } from "../../game/controls";
 import { MDgame } from "./game";
 import { touchingBlocks } from "./interact";
 import { FgObj, MDshell } from "./shell";
@@ -6,6 +7,11 @@ import { Sprite } from "pixi.js";
 export interface BlockComponent {
     door?: DoorComponent;
     interact?: InteractComponent;
+    doorpoint?: DoorpointComponent;
+}
+
+interface DoorpointComponent {
+    toLevel: string;
 }
 
 interface DoorComponent {
@@ -17,11 +23,25 @@ export interface InteractComponent {
 }
 
 export function parseBlockComponents(mdshell: MDshell, game: MDgame, components: BlockComponent, id: number) {
-    const fgObj = game.pwObjects[id];
+    const fgObj = game.blocks.fg[id];
 
     if(components.door) parseDoor(mdshell, game, components, fgObj);
 
     if(components.interact) parseInteract(mdshell, game, components, fgObj);
+
+    if(components.doorpoint) parseDoorpoint(mdshell, components, fgObj);
+}
+
+function parseDoorpoint(mdshell: MDshell, components: BlockComponent, {pwb}: FgObj) {
+    var hasCollided = false;
+
+    pwb.onCollide.push(() => {
+        if(hasCollided) return;
+        hasCollided = true;
+        
+        mdshell.destroyCurrentLevel();
+        mdshell.setCurrentLevel(components.doorpoint!.toLevel);
+    });
 }
 
 function parseDoor(mdshell: MDshell, game: MDgame, components: BlockComponent, {pwb}: FgObj) {

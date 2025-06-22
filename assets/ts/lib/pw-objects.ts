@@ -118,6 +118,7 @@ export class PWB {
     }
 
     destroy() {
+        this.sprite?.destroy();
         this.sprite = undefined;
         this.x = 0;
         this.y = 0;
