@@ -1,5 +1,5 @@
 import { $, degToRad } from "../../lib/util";
-import { selectedBlock, selectedSprite } from "./studio";
+import { editorTools } from "./studio";
 
 
 export var blockRotation = 0;
@@ -14,6 +14,6 @@ export function devRotate(deg: number) {
         for(const el of div.getElementsByTagName("img"))
             el.style.rotate = `${blockRotation}deg`;
 
-    selectedSprite.rotation = degToRad(blockRotation);
+    editorTools.devSprite.rotation = degToRad(blockRotation);
 
 }

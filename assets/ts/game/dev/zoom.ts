@@ -1,9 +1,9 @@
 import { mdshell, player } from "../../constants";
 import { MDslider } from "../../lib/el";
+import { GameScaleObj } from "../../lib/md-framework/editor-tools";
 import { $, ToggleState } from "../../lib/util";
-import { app } from "../../constants";
 
-export const gameScale = {
+export const gameScale: GameScaleObj = {
     x: 1,
     y: 1,
     nx: 0,

@@ -1,10 +1,11 @@
-import { $ } from "../lib/util";
+import { $, ToggleState } from "../lib/util";
 
 import { deltaTime } from "./dev/stats";
 import { Joystick } from "../lib/joystick";
-import { mdshell, player } from "../constants";
+import { player } from "../constants";
 import { playerInteract } from "../lib/md-framework/interact";
 import { isMobile } from "pixi.js";
+import { areControlsEnabled } from "./dev/studio";
 
 const speed = 5;
 var isMovingLeft = false;
@@ -30,23 +31,15 @@ addEventListener("keyup", e => {
     }
 });
 
-var areControlsEnabled = true;
-export function disableControls() {
-    areControlsEnabled = false;
-}
-
-export function enableControls() {
-    areControlsEnabled = true;
-}
-
 var lastMoveUDwasUp = false;
+
+const mspeed = 0.1;
 
 export function startControlLoop() {
     var isMoving = false;
 
     function loop() {
         if(!areControlsEnabled) return requestAnimationFrame(loop);
-        //player.container.scale.x = 1;
         isMoving = false;
 
         const calcSpeed = (speed * deltaTime);
@@ -54,28 +47,28 @@ export function startControlLoop() {
         if(isMovingLeft) {
             player.vx -= calcSpeed;
             isMoving = true;
-            player.playAnimation("walk-l", 0.08);
+            player.playAnimation("walk-l", mspeed);
             lastMoveUDwasUp = false;
         }
 
         if(isMovingRight) {
             player.vx += calcSpeed;
             isMoving = true;
-            player.playAnimation("walk-r", 0.08);
+            player.playAnimation("walk-r", mspeed);
             lastMoveUDwasUp = false;
         }
 
         if(isJumping) {
             player.vy -= calcSpeed;
             isMoving = true;
-            player.playAnimation("walk-ud-up", 0.08);
+            player.playAnimation("walk-ud-up", mspeed);
             lastMoveUDwasUp = true;
         }
 
         if(isGoingDown) {
             player.vy += calcSpeed;
             isMoving = true;
-            player.playAnimation("walk-ud-down", 0.08);
+            player.playAnimation("walk-ud-down", mspeed);
             lastMoveUDwasUp = false;
         }
 
@@ -86,8 +79,8 @@ export function startControlLoop() {
 
         if(player.vx != 0 && player.vy != 0) {
             // Math.sqrt(2) is the actual thing, not 1.3
-            player.vx = player.vx / 1.3;
-            player.vy = player.vy / 1.3;
+            player.vx = Math.ceil(player.vx / 1.4);
+            player.vy = Math.ceil(player.vy / 1.4);
         }
 
         requestAnimationFrame(loop);

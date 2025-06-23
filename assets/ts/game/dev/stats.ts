@@ -17,8 +17,6 @@ function loop() {
     px.textContent = round(player.x, 10).toString();
     py.textContent = round(player.y, 10).toString();
     fpsEl.textContent = Math.round(fps).toString();
-
-    fpsLoop();
 }
 
 const expectedFPS = 1000 / 60;

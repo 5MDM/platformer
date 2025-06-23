@@ -1,8 +1,8 @@
 import { startGame } from "./game/main";
 import { c } from "./canvas";
-import { initStudio } from "./game/dev/studio";
 import { app, mdshell, pw } from "./constants";
 import { initLevels } from "./game/levels";
+import { editorTools } from "./game/dev/studio";
 
 export const mainPromises: Promise<any>[] = [];
 export function addMainPromise(...pr: Promise<any>[]) {
@@ -43,7 +43,7 @@ app.init({
 
         mdshell.getBlocksAsImages()
         .then(async images => {
-            initStudio(images);
+            editorTools.init(images);
             startGame(mdshell);
         });
     });

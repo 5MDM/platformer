@@ -193,8 +193,9 @@ export class PW {
         .then(() => {
             this.endForNow = false;
 
-            for(const id in this.recentCollisions)
+            for(const id in this.recentCollisions) {
                 delete this.recentCollisions[id];
+            }
         });
     }
 }

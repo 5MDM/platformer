@@ -81,6 +81,9 @@ export class MDgame {
         this.grids.bg.clear();
         this.grids.fg.clear();
         this.grids.overlay.clear();
+
+        this.endDialogue();
+        
     }
 
     iterateFGblocks(f: (block: FgObj, id: string) => void) {

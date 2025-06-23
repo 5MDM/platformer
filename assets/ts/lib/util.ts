@@ -355,6 +355,14 @@ export class ToggleState {
     this.onEnable();
   }
 
+  disableIfOn() {
+    if(this.isToggled) this.toggle();
+  }
+
+  enableIfOff() {
+    if(!this.isToggled) this.toggle();
+  }
+
   private onEnable: () => void = () => undefined;
   private onDisable: () => void = () => undefined;
 }

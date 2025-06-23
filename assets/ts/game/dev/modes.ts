@@ -2,9 +2,8 @@ import { mdshell } from "../../constants";
 import { ElList } from "../../lib/el";
 import { MDshell } from "../../lib/md-framework/shell";
 import { $, $$, ToggleState } from "../../lib/util";
-import { blockEditState } from "./edit";
 import { devRotate } from "./rotate";
-import { rowEditState } from "./row-edit";
+import { editorTools } from "./studio";
 import { zoomState } from "./zoom";
 
 const imgs = import.meta.glob<{default: string}>("/assets/images/*.png");
@@ -24,7 +23,7 @@ const modeArr: Elt[] = [
     {
         name: "row-edit",
         src: "row-edit.png",
-        state: rowEditState,
+        state: editorTools.multiPlacementState,
     },
     {
         name: "zoom",
@@ -44,7 +43,7 @@ const modeArr: Elt[] = [
     {
         name: "edit",
         src: "interact-btn.png",
-        state: blockEditState,
+        //state: blockEditState,
     }
 ];
 

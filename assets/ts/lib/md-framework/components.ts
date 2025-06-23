@@ -1,4 +1,3 @@
-import { disableControls } from "../../game/controls";
 import { MDgame } from "./game";
 import { touchingBlocks } from "./interact";
 import { FgObj, MDshell } from "./shell";

@@ -7,7 +7,7 @@ interface DragControllerOpts {
     customDownElement?: HTMLElement;
 }
 
-// improvements made by DeltAndy
+// multitouch improvements made by DeltAndy
 
 export class DragController {
     downElement: HTMLElement;

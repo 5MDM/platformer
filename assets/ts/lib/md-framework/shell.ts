@@ -68,6 +68,7 @@ export class MDshell {
     levels: Record<string, LevelJSONoutput[]> = {};
 
     blockSize: number;
+    blockSizeHalf: number;
     app: Application;
     game: MDgame;
     pw: PW;
@@ -97,6 +98,7 @@ export class MDshell {
     constructor(o: MDshellOpts) {
         this.app = o.app;
         this.blockSize = o.blockSize;
+        this.blockSizeHalf = this.blockSize / 2;
         this.imageBlobSize = o.imageBlobSize;
 
         const ictx = this.internalCanvas.getContext("2d");
