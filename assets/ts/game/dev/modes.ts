@@ -2,13 +2,13 @@ import { mdshell } from "../../constants";
 import { ElList } from "../../lib/el";
 import { MDshell } from "../../lib/md-framework/shell";
 import { $, $$, ToggleState } from "../../lib/util";
-import { devRotate } from "./rotate";
+import { devRotate } from "./studio";
 import { editorTools } from "./studio";
 import { zoomState } from "./zoom";
 
 const imgs = import.meta.glob<{default: string}>("/assets/images/*.png");
 
-const modes: Record<string, ToggleState> = {};
+export const editorModes: Record<string, ToggleState> = {};
 const funcs: Record<string, () => void> = {};
 
 interface Elt {
@@ -21,7 +21,7 @@ interface Elt {
 
 const modeArr: Elt[] = [
     {
-        name: "row-edit",
+        name: "multiPlacement",
         src: "row-edit.png",
         state: editorTools.multiPlacementState,
     },
@@ -43,12 +43,12 @@ const modeArr: Elt[] = [
     {
         name: "edit",
         src: "interact-btn.png",
-        //state: blockEditState,
+        state: editorTools.editState,
     }
 ];
 
 const list = new ElList<Elt>("selected", async opts => {
-    if(opts.state) modes[opts.name] = opts.state;
+    if(opts.state) editorModes[opts.name] = opts.state;
 
     const el = $$("button", {
         attrs: {
@@ -78,7 +78,7 @@ const list = new ElList<Elt>("selected", async opts => {
     return el;
 }, (el: HTMLElement) => {
     const name: string = el.getAttribute("data-name")!;
-    const toggleState = modes[name];
+    const toggleState = editorModes[name];
     const f = funcs[name];
     if(toggleState) {
         toggleState.toggle();
@@ -94,4 +94,6 @@ const list = new ElList<Elt>("selected", async opts => {
     }
 });
 
-list.parse(modeArr, $("#ui > #editor #mode"));
+const editorModesEl = $("#ui > #editor #mode");
+
+list.parse(modeArr, editorModesEl);

@@ -1,5 +1,5 @@
 import { Texture, TilingSprite } from "pixi.js";
-import { $, $$, ToggleList, ToggleState } from "../../lib/util";
+import { $, $$, degToRad, ToggleList, ToggleState } from "../../lib/util";
 import { app, blockSizeHalf, maxLevelSize } from "../../constants";
 import { mdshell } from "../../constants";
 import { DragController } from "../../lib/drag";
@@ -7,7 +7,6 @@ import { c } from "../../canvas";
 import { blocksEl, blockSize, player, pw } from "../../constants";
 import { scale, startStats, studio } from "./stats";
 import { gameScale, setGameScale } from "./zoom";
-import { devRotate } from "./rotate";
 import { promptLevelInput } from "./level-inserter";
 import { EditorTools } from "../../lib/md-framework/editor-tools";
 import { LevelJSONoutput } from "../../lib/md-framework/shell";
@@ -80,10 +79,6 @@ addEventListener("keydown", e => {
     }
 });
 
-export function startStudioLoop() {
-    startStats();
-}
-
 export function copyLevel() {
     const arr: LevelJSONoutput[] = mdshell.game.getBlocksAsArray();
 
@@ -123,4 +118,20 @@ const catList = new ToggleList([
     row.style.display = "none";
 
     el.classList.remove("toggled");
-}, cat);
+}, cat);export var blockRotation = 0;
+
+const con = $("#ui > #editor").getElementsByClassName("block-row");
+
+export function devRotate(deg: number) {
+    blockRotation += deg;
+    if (blockRotation >= 360) blockRotation -= 360;
+    if (blockRotation < 0) blockRotation = 360 + blockRotation;
+
+    for (const div of con)
+        for (const el of div.getElementsByTagName("img"))
+            el.style.rotate = `${blockRotation}deg`;
+
+    editorTools.devSprite.rotation = degToRad(blockRotation);
+
+}
+

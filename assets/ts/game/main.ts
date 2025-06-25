@@ -1,6 +1,5 @@
 import { AnimatedSprite, isMobile, Sprite } from "pixi.js";
 import { startControlLoop } from "./controls";
-import { startStudioLoop } from "./dev/studio";
 import { player, pw } from "../constants";
 import "./audio";
 import "./dev/menu";
@@ -8,6 +7,7 @@ import "./dev/modes";
 import { MDshell } from "../lib/md-framework/shell";
 import { mdshell } from "../constants";
 import { $ } from "../lib/util";
+import { startStats } from "./dev/stats";
 
 async function loadAnimations() {
     const spritesheet = await mdshell.spritesheet;
@@ -38,7 +38,7 @@ export async function startGame(sh: MDshell) {
     
     startControlLoop();
     
-    startStudioLoop(); 
+    startStats(); 
 }
 
 if(isMobile.any) {

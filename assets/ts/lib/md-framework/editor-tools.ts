@@ -1,9 +1,9 @@
-import { Container, Sprite, TilingSprite } from "pixi.js";
+import { Container, Sprite, Texture, TilingSprite } from "pixi.js";
 import { DragController } from "../drag";
 import { $$, degToRad, floorToMultiples, MDmatrix, snapToGrid, ToggleList, ToggleState } from "../util";
 import { MDshell } from "./shell";
 import { player } from "../../constants";
-import { blockRotation } from "../../game/dev/rotate";
+import { blockRotation } from "../../game/dev/studio";
 import { PWS } from "../pw-objects";
 import { GMOutput, Keymap } from "../keymap";
 
@@ -59,6 +59,8 @@ export class EditorTools {
 
     moveStateImg: HTMLImageElement;
 
+    private spriteOutline: Sprite;
+
     constructor(o: EditorToolsOpts) {
         this.mdshell = o.shell;
         this.controlState = o.controlState;
@@ -89,10 +91,20 @@ export class EditorTools {
         this.mdshell.game.groups.static.addChild(this.editorC);
         this.moveStateImg = o.moveStateImg;
 
-        
         document.addEventListener("pointerlockchange", e => {
             if(!document.pointerLockElement) this.movementState.disableIfOn(); 
         });
+
+        this.spriteOutline = new Sprite({
+            width: this.mdshell.blockSize,
+            height: this.mdshell.blockSize,
+            texture: Texture.WHITE,
+            alpha: .3,
+            tint: 0xfff000,
+            visible: false,
+        });
+
+        this.mdshell.game.groups.view.addChild(this.spriteOutline);
     }
 
     multiPlacementHover(x: number, y: number) {
@@ -336,12 +348,6 @@ export class EditorTools {
         if(this.placementModeState.isToggled) this.dragController.onDrag = (rx, ry, x, y) => this.placeBlock(rx, ry, x, y);
     });
 
-    editState = new ToggleState(() => {
-        
-    }, () => {
-
-    });
-
     private onPlacementModeDown(e: PointerEvent) {
         if(this.levelEditorState.isToggled) this.placeRow(0, 0, e.x, e.y);
     }
@@ -480,12 +486,7 @@ export class EditorTools {
     
         this.movementState.disableIfOn();  
         this.mdshell.game.groups.view.removeChild(this.devSprite);
-    });
-
-    panState = new ToggleState(() => {
-        
-    }, () => {
-
+        this.editState.disableIfOn();
     });
 
     setKeybinds(keybinds: Record<string, EditorKeybinds>) {
@@ -500,7 +501,7 @@ export class EditorTools {
                 case "rotate left": this.onRotate(90); break;
                 case "rotate right": this.onRotate(-90); break;
                 case "movement": this.movementState.toggle(); break;
-                case "pan": this.panState.toggle(); break;
+                case "pan": this.placementModeState.disableIfOn(); this.switchToPanMode(); break;
             }
         });
     }
@@ -594,4 +595,66 @@ export class EditorTools {
     private setDevSpritePos(x: number, y: number) {
         this.devSprite.position.set(x + this.mdshell.blockSizeHalf, y + this.mdshell.blockSizeHalf);
     }
+
+    private changeSpriteOutlinePos(x: number, y: number) {
+        x *= this.gameScale.x;
+        y *= this.gameScale.y;
+    
+        const fx = 
+        snapToGrid(x - player.halfWS - this.mdshell.game.container.x * this.gameScale.x - this.mdshell.game.groups.world.x + player.x, 0, this.mdshell.blockSize);
+        const fy = 
+        snapToGrid(y - player.halfHS - this.mdshell.game.container.y * this.gameScale.y - this.mdshell.game.groups.world.y + player.y, 0, this.mdshell.blockSize);
+        
+        const cursorX = floorToMultiples(player.x + x - player.halfWS - this.mdshell.game.groups.world.x - this.mdshell.game.container.x * this.gameScale.x, this.mdshell.blockSize) / this.mdshell.blockSize;
+        const cursorY = floorToMultiples(player.y + y - player.halfHS - this.mdshell.game.groups.world.y - this.mdshell.game.container.y * this.gameScale.y, this.mdshell.blockSize) / this.mdshell.blockSize;
+
+
+        this.spriteOutline.x = fx;
+        this.spriteOutline.y = fy;
+
+        /*
+        const bool = this.mdshell.pw.staticGrid.isOOB(cursorX, cursorY);
+        this.dragController.CAD(bool);
+        if(bool) return;
+        */
+        //if(this.mdshell.game.editGrid.isOOB(fx, fy)) return this.dragController.CAD(true);
+        
+        const blockRef = this.mdshell.game.grids.fg.get(cursorX, cursorY);
+
+        if(!blockRef) {
+            this.dragController.changeGrab("not-allowed");
+        } else {
+            this.dragController.changeGrab("pointer")
+        }
+    }
+
+    private onEditStateClick(x: number, y: number) {
+        x *= this.gameScale.x;
+        y *= this.gameScale.y;
+    
+        const fx = floorToMultiples(player.x + x - player.halfWS - this.mdshell.game.container.x * this.gameScale.x - this.mdshell.game.groups.world.x, this.mdshell.blockSize) / this.mdshell.blockSize;
+        const fy = floorToMultiples(player.y + y - player.halfHS - this.mdshell.game.container.y * this.gameScale.y - this.mdshell.game.groups.world.y, this.mdshell.blockSize) / this.mdshell.blockSize;
+    
+        if(this.mdshell.game.editGrid.isOOB(fx, fy)) return this.dragController.CAD(true);
+
+        const blockRef = this.mdshell.game.grids.fg.get(fx, fy);
+        if(!blockRef) return this.dragController.CAD(true);
+
+        const block = this.mdshell.game.blocks.fg[blockRef.id];
+        
+        block.pwb.sprite!.tint = 0xfff000;
+    }
+
+    private editStateMoveF = (e: PointerEvent) => this.changeSpriteOutlinePos(e.pageX, e.pageY);
+    private editStateClickF = (e: MouseEvent) => this.onEditStateClick(e.x, e.y);
+
+    editState = new ToggleState(() => {
+        this.placementModeState.disableIfOn();
+        this.spriteOutline.visible = true;
+        this.dragController.downElement.addEventListener("pointermove", this.editStateMoveF);
+        this.dragController.downElement.addEventListener("click", this.editStateClickF)
+    }, () => {
+        this.spriteOutline.visible = false;
+        this.dragController.downElement.removeEventListener("pointermove", this.editStateMoveF);
+    });
 }
