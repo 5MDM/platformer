@@ -1,6 +1,7 @@
 import { Container, Texture } from "pixi.js";
 import { PWD } from "./pw-objects";
 import { PW } from "./physics";
+import { lerp } from "./util";
 
 export class Player extends PWD {
     halfWS: number;
@@ -29,7 +30,7 @@ export class Player extends PWD {
     }
 
     addX(x: number): void {
-        this.wc.x -= x;
+        //this.wc.x -= x;
         this.x += x;
         this.maxX += x;
         this.cx += x;
@@ -39,7 +40,7 @@ export class Player extends PWD {
         this.x = x;
         this.maxX = x + this.w;
         this.cx = x + this.halfW;
-        this.wc.x = this.halfWS - x;
+        //this.wc.x = this.halfWS - x;
     }
 
     teleport(x: number, y: number) {
@@ -48,7 +49,7 @@ export class Player extends PWD {
     }
 
     addY(y: number) {
-        this.wc.y -= y;
+        //this.wc.y -= y;
         this.y += y;
         this.maxY += y;
         this.cy += y;
@@ -58,9 +59,26 @@ export class Player extends PWD {
         this.y = y;
         this.maxY = y + this.h;
         this.cy = y + this.halfH;
-        this.wc.y = this.halfHS - y;
+        //this.wc.y = this.halfHS - y;
     }
 
-    updateSprite(): void {}
+    updateSprite(): void {
+        this.wc.x = this.halfWS - this.x;
+        this.wc.y = this.halfHS - this.y;
+    } 
+
+    setSpriteX(n: number) {
+        this.wc.x = this.halfWS - n;
+    }
+
+    setSpriteY(n: number) {
+        this.wc.y = this.halfHS - n;
+    }
+
+    lerpPos(to: {x: number, y: number}, lerpTime: number) {
+        this.wc.x += lerp(0, this.halfWS - to.x - this.wc.x, lerpTime);
+        this.wc.y += lerp(0, this.halfHS - to.y - this.wc.y, lerpTime);
+        //this.wc.x = lerp(this.wc.x, this.halfWS - to.x, lerpTime);
+    }
 }
 

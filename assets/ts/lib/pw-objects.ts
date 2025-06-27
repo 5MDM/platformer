@@ -1,4 +1,5 @@
 import { AnimatedSprite, Application, Container, Sprite, Texture, TilingSprite } from "pixi.js";
+import { lerp } from "./util";
 
 var id = 0;
 
@@ -226,9 +227,22 @@ export class PWD extends PWB {
         c.addChild(this.container);
     }
 
+    setSpriteX(n: number) {
+        this.container.x = n;
+    }
+
+    setSpriteY(n: number) {
+        this.container.y = n;
+    }
+
     updateSprite() {
         this.container.x = this.x;
         this.container.y = this.y;
+    }
+
+    lerpPos(to: {x: number, y: number}, lerpTime: number) {
+        this.container.x = lerp(this.container.x, to.x, lerpTime);
+        this.container.y = lerp(this.container.y, to.y, lerpTime);
     }
 }
 

@@ -376,3 +376,8 @@ export function rotatePoints90(x: number, y: number, deg: number): [number, numb
   throw new Error("util.ts: Invalid rotation");
   return [x, y];
 }
+
+// t must be between 0 and 1
+export function lerp(start: number, end: number, t: number) {
+  return start + t * (end - start);
+}

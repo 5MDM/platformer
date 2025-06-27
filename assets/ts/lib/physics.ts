@@ -1,5 +1,5 @@
-import { NotDynamicObj, PWD, PWS } from "./pw-objects";
-import { $, MDmatrix, resizeDebounce } from "./util";
+import { NotDynamicObj, PWB, PWD, PWS } from "./pw-objects";
+import { $, clamp, lerp, MDmatrix, resizeDebounce, round } from "./util";
 
 interface PWopts {
     gx: number;
@@ -31,18 +31,34 @@ addEventListener("resize", resizeDebounce(() => {
 
 addEventListener("orientationchange", () => setTimeout(() => resizeF(), 100));
 
+interface XY {
+    x: number;
+    y: number;
+}
+
+interface TweenFrame {
+    pwd: PWD;
+    to: XY;
+    currentTime: number;
+}
+
 export class PW {
     blockSize: number;
     blockSizeHalf: number;
     size: number;
 
-    clockLoopId: number = NaN;
+    private lastPhysicsUpdate: number = 0;
+    private physicsDeltaTime: number = 0;
+    private lastAnimUpdate: number = 0;
+
     readonly simSpeed: number;
     private dynamicObjs: PWD[] = [];
     staticGrid: MDmatrix<NotDynamicObj>;
 
     gx: number;
     gy: number;
+
+    private isLoopRunning = false;
 
     static OnResizeChange(f: (x: number, y: number) => void) {
         resizeFuncs.push(f);
@@ -56,15 +72,72 @@ export class PW {
         this.blockSize = opts.blockSize;
         this.blockSizeHalf = opts.blockSize / 2;
         this.size = opts.maxLevelSize;
+
+        this.setupAnimationLoop();
+        this.setupPhysicsLoop();
     }
 
-    private tick() {
-        this.findCollisions();
+    private tweenList: TweenFrame[] = [];
+
+    setupAnimationLoop() {
+        const self = this;
+
+        function animLoop() {
+            const timeNow = performance.now();
+            const deltaTime = timeNow - self.lastAnimUpdate;
+
+            if(!self.isLoopRunning) return requestAnimationFrame(animLoop);
+
+            const lerpTime = clamp(0, deltaTime / self.physicsDeltaTime, 1);
+
+            // console.log(round(lerpTime, 10))
+
+            for(const tweenFrameNumber in self.tweenList) self.parseTween(lerpTime, parseInt(tweenFrameNumber));
+
+            self.lastAnimUpdate = timeNow;
+
+            requestAnimationFrame(animLoop);
+        }
+
+        requestAnimationFrame(animLoop);
     }
 
+    private parseTween(lerpTime: number, n: number) {
+        const o = this.tweenList[n];
+
+        o.pwd.lerpPos(o.to, lerpTime);
+
+        o.currentTime += lerpTime;
+        if(o.currentTime >= 1)
+             this.tweenList.splice(n, 1);
+    }
+
+    onPhysicsTick: ((deltaTime: number) => void) = (deltaTime: number) => undefined;
+
+    setupPhysicsLoop() {
+        const self = this;
+
+        this.lastPhysicsUpdate = performance.now();
+
+        function physicsLoop() {
+            if(!self.isLoopRunning) return;
+
+            const timeNow = performance.now();
+            self.physicsDeltaTime = timeNow - self.lastPhysicsUpdate;
+            self.lastPhysicsUpdate = timeNow;
+
+            self.onPhysicsTick(self.physicsDeltaTime);
+
+            self.findCollisions();
+        }
+
+        setInterval(physicsLoop, this.simSpeed);
+    }
+
+    
     private updateObj(obj: PWD) {
-        obj.vx += this.gx;
-        obj.vy += this.gy;
+        //obj.vx += this.gx;
+        //obj.vy += this.gy;
 
         obj.addX(obj.vx);
         obj.addY(obj.vy);
@@ -77,7 +150,7 @@ export class PW {
         const calcX = Math.abs(dx) - moving.halfW - obj.halfW;
         const calcY = Math.abs(dy) - moving.halfH - obj.halfH;
         
-        if(Math.floor(calcX - calcY) == 0) return;
+        if(Math.floor(calcX - calcY) == 0) return {x: moving.x, y: moving.y};
         if(calcX < calcY) {
             if(dy < 0) {
                 moving.setY(obj.y - moving.h);
@@ -96,10 +169,9 @@ export class PW {
     private recentCollisions: Record<number, PWS> = {}
     private endForNow = false;
 
-    private findStaticCollisions(moving: PWD): number {
-        if(this.endForNow) return 0;
+    private findStaticCollisions(moving: PWD): void {
+        if(this.endForNow) return;
 
-        var collisionAmnt = 0;
         const x = Math.floor(moving.x / this.blockSize);
         const maxX = Math.floor(moving.maxX / this.blockSize);
         const y = Math.floor(moving.y / this.blockSize);
@@ -124,12 +196,11 @@ export class PW {
                 }
                 
                 if(col.testAABB(moving)) {
-                    collisionAmnt++;
                     for(const f of col.onCollide) {
                         if(f(col)) continue loop;
                     }
                     
-                    this.separate(moving, col);
+                    const resolution = this.separate(moving, col);
                 }
             }
         }
@@ -144,38 +215,37 @@ export class PW {
                 }
             }
         }
-
-        return collisionAmnt;
     }
 
     private findCollisions() {
         for(const moving of this.dynamicObjs) {
-            moving.vy = Math.min(this.blockSizeHalf, moving.vy);
-            moving.vx = Math.min(this.blockSizeHalf, moving.vx);
-
+            moving.vy = Math.min(this.blockSizeHalf, Math.abs(moving.vy)) * Math.sign(moving.vy);
+            moving.vx = Math.min(this.blockSizeHalf, Math.abs(moving.vx)) * Math.sign(moving.vx);
+            
             this.updateObj(moving);
-            
-            const playerCollisionAmnt = this.findStaticCollisions(moving);
 
-            //if(moving.isPlayer) colEl.textContent = playerCollisionAmnt.toString();
+            this.findStaticCollisions(moving);
             
-            if(moving.sprite) moving.updateSprite();
+            this.tweenList.push({
+                to: {x: moving.x, y: moving.y},
+                pwd: moving,
+                currentTime: 0,
+            });
+            
+            //if(moving.sprite) moving.updateSprite();
+
             moving.vx = 0;
             moving.vy = 0;
         }
     }
 
+    // called manually
     startClock() {
-        const self = this;
-        function loop() {
-            self.tick();
-        }
-
-        this.clockLoopId = setInterval(loop, this.simSpeed);
+        this.isLoopRunning = true;
     }
 
     stopClock() {
-        clearInterval(this.clockLoopId);
+        this.isLoopRunning = false;
     }
 
     addDynamic(obj: PWD) {

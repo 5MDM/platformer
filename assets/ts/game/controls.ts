@@ -1,13 +1,13 @@
-import { $, ToggleState } from "../lib/util";
+import { $, round, ToggleState } from "../lib/util";
 
 import { deltaTime } from "./dev/stats";
 import { Joystick } from "../lib/joystick";
-import { player } from "../constants";
+import { player, pw } from "../constants";
 import { playerInteract } from "../lib/md-framework/interact";
 import { isMobile } from "pixi.js";
 import { areControlsEnabled } from "./dev/studio";
 
-const speed = 5;
+const speed = 0.3;
 var isMovingLeft = false;
 var isMovingRight = false;
 var isJumping = false;
@@ -38,35 +38,39 @@ const mspeed = 0.1;
 export function startControlLoop() {
     var isMoving = false;
 
-    function loop() {
-        if(!areControlsEnabled) return requestAnimationFrame(loop);
+    function loop(d: number): void {
+        if(!areControlsEnabled) return;
         isMoving = false;
 
-        const calcSpeed = (speed * deltaTime);
+        var finalX = 0;
+        var finalY = 0;
+        const calcSpeed = (speed * d);
+
+        //console.log(round(calcSpeed, 1000))
 
         if(isMovingLeft) {
-            player.vx -= calcSpeed;
+            finalX -= calcSpeed;
             isMoving = true;
             player.playAnimation("walk-l", mspeed);
             lastMoveUDwasUp = false;
         }
 
         if(isMovingRight) {
-            player.vx += calcSpeed;
+            finalX += calcSpeed;
             isMoving = true;
             player.playAnimation("walk-r", mspeed);
             lastMoveUDwasUp = false;
         }
 
         if(isJumping) {
-            player.vy -= calcSpeed;
+            finalY -= calcSpeed;
             isMoving = true;
             player.playAnimation("walk-ud-up", mspeed);
             lastMoveUDwasUp = true;
         }
 
         if(isGoingDown) {
-            player.vy += calcSpeed;
+            finalY += calcSpeed;
             isMoving = true;
             player.playAnimation("walk-ud-down", mspeed);
             lastMoveUDwasUp = false;
@@ -77,16 +81,17 @@ export function startControlLoop() {
             else player.playSprite("stand-ud-down");
         }
 
-        if(player.vx != 0 && player.vy != 0) {
-            // Math.sqrt(2) is the actual thing, not 1.3
-            player.vx = Math.ceil(player.vx / 1.4);
-            player.vy = Math.ceil(player.vy / 1.4);
+        if(finalX != 0 && finalY != 0) {
+            // Math.sqrt(2) is the actual thing, not 1.4
+            finalX = Math.sign(finalX) * calcSpeed / 1.4;
+            finalY = Math.sign(finalY) * calcSpeed / 1.4;
         }
 
-        requestAnimationFrame(loop);
+        player.vx += finalX;
+        player.vy += finalY;
     }
 
-    loop();
+    pw.onPhysicsTick = loop;
 }
 
 const joystick = new Joystick({
