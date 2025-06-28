@@ -1,3 +1,4 @@
+import { MDshell } from "./md-framework/shell";
 import { NotDynamicObj, PWB, PWD, PWS } from "./pw-objects";
 import { $, clamp, lerp, MDmatrix, resizeDebounce, round } from "./util";
 
@@ -7,6 +8,7 @@ interface PWopts {
     simSpeed: number;
     blockSize: number;
     maxLevelSize: number;
+    smoothing: number;
 }
 
 export var playerCollisionAmnt = 0;
@@ -46,6 +48,7 @@ export class PW {
     blockSize: number;
     blockSizeHalf: number;
     size: number;
+    lerpTime: number;
 
     private lastPhysicsUpdate: number = 0;
     private physicsDeltaTime: number = 0;
@@ -58,6 +61,7 @@ export class PW {
     gx: number;
     gy: number;
 
+    private isUserDefinedLoopRunning = false;
     private isLoopRunning = false;
 
     static OnResizeChange(f: (x: number, y: number) => void) {
@@ -72,9 +76,18 @@ export class PW {
         this.blockSize = opts.blockSize;
         this.blockSizeHalf = opts.blockSize / 2;
         this.size = opts.maxLevelSize;
+        this.lerpTime = opts.smoothing;
 
         this.setupAnimationLoop();
         this.setupPhysicsLoop();
+
+        addEventListener("blur", () => {
+            this.isLoopRunning = false;
+        });
+
+        addEventListener("focus", () => {
+            if(this.isUserDefinedLoopRunning) this.isLoopRunning = true;
+        })
     }
 
     private tweenList: TweenFrame[] = [];
@@ -88,11 +101,19 @@ export class PW {
 
             if(!self.isLoopRunning) return requestAnimationFrame(animLoop);
 
-            const lerpTime = clamp(0, deltaTime / self.physicsDeltaTime, 1);
+            //var lerpTime = clamp(0, deltaTime / self.physicsDeltaTime, .1);
 
-            // console.log(round(lerpTime, 10))
+            if(self.tweenList.length >= 100) {
+                MDshell.Err("PW: too many objects in tweenlist: " + self.tweenList.length);
+                alert("Error: too many objects in the tweenlist. Report this error to me");
+                for(const tweenFrameNumber in self.tweenList) {
+                    self.parseTween(1, parseInt(tweenFrameNumber));
+                }
+            }
 
-            for(const tweenFrameNumber in self.tweenList) self.parseTween(lerpTime, parseInt(tweenFrameNumber));
+            for(const tweenFrameNumber in self.tweenList) {
+                self.parseTween(self.lerpTime, parseInt(tweenFrameNumber));
+            }
 
             self.lastAnimUpdate = timeNow;
 
@@ -109,7 +130,7 @@ export class PW {
 
         o.currentTime += lerpTime;
         if(o.currentTime >= 1)
-             this.tweenList.splice(n, 1);
+        this.tweenList.splice(n, 1);
     }
 
     onPhysicsTick: ((deltaTime: number) => void) = (deltaTime: number) => undefined;
@@ -120,11 +141,12 @@ export class PW {
         this.lastPhysicsUpdate = performance.now();
 
         function physicsLoop() {
-            if(!self.isLoopRunning) return;
 
             const timeNow = performance.now();
             self.physicsDeltaTime = timeNow - self.lastPhysicsUpdate;
             self.lastPhysicsUpdate = timeNow;
+
+            if(!self.isLoopRunning) return;
 
             self.onPhysicsTick(self.physicsDeltaTime);
 
@@ -242,10 +264,12 @@ export class PW {
     // called manually
     startClock() {
         this.isLoopRunning = true;
+        this.isUserDefinedLoopRunning = true;
     }
 
     stopClock() {
         this.isLoopRunning = false;
+        this.isUserDefinedLoopRunning = false;
     }
 
     addDynamic(obj: PWD) {
