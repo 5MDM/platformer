@@ -1,6 +1,6 @@
 import { Container, Texture } from "pixi.js";
-import { PWD } from "./pw-objects";
-import { PW } from "./physics";
+import { PWD } from "./physics/objects";
+import { PW } from "./physics/physics";
 import { lerp } from "./util";
 
 export class Player extends PWD {
@@ -75,10 +75,19 @@ export class Player extends PWD {
         this.wc.y = this.halfHS - n;
     }
 
-    lerpPos(to: {x: number, y: number}, lerpTime: number) {
-        this.wc.x += lerp(0, this.halfWS - to.x - this.wc.x, lerpTime);
-        this.wc.y += lerp(0, this.halfHS - to.y - this.wc.y, lerpTime);
-        //this.wc.x = lerp(this.wc.x, this.halfWS - to.x, lerpTime);
+    protected lerpX(x: number, time: number): number {
+        const val = lerp(0, this.halfWS - this.x + x - this.wc.x, time);
+
+        this.wc.x += val;
+
+        return val;
+    }
+
+    protected lerpY(y: number, time: number): number {
+        const val = lerp(0, this.halfHS - this.y + y - this.wc.y, time);
+        this.wc.y += val;
+
+        return val;
     }
 }
 

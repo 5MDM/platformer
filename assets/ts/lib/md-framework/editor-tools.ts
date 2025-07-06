@@ -4,7 +4,7 @@ import { $$, degToRad, floorToMultiples, MDmatrix, snapToGrid, ToggleList, Toggl
 import { MDshell } from "./shell";
 import { player } from "../../constants";
 import { blockRotation } from "../../game/dev/studio";
-import { PWS } from "../pw-objects";
+import { PWS } from "../physics/objects";
 import { GMOutput, Keymap } from "../keymap";
 
 type EditorKeybinds = 
@@ -642,7 +642,7 @@ export class EditorTools {
 
         const block = this.mdshell.game.blocks.fg[blockRef.id];
         
-        block.pwb.sprite!.tint = 0xfff000;
+        block.pwb
     }
 
     private editStateMoveF = (e: PointerEvent) => this.changeSpriteOutlinePos(e.pageX, e.pageY);

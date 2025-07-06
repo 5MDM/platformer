@@ -1,14 +1,16 @@
-import { AnimatedSprite, Application, Container, Sprite, Texture, TilingSprite } from "pixi.js";
-import { lerp } from "./util";
+import { Sprite, TilingSprite, Container, Texture, AnimatedSprite } from "pixi.js";
+import { lerp } from "../util";
+import { XY } from "./physics";
 
 var id = 0;
 
-export function getNewID(): number {return id++}
+export function getNewID(): number { return id++; }
 
 export class PWB {
     isPlayer = false;
     sprite?: Sprite | TilingSprite;
     id: number = 0;
+
     x: number;
     y: number;
     w: number;
@@ -28,8 +30,8 @@ export class PWB {
         this.y = y;
         this.maxY = y + this.h;
 
-        this.halfW = this.w/2;
-        this.halfH = this.h/2;
+        this.halfW = this.w / 2;
+        this.halfH = this.h / 2;
         this.cx = this.x + this.halfW;
         this.cy = this.y + this.halfH;
     }
@@ -51,19 +53,19 @@ export class PWB {
         //     ${this.maxX} > ${o.x}
         //     ${this.y} < ${o.maxY}
         //     ${this.maxY} > ${o.y}`);
-        return this.x < o.maxX 
-        && this.maxX > o.x
-        && this.y < o.maxY 
-        && this.maxY > o.y;
+        return this.x < o.maxX
+            && this.maxX > o.x
+            && this.y < o.maxY
+            && this.maxY > o.y;
     }
 
     private SMALL_VAL = -10;
 
     testSmallAABB(o: AnyObj) {
-        return this.x+this.SMALL_VAL < o.maxX 
-        && this.maxX-this.SMALL_VAL > o.x
-        && this.y+this.SMALL_VAL < o.maxY 
-        && this.maxY-this.SMALL_VAL > o.y;
+        return this.x + this.SMALL_VAL < o.maxX
+            && this.maxX - this.SMALL_VAL > o.x
+            && this.y + this.SMALL_VAL < o.maxY
+            && this.maxY - this.SMALL_VAL > o.y;
     }
 
     testAABBminX(o: AnyObj): boolean {
@@ -75,13 +77,13 @@ export class PWB {
     }
 
     testAABBX(o: AnyObj): boolean {
-        return this.x < o.maxX 
-        && this.maxX > o.x;
+        return this.x < o.maxX
+            && this.maxX > o.x;
     }
 
     testAABBY(o: AnyObj): boolean {
-        return this.y < o.maxY 
-        && this.maxY > o.y;
+        return this.y < o.maxY
+            && this.maxY > o.y;
     }
 
     addX(x: number) {
@@ -107,7 +109,7 @@ export class PWB {
 
     setTexture(t: Texture) {
         this.sprite = new Sprite({
-            position: {x: this.x, y: this.y},
+            position: { x: this.x, y: this.y },
             texture: t,
             width: this.w,
             height: this.h,
@@ -126,13 +128,13 @@ export class PWB {
         this.w = 1;
         this.h = 1;
         this.cx = .5;
-        this.cy =.5;
+        this.cy = .5;
         this.halfW = .5;
         this.halfH = .5;
     }
 }
 
-export class PWS extends PWB {    
+export class PWS extends PWB {
     type: string;
 
     constructor(x: number, y: number, w: number, h: number, type: string) {
@@ -148,31 +150,63 @@ export class PWS extends PWB {
     onCollide: ((pws: PWS) => boolean | void)[] = [];
 }
 
-// export class PWK extends PWB {
-//     id: number;
-
-//     constructor(x: number, y: number, w: number, h: number) {
-//         super(x, y, w, h);
-//         this.id = getNewID();
-
-
-//     }
-// }
+interface TweenStep {
+    x: number;
+    y: number;
+    completion: number;
+}
 
 export class PWD extends PWB {
     lastAnim?: string;
     lastSprite?: string;
     current: string = "";
     container: Container = new Container();
-    animations: {[index: string]: AnimatedSprite} = {};
-    sprites: {[index: string]: Sprite} = {};
+    animations: { [index: string]: AnimatedSprite; } = {};
+    sprites: { [index: string]: Sprite; } = {};
     vx = 0;
     vy = 0;
+
+    private tweenList: TweenStep[] = [];
 
     constructor(x: number, y: number, w: number, h: number) {
         super(x, y, w, h);
 
         this.id = getNewID();
+    }
+
+    addTween(x: number, y: number): void {
+        this.tweenList.push({
+            x,
+            y,
+            completion: 0,
+        });
+    }
+
+    tweenStep(n: number) {
+        for(const i in this.tweenList) {
+            const obj = this.tweenList[i];
+
+            obj.completion += n;
+            
+            this.lerpX(obj.x, n);
+            this.lerpY(obj.y, n);
+
+            if(obj.completion >= 1) this.tweenList.splice(Number(i), 1);
+        }
+    }
+
+    protected lerpX(x: number, time: number): number {
+        const val = lerp(0, x, time);
+        this.container.x += val;
+
+        return val;
+    }
+
+    protected lerpY(y: number, time: number): number {
+        const val = lerp(0, y, time);
+        this.container.y += val;
+
+        return val;
     }
 
     setAnimation(name: string, s: AnimatedSprite) {
@@ -188,15 +222,15 @@ export class PWD extends PWB {
     }
 
     private beforeImageChange(name: string) {
-        if(this.current == name) return;
+        if (this.current == name) return;
         this.current = name;
 
-        if(this.lastAnim) {
+        if (this.lastAnim) {
             this.animations[this.lastAnim].visible = false;
             this.animations[this.lastAnim].stop();
             this.lastAnim = undefined;
         }
-        if(this.lastSprite) {
+        if (this.lastSprite) {
             this.sprites[this.lastSprite].visible = false;
             this.lastSprite = undefined;
         }
@@ -240,9 +274,9 @@ export class PWD extends PWB {
         this.container.y = this.y;
     }
 
-    lerpPos(to: {x: number, y: number}, lerpTime: number) {
-        this.container.x = lerp(this.container.x, to.x, lerpTime);
-        this.container.y = lerp(this.container.y, to.y, lerpTime);
+    protected lerpPos(x: number, y: number, lerpTime: number) {
+        this.container.x += lerp(0, x, lerpTime);
+        this.container.y += lerp(0, y, lerpTime);
     }
 }
 

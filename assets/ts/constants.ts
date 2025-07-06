@@ -1,5 +1,5 @@
 import { Application, Container, SpritesheetData } from "pixi.js";
-import { PW } from "./lib/physics";
+import { PW } from "./lib/physics/physics";
 import { $, convertPathToObj, MDmatrix } from "./lib/util";
 import { Player } from "./lib/player";
 import { MDshell, ModInfo } from "./lib/md-framework/shell";
@@ -14,10 +14,10 @@ export const maxLevelSize = 256;
 export const pw = new PW({
     gx: 0,
     gy: 0,
-    simSpeed: 1000 / 60,
+    simSpeed: 1000 / 30,
     blockSize,
     maxLevelSize,
-    smoothing: 0.2,
+    smoothing: .5,
 });
 
 //export const staticContainer = new Container();

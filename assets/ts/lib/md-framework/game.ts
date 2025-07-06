@@ -17,8 +17,6 @@ export interface MDgameOpts {
 export type MDgameType = "td" | "side";
 export type MDgameGridType = "fg" | "bg" | "overlay";
 
-type AnyBlockObj = FgObj | BgObj;
-
 // world container -> view -> static -> bg and fg
 
 export class MDgame {

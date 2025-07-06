@@ -1,7 +1,7 @@
 import { Application, Assets, BindableTexture, Container, Sprite, Spritesheet, SpritesheetData, Texture, TilingSprite } from "pixi.js";
 import { GMOutput, Keymap } from "../keymap";
-import { PWS } from "../pw-objects";
-import { PW } from "../physics";
+import { PWS } from "../physics/objects";
+import { PW } from "../physics/physics";
 import { degToRad, getRandom } from "../util";
 import { MDgame, MDgameGridType, MDgameType } from "./game";
 import { parseBlockComponents } from "./components";
@@ -50,6 +50,7 @@ export interface BgObj extends XYWH {
 
 export interface FgObj extends BgObj {
     pwb: PWS;
+    
 }
 
 // name: the id of the block

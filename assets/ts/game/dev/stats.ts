@@ -10,6 +10,8 @@ export function startStats() {
     fpsLoop();
 }
 
+var fps = 1;
+
 function loop() {
     fps = 1000 / RDtime;
 
@@ -66,7 +68,7 @@ function disableGraph() {
     graphLoop.stop();
 }
 export var RDtime = 0;
-export var deltaTime = 0;var fps = 1;
+export var deltaTime = 0;
 export const scale = 1;
 export const studio = $("#ui > #studio") as HTMLDivElement;
 const px = $("#ui > #studio .bottom #px");
