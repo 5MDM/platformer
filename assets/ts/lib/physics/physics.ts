@@ -252,14 +252,16 @@ export class PW {
 
             this.findStaticCollisions(moving);
 
-            moving.addTween(moving.x - preX, moving.y - preY);
+            const dx = moving.x - preX;
+            const dy = moving.y - preY;
 
-            /*
-            this.tweenList.push({
-                to: { x: moving.x, y: moving.y },
-                pwd: moving,
-                currentTime: 0,
-            });*/
+            const last = moving.getLastTweenObj();
+            if(last) {
+                if(!(last.x == 0
+                && dx == 0
+                && last.y == 0
+                && dy == 0)) moving.addTween(dx, dy);
+            } else moving.addTween(dx, dy);
 
             //if(moving.sprite) moving.updateSprite();
             moving.vx = 0;

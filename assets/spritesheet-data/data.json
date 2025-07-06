@@ -106,7 +106,7 @@
 },
 "grass_block_1.png":
 {
-	"frame": {"x":0,"y":1535,"w":256,"h":256},
+	"frame": {"x":0,"y":1663,"w":256,"h":256},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":256,"h":256},
@@ -120,9 +120,17 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
 	"sourceSize": {"w":128,"h":128}
 },
-"kitchen-top.png":
+"kitchen-table.png":
 {
 	"frame": {"x":0,"y":895,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+"kitchen-top.png":
+{
+	"frame": {"x":128,"y":895,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -218,7 +226,7 @@
 },
 "question.png":
 {
-	"frame": {"x":128,"y":895,"w":128,"h":128},
+	"frame": {"x":0,"y":1023,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -226,7 +234,7 @@
 },
 "sink.png":
 {
-	"frame": {"x":0,"y":1023,"w":128,"h":128},
+	"frame": {"x":128,"y":1023,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -234,7 +242,7 @@
 },
 "tv.png":
 {
-	"frame": {"x":128,"y":1023,"w":128,"h":128},
+	"frame": {"x":0,"y":1151,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -250,7 +258,7 @@
 },
 "white-wall-corner.png":
 {
-	"frame": {"x":0,"y":1151,"w":128,"h":128},
+	"frame": {"x":128,"y":1151,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -258,7 +266,7 @@
 },
 "white-wall-end.png":
 {
-	"frame": {"x":128,"y":1151,"w":128,"h":128},
+	"frame": {"x":0,"y":1279,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -266,7 +274,7 @@
 },
 "white-wall-left.png":
 {
-	"frame": {"x":0,"y":1279,"w":128,"h":128},
+	"frame": {"x":128,"y":1279,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -274,7 +282,7 @@
 },
 "white-wall-tube.png":
 {
-	"frame": {"x":128,"y":1279,"w":128,"h":128},
+	"frame": {"x":0,"y":1407,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -282,7 +290,7 @@
 },
 "wood-door-open.png":
 {
-	"frame": {"x":0,"y":1407,"w":128,"h":128},
+	"frame": {"x":128,"y":1407,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -290,7 +298,7 @@
 },
 "wood-door.png":
 {
-	"frame": {"x":128,"y":1407,"w":128,"h":128},
+	"frame": {"x":0,"y":1535,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -306,8 +314,8 @@
 	"version": "1.1",
 	"image": "atlas.png",
 	"format": "RGBA8888",
-	"size": {"w":256,"h":1791},
+	"size": {"w":256,"h":1919},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:86f0ef54741473e052a8d04047803914:4e2b44457a59555c4e95360099c98882:9157e326ab292468473525d456d5b553$"
+	"smartupdate": "$TexturePacker:SmartUpdate:5d5e42562af4ada9ede5b68126111a76:4d1de964471e298aabb2559a018eb9ef:9157e326ab292468473525d456d5b553$"
 }
 }

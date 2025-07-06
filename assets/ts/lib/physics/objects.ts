@@ -182,8 +182,14 @@ export class PWD extends PWB {
         });
     }
 
+    getLastTweenObj(): TweenStep | undefined {
+        return this.tweenList[this.tweenList.length-1];
+    }
+
     tweenStep(n: number) {
-        for(const i in this.tweenList) {
+        for(let i = 0; i < this.tweenList.length; i++) {
+            if(i > 1) break;
+
             const obj = this.tweenList[i];
 
             obj.completion += n;
@@ -191,7 +197,7 @@ export class PWD extends PWB {
             this.lerpX(obj.x, n);
             this.lerpY(obj.y, n);
 
-            if(obj.completion >= 1) this.tweenList.splice(Number(i), 1);
+            if(obj.completion >= 1) this.tweenList.splice(i, 1);
         }
     }
 

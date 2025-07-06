@@ -139,6 +139,11 @@
                     "toLevel": "2"
                 }
             }
+        },
+        {
+            "name": "kitchen table",
+            "texture": "kitchen-table.png",
+            "type": "fg"
         }
     ]
 }

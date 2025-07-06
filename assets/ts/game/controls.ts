@@ -82,9 +82,8 @@ export function startControlLoop() {
         }
 
         if(finalX != 0 && finalY != 0) {
-            // Math.sqrt(2) is the actual thing, not 1.4
-            finalX = Math.sign(finalX) * calcSpeed / 1.4;
-            finalY = Math.sign(finalY) * calcSpeed / 1.4;
+            finalX = Math.sign(finalX) * calcSpeed / Math.SQRT2;
+            finalY = Math.sign(finalY) * calcSpeed / Math.SQRT2;
         }
 
         player.vx += finalX;

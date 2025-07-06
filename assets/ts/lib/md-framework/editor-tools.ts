@@ -640,9 +640,7 @@ export class EditorTools {
         const blockRef = this.mdshell.game.grids.fg.get(fx, fy);
         if(!blockRef) return this.dragController.CAD(true);
 
-        const block = this.mdshell.game.blocks.fg[blockRef.id];
-        
-        block.pwb
+        const block = this.mdshell.game.blocks.fg[blockRef.id];        
     }
 
     private editStateMoveF = (e: PointerEvent) => this.changeSpriteOutlinePos(e.pageX, e.pageY);
