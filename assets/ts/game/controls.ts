@@ -33,7 +33,7 @@ addEventListener("keyup", e => {
 
 var lastMoveUDwasUp = false;
 
-const mspeed = 0.1;
+const mspeed = 0.08;
 
 export function startControlLoop() {
     var isMoving = false;
@@ -45,8 +45,6 @@ export function startControlLoop() {
         var finalX = 0;
         var finalY = 0;
         const calcSpeed = (speed * d);
-
-        //console.log(round(calcSpeed, 1000))
 
         if(isMovingLeft) {
             finalX -= calcSpeed;

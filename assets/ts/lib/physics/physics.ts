@@ -1,6 +1,5 @@
-import { MDshell } from "../md-framework/shell";
 import { PWD, NotDynamicObj, PWS } from "./objects";
-import { resizeDebounce, MDmatrix } from "../util";
+import { resizeDebounce, MDmatrix, round } from "../util";
 
 interface PWopts {
     gx: number;
@@ -87,8 +86,6 @@ export class PW {
         });
     }
 
-    // private tweenList: TweenFrame[] = [];
-
     setupAnimationLoop() {
         const self = this;
 
@@ -96,25 +93,9 @@ export class PW {
             const timeNow = performance.now();
             const deltaTime = timeNow - self.lastAnimUpdate;
 
-            if (!self.isLoopRunning) return requestAnimationFrame(animLoop);
+            if(!self.isLoopRunning) return requestAnimationFrame(animLoop);
 
-            //var lerpTime = clamp(0, deltaTime / self.physicsDeltaTime, .1);
-            /*
-            if (self.tweenList.length >= 100) {
-                MDshell.Err("PW: too many objects in tweenlist: " + self.tweenList.length);
-                alert("Error: too many objects in the tweenlist. Report this error to me");
-                for (const tweenFrameNumber in self.tweenList) {
-                    self.parseTween(1, parseInt(tweenFrameNumber));
-                }
-            }
-
-            for (const tweenFrameNumber in self.tweenList) {
-                self.parseTween(self.lerpTime, parseInt(tweenFrameNumber));
-            }*/
-
-            for(const obj of self.dynamicObjs) {
-                obj.tweenStep(self.lerpTime);
-            }
+            for(const obj of self.dynamicObjs) obj.tweenStep(self.lerpTime);
 
             self.lastAnimUpdate = timeNow;
 
@@ -124,17 +105,6 @@ export class PW {
         requestAnimationFrame(animLoop);
     }
 
-    /*
-    private parseTween(lerpTime: number, n: number) {
-        const o = this.tweenList[n];
-
-        o.pwd.lerpPos(o.to, lerpTime);
-
-        o.currentTime += lerpTime;
-        if (o.currentTime >= 1)
-            this.tweenList.splice(n, 1);
-    }
-    */
     onPhysicsTick: ((deltaTime: number) => void) = (deltaTime: number) => undefined;
 
     setupPhysicsLoop() {
@@ -257,11 +227,11 @@ export class PW {
 
             const last = moving.getLastTweenObj();
             if(last) {
-                if(!(last.x == 0
-                && dx == 0
-                && last.y == 0
-                && dy == 0)) moving.addTween(dx, dy);
-            } else moving.addTween(dx, dy);
+                if(!(dx == 0 && dy == 0)) moving.addTween(dx, dy, this.lerpTime);
+            } else if(!moving.tweenMatches()) {
+                moving.addTween(dx, dy, this.lerpTime);
+            }
+            
 
             //if(moving.sprite) moving.updateSprite();
             moving.vx = 0;

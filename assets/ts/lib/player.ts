@@ -46,6 +46,14 @@ export class Player extends PWD {
     teleport(x: number, y: number) {
         this.setX(x);
         this.setY(y);
+        this.updateSprite();
+    }
+
+    tweenMatches(): boolean {
+        if(Math.round(this.halfHS - this.y) == Math.round(this.wc.y)
+        && Math.round(this.halfWS - this.x) == Math.round(this.wc.x)) return true;
+
+        return false;
     }
 
     addY(y: number) {
@@ -75,19 +83,13 @@ export class Player extends PWD {
         this.wc.y = this.halfHS - n;
     }
 
-    protected lerpX(x: number, time: number): number {
-        const val = lerp(0, this.halfWS - this.x + x - this.wc.x, time);
-
-        this.wc.x += val;
-
-        return val;
+    protected lerpX(x: number): void {
+        this.wc.x -= x;
     }
 
-    protected lerpY(y: number, time: number): number {
-        const val = lerp(0, this.halfHS - this.y + y - this.wc.y, time);
-        this.wc.y += val;
-
-        return val;
+    protected lerpY(y: number): void {
+        //const val = time * (this.halfHS - this.y + y - this.wc.y);
+        this.wc.y -= y;
     }
 }
 

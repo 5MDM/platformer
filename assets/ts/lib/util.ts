@@ -381,3 +381,8 @@ export function rotatePoints90(x: number, y: number, deg: number): [number, numb
 export function lerp(start: number, end: number, t: number) {
   return start + t * (end - start);
 }
+
+export function decToFrac(val: number, denom: number): string {
+  return `${denom / val}/${denom}`;
+}
+

@@ -17,7 +17,7 @@ export const pw = new PW({
     simSpeed: 1000 / 30,
     blockSize,
     maxLevelSize,
-    smoothing: .5,
+    smoothing: .25
 });
 
 //export const staticContainer = new Container();

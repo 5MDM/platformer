@@ -1,5 +1,5 @@
 import { Sprite, TilingSprite, Container, Texture, AnimatedSprite } from "pixi.js";
-import { lerp } from "../util";
+import { decToFrac, lerp } from "../util";
 import { XY } from "./physics";
 
 var id = 0;
@@ -151,6 +151,8 @@ export class PWS extends PWB {
 }
 
 interface TweenStep {
+    stepX: number;
+    stepY: number;
     x: number;
     y: number;
     completion: number;
@@ -166,7 +168,7 @@ export class PWD extends PWB {
     vx = 0;
     vy = 0;
 
-    private tweenList: TweenStep[] = [];
+    tweenList: TweenStep[] = [];
 
     constructor(x: number, y: number, w: number, h: number) {
         super(x, y, w, h);
@@ -174,10 +176,12 @@ export class PWD extends PWB {
         this.id = getNewID();
     }
 
-    addTween(x: number, y: number): void {
+    addTween(x: number, y: number, n: number): void {
         this.tweenList.push({
             x,
             y,
+            stepX: x * n,
+            stepY: y * n,
             completion: 0,
         });
     }
@@ -188,31 +192,32 @@ export class PWD extends PWB {
 
     tweenStep(n: number) {
         for(let i = 0; i < this.tweenList.length; i++) {
-            if(i > 1) break;
-
             const obj = this.tweenList[i];
 
-            obj.completion += n;
-            
-            this.lerpX(obj.x, n);
-            this.lerpY(obj.y, n);
+            obj.completion += n * 100;
 
-            if(obj.completion >= 1) this.tweenList.splice(i, 1);
+            this.lerpX(obj.stepX);
+            this.lerpY(obj.stepY);
+
+            console.log(obj.completion)
+
+            if((obj.completion) >= 100) this.tweenList.splice(i, 1);
         }
     }
 
-    protected lerpX(x: number, time: number): number {
-        const val = lerp(0, x, time);
-        this.container.x += val;
+    tweenMatches(): boolean {
+        if(this.container.x == this.x
+        && this.container.y == this.y) return true;
 
-        return val;
+        return false;
     }
 
-    protected lerpY(y: number, time: number): number {
-        const val = lerp(0, y, time);
-        this.container.y += val;
+    protected lerpX(x: number): void {
+        this.container.x += x;
+    }
 
-        return val;
+    protected lerpY(y: number) {
+        this.container.y += y;
     }
 
     setAnimation(name: string, s: AnimatedSprite) {
