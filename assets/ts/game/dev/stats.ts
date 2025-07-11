@@ -2,7 +2,6 @@ import { Container, Sprite, Texture } from "pixi.js";
 import { $, attatchToggle, round, stopAnimLoop } from "../../lib/util";
 import { mdshell } from "../../constants";
 import { Graph } from "../../lib/graph";
-import { player } from "../../constants";
 import { studioState } from "./studio";
 
 export function startStats() {
@@ -16,8 +15,8 @@ function loop() {
     fps = 1000 / RDtime;
 
     if(!studioState.isToggled) return;
-    px.textContent = round(player.x, 10).toString();
-    py.textContent = round(player.y, 10).toString();
+    px.textContent = round(mdshell.player.x, 10).toString();
+    py.textContent = round(mdshell.player.y, 10).toString();
     fpsEl.textContent = Math.round(fps).toString();
 }
 

@@ -1,6 +1,5 @@
 import { Sprite, TilingSprite, Container, Texture, AnimatedSprite } from "pixi.js";
-import { decToFrac, lerp } from "../util";
-import { XY } from "./physics";
+import { lerp } from "../util";
 
 var id = 0;
 
@@ -148,6 +147,23 @@ export class PWS extends PWB {
 
     onCollisionLeave: ((pws: PWS) => void)[] = [];
     onCollide: ((pws: PWS) => boolean | void)[] = [];
+
+    destroy(): void {
+        this.sprite?.destroy();
+        this.sprite = undefined;
+        this.x = 0;
+        this.y = 0;
+        this.w = 1;
+        this.h = 1;
+        this.cx = .5;
+        this.cy = .5;
+        this.halfW = .5;
+        this.halfH = .5;
+        this.onCollisionLeave = [];
+        this.onCollide = [];
+        this.hasCollidedRecently = false;
+        this.hasCollisionLeaveEvents = false;
+    }
 }
 
 interface TweenStep {
@@ -163,8 +179,8 @@ export class PWD extends PWB {
     lastSprite?: string;
     current: string = "";
     container: Container = new Container();
-    animations: { [index: string]: AnimatedSprite; } = {};
-    sprites: { [index: string]: Sprite; } = {};
+    animations: Record<string, AnimatedSprite> = {};
+    sprites: Record<string, Sprite> = {};
     vx = 0;
     vy = 0;
 
@@ -198,8 +214,6 @@ export class PWD extends PWB {
 
             this.lerpX(obj.stepX);
             this.lerpY(obj.stepY);
-
-            console.log(obj.completion)
 
             if((obj.completion) >= 100) this.tweenList.splice(i, 1);
         }

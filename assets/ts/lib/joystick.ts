@@ -1,5 +1,5 @@
 import { DragController } from "./drag";
-import { $$, normalize } from "./util";
+import { $$ } from "./util";
 
 interface JoystickOpts {
     target: HTMLDivElement;

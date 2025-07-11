@@ -1,5 +1,6 @@
 import { PWD, NotDynamicObj, PWS } from "./objects";
-import { resizeDebounce, MDmatrix, round } from "../util";
+import { resizeDebounce } from "../util";
+import { MDmatrix } from "../matrix";
 
 interface PWopts {
     gx: number;
@@ -23,6 +24,7 @@ function resizeF() {
 
     for (const f of resizeFuncs) f(changeX, changeY);
 }
+
 addEventListener("resize", resizeDebounce(() => {
     resizeF();
 }, 200));
@@ -256,6 +258,10 @@ export class PW {
 
     addStatic(x: number, y: number, obj: PWS) {
         this.staticGrid.set(x, y, obj);
+    }
+
+    removeStatic(x: number, y: number) {
+        this.staticGrid.delete(x, y);
     }
 
     clear() {

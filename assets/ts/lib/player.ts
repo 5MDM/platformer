@@ -1,7 +1,6 @@
-import { Container, Texture } from "pixi.js";
+import { Container } from "pixi.js";
 import { PWD } from "./physics/objects";
 import { PW } from "./physics/physics";
-import { lerp } from "./util";
 
 export class Player extends PWD {
     halfWS: number;

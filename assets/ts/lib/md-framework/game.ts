@@ -1,12 +1,8 @@
 import { Container } from "pixi.js";
-import { $, MDmatrix, radToDeg, ToggleState } from "../util";
-import { BgObj, FgObj, LevelJSONoutput } from "./shell";
-
-export interface GridBlockData {
-    name: string;
-    id: number;
-    type: string;
-}
+import { $, radToDeg, ToggleState } from "../util";
+import { MDmatrix } from "../matrix";
+import { LevelJSONoutput, MDshell } from "./shell";
+import { BgBlock, FgBlock } from "./unit";
 
 export interface MDgameOpts {
     maxLevelWidth: number;
@@ -30,7 +26,11 @@ export class MDgame {
     gameType: MDgameType;
     spawnX: number = 0;
     spawnY: number = 0;
-    grids: Record<MDgameGridType, MDmatrix<GridBlockData>>;
+    grids: {
+        fg: MDmatrix<FgBlock>;
+        bg: MDmatrix<BgBlock>;
+        overlay: MDmatrix<BgBlock>;
+    };
     groups = {
         bg: new Container(),
         fg: new Container(),
@@ -44,34 +44,41 @@ export class MDgame {
     private idCounter = 0;
 
     blocks: {
-        fg: Record<number, FgObj>;
-        bg: Record<number, BgObj>;
-        overlay: Record<number, BgObj>;
+        fg: Record<number, FgBlock>;
+        bg: Record<number, BgBlock>;
+        overlay: Record<number, BgBlock>;
     } = {
         fg: {},
         bg: {},
         overlay: {},
     };
 
+    internalDeleteWholeSingleBlock(type: MDgameGridType, x: number, y: number, id: number) {
+        const block = this.blocks[type][id];
+        if(!block) return MDshell.Err(`Couldn't delete block of id "${id}" and of type "${type}"`);
+
+        this.grids[type].delete(block.x, block.y);
+        delete this.blocks[type][id];
+    }
+
     clearAndDestroyItems() {
         for(const id in this.blocks.fg) {
             const block = this.blocks.fg[id];
-            this.container
-            block.pwb.destroy();
+            block.destroy();
 
             delete this.blocks.fg[id];
         }
 
         for(const id in this.blocks.bg) {
             const block = this.blocks.bg[id];
-            block.sprite.destroy();
+            block.destroy();
 
             delete this.blocks.bg[id];
         }
 
         for(const id in this.blocks.overlay) {
             const block = this.blocks.overlay[id];
-            block.sprite.destroy();
+            block.destroy();
 
             delete this.blocks.overlay[id];
         }
@@ -84,17 +91,17 @@ export class MDgame {
         
     }
 
-    iterateFGblocks(f: (block: FgObj, id: string) => void) {
+    iterateFGblocks(f: (block: FgBlock, id: string) => void) {
         for(const id in this.blocks.fg)
             f(this.blocks.fg[id], id);
     }
 
-    iterateBGblocks(f: (block: BgObj, id: string) => void) {
+    iterateBGblocks(f: (block: BgBlock, id: string) => void) {
         for(const id in this.blocks.bg)
             f(this.blocks.bg[id], id);
     }    
 
-    iterateOverlayblocks(f: (block: BgObj, id: string) => void) {
+    iterateOverlayblocks(f: (block: BgBlock, id: string) => void) {
         for(const id in this.blocks.overlay)
             f(this.blocks.overlay[id], id);
     }
@@ -102,16 +109,16 @@ export class MDgame {
     getBlocksAsArray(): LevelJSONoutput[] {
         const arr: LevelJSONoutput[] = [];
 
-        this.iterateFGblocks(({x, y, w, h, rotation, type}) => {
-            arr.push({x, y, w, h, rotation: radToDeg(rotation), type});
+        this.iterateFGblocks(({x, y, w, h, rotation, name}) => {
+            arr.push({x, y, w, h, rotation: radToDeg(rotation), type: name});
         });
 
-        this.iterateBGblocks(({x, y, w, h, rotation, type}) => {
-            arr.push({x, y, w, h, rotation: radToDeg(rotation), type});
+        this.iterateBGblocks(({x, y, w, h, rotation, name}) => {
+            arr.push({x, y, w, h, rotation: radToDeg(rotation), type: name});
         });
 
-        this.iterateOverlayblocks(({x, y, w, h, rotation, type}) => {
-            arr.push({x, y, w, h, rotation: radToDeg(rotation), type});
+        this.iterateOverlayblocks(({x, y, w, h, rotation, name}) => {
+            arr.push({x, y, w, h, rotation: radToDeg(rotation), type: name});
         });
 
         return arr;
@@ -120,9 +127,9 @@ export class MDgame {
     constructor(o: MDgameOpts) {
         this.gameType = o.gameType;
         this.grids = {
-            fg: new MDmatrix<GridBlockData>(o.maxLevelWidth, o.maxLevelHeight),
-            bg: new MDmatrix<GridBlockData>(o.maxLevelWidth, o.maxLevelHeight),
-            overlay: new MDmatrix<GridBlockData>(o.maxLevelWidth, o.maxLevelHeight),
+            fg: new MDmatrix<FgBlock>(o.maxLevelWidth, o.maxLevelHeight),
+            bg: new MDmatrix<BgBlock>(o.maxLevelWidth, o.maxLevelHeight),
+            overlay: new MDmatrix<BgBlock>(o.maxLevelWidth, o.maxLevelHeight),
         };
 
         this.editGrid = new MDmatrix<string>(o.maxLevelWidth, o.maxLevelHeight);

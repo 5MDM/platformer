@@ -1,3 +1,5 @@
+import { validateRenderables } from "pixi.js";
+import { MDshell } from "./md-framework/shell";
 import { $$ } from "./util";
 
 export class ElList<T> {
@@ -126,4 +128,215 @@ export class MDslider {
         if(this.markerEl) el.appendChild(this.markerEl);
         if(this.inputValueEl) el.appendChild(this.inputValueEl);
     }
+}
+
+export function tr(...args: HTMLElement[]): HTMLTableRowElement {
+    return $$("tr", {children: args});
+}
+
+export class MD2Columntable {
+    el: HTMLTableElement = $$("table");
+    tables: Record<string, MD2Columntable> = {};
+
+    constructor() {}
+
+    getTable(arr: string[]): MD2Columntable | void {
+        if(arr.length <= 0) return;
+        var current: MD2Columntable;
+
+        for(const prop of arr) {
+            current = this.tables[prop];
+            if(!current) return MDshell.Err(
+                `el.ts: can't find property "${arr.join(".")}"`
+            );
+        }
+    }
+
+    addTable(name: string) {
+        const table = new MD2Columntable();
+        this.tables[name] = table;
+    }
+
+    createRow(name: string, val: string): HTMLTableRowElement {
+        return tr(
+            $$("td", {
+                text: name,
+            }),
+            $$("td", {
+                text: val,
+            }),
+        );
+    }
+
+    static TDstyle = {
+        border: "1px solid black",
+        padding: "5px",
+        "background-color": "#bbbbbb",
+    };
+
+    static TRstyle = {
+        width: "100%",
+        border: "2px solid red",
+        "border-collapse": "seperate",
+    };
+
+    static HRstyle = {
+        width: "100%",
+        margin: "0 auto",
+        border: "3px solid darkblue",
+    };
+
+    static TableStyle = {
+        "border-bottom": "2px solid darkblue",
+    };
+
+    private td(text: string, style: Record<string, any>): HTMLTableCellElement {
+        return $$("td", {text, style});
+    }
+
+    private editObj(ref: string[], val: string) {
+        var og = this.currentObj;
+        var current: any = og;
+
+        const nowRef = [...ref];
+        nowRef.pop();
+
+        for(const i of nowRef) {
+            if(!current) return MDshell.Err(
+                `el.ts: deep object editing error. Reference "${ref.join(".")}" is invalid with "${i}" or before`
+            );
+            current = current[i];
+        }
+
+        current[ref[ref.length-1]] = val;
+        this.currentObj = og;
+    }
+
+    private tdInput<T>(text: string, ref: string[]): HTMLTableCellElement {
+        const input = $$("input", {
+            attrs: {
+                value: text,
+            }
+        });
+
+        const el = $$("td", {
+            style: MD2Columntable.TDstyle,
+            children: [
+                input,
+            ],
+        });
+
+        el.addEventListener("input", () => this.editObj(ref, input.value));
+
+        return el;
+    }
+
+    currentObj: Record<string, any> = {};
+
+    private parseInnerJSON<T extends Object>(obj: T, parentRef?: string[]): [HTMLTableElement, string[]] {
+        const ref: string[] = [];
+        
+        const el = $$("table", {
+            style: MD2Columntable.TableStyle,
+        });
+
+        for(const i in obj) {
+            const children = [];
+            const io = obj[i];
+            ref.push(i);
+
+            if(io instanceof Object) {
+                const [child, iref] = this.parseInnerJSON(io, ref);
+                ref.push(...iref);
+
+                children.push($$("tr", {
+                    style: MD2Columntable.TRstyle,
+                    children: [
+                        $$("td", {text: i + ": "}),
+                        child,
+                    ]
+                }));
+            } else {
+                const nameEl = this.td(i, MD2Columntable.TDstyle);
+
+                var ref0 = ref;
+                if(parentRef) ref0 = parentRef;
+
+                if(typeof io == "string") children.push(tr(
+                    nameEl,
+                    this.tdInput<T>(io, ref0)
+                )); else if(Array.isArray(io)) children.push(tr(
+                    nameEl,
+                    this.tdInput<T>(`[${io.join(", ")}]`, ref0),
+                )); else if(!io) children.push(tr(
+                    nameEl,
+                    this.tdInput<T>("Undefined", ref0),
+                )); else children.push(tr(
+                    nameEl,
+                    this.tdInput<T>(`${io}`, ref0),
+                ));
+            }
+
+            el.append(...children);
+        }
+
+        return [el, ref];
+    }
+
+    parseJSON<T extends Object>(obj: T): HTMLTableElement {
+        this.currentObj = obj;
+        const el = this.parseInnerJSON<T>(obj)[0];
+        el.style = "";
+
+        return el;
+
+        //this.el.appendChild(table);
+    }
+}
+
+export function jsonToEl(style: Record<string, string>, json: Record<string, Record<string, any>>): HTMLTableElement {
+    const children: HTMLTableRowElement[] = [
+        tr(
+            $$("th", {text: "Component Name"}),
+            $$("th", {text: "Component Values"}),
+        )
+    ];
+
+    for(const key in json) {
+        const arr: HTMLTableRowElement[] = []
+
+        for(const key2 in json[key]) {
+            arr.push(tr(
+                $$("td", {
+                    style: {
+                        padding: "2px",
+                    },
+                    text: key2 + ": "
+                }),
+                $$("td", {
+                    text: `${json[key][key2]}`,
+                    style: {"background-color": "lightgray", padding: "5px"},
+                }),
+            ));
+        }
+
+        children.push(tr(
+            $$("td", {
+                text: key,
+            }),
+            $$("td", {
+                children: [
+                    $$("table", {
+                        style,
+                        children: arr
+                    })
+                ]
+            }),
+        ));
+    }
+
+    return $$("table", {
+        style,
+        children,
+    });
 }

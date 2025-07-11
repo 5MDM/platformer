@@ -7,6 +7,7 @@
     height: auto;
     pointer-events: none;
     z-index: -1;
+    width: 100%;
 }
 
 #ui > #dialogue > #dialogue-c {
@@ -29,7 +30,8 @@
     font-size: 1em;
 }
 
-@media (max-width: 5.7in) {
+/* Mobile */
+@media (max-width: 5.6in) {
     #ui > #dialogue {
         font-size: 0.4em;
         top: 30px;
@@ -46,7 +48,7 @@
     }
 }
 
-@media (min-width: 5.7in) and (max-width: 8in) {
+@media (min-width: 5.6in) and (max-width: 8in) {
     #ui > #dialogue {
         font-size: 0.6em;
     }

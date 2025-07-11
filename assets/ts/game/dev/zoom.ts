@@ -1,4 +1,4 @@
-import { mdshell, player } from "../../constants";
+import { mdshell } from "../../constants";
 import { MDslider } from "../../lib/el";
 import { GameScaleObj } from "../../lib/md-framework/editor-tools";
 import { $, ToggleState } from "../../lib/util";
@@ -40,12 +40,12 @@ slider.el.addEventListener("input", () => {
 function scale(percent: number) {
     const val = (percent + 100) / 100;
     const dval = lastVal - val;
-    const nx = (player.halfWS) * dval;
-    const ny = (player.halfHS) * dval;
+    const nx = (mdshell.player.halfWS) * dval;
+    const ny = (mdshell.player.halfHS) * dval;
 
-    mdshell.game.container.x += nx + dval * player.halfW;
+    mdshell.game.container.x += nx + dval * mdshell.player.halfW;
     mdshell.game.container.scale.x = val;
-    mdshell.game.container.y += ny + dval * player.halfH;
+    mdshell.game.container.y += ny + dval * mdshell.player.halfH;
     mdshell.game.container.scale.y = val;   
     lastVal = val;
 

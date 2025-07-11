@@ -1,6 +1,6 @@
 import { AnimatedSprite, isMobile, Sprite } from "pixi.js";
 import { startControlLoop } from "./controls";
-import { player, pw } from "../constants";
+import { pw } from "../constants";
 import "./audio";
 import "./dev/menu";
 import "./dev/modes";
@@ -17,22 +17,22 @@ async function loadAnimations() {
     walkR.scale.x = -1;
     walkR.position.x = 30;
 
-    player.setAnimation("walk-ud-down", new AnimatedSprite(spritesheet.animations["player-down-walk"]));
-    player.setAnimation("walk-ud-up", new AnimatedSprite(spritesheet.animations["player-up-walk"]));
-    player.setAnimation("walk-l", new AnimatedSprite(spritesheet.animations["player-side-walk"]));
-    player.setAnimation("walk-r", walkR);
-    player.setSprite("stand-ud-down", new Sprite(spritesheet.textures["player-down-stand.png"]));
-    player.setSprite("stand-ud-up", new Sprite(spritesheet.textures["player-up-stand.png"]));
+    mdshell.player.setAnimation("walk-ud-down", new AnimatedSprite(spritesheet.animations["player-down-walk"]));
+    mdshell.player.setAnimation("walk-ud-up", new AnimatedSprite(spritesheet.animations["player-up-walk"]));
+    mdshell.player.setAnimation("walk-l", new AnimatedSprite(spritesheet.animations["player-side-walk"]));
+    mdshell.player.setAnimation("walk-r", walkR);
+    mdshell.player.setSprite("stand-ud-down", new Sprite(spritesheet.textures["player-down-stand.png"]));
+    mdshell.player.setSprite("stand-ud-up", new Sprite(spritesheet.textures["player-up-stand.png"]));
 }
 
 export async function startGame(sh: MDshell) { 
     await loadAnimations();
     
-    player.displayTo(mdshell.game.groups.world);
+    mdshell.player.displayTo(mdshell.game.groups.world);
 
     sh.setCurrentLevel("1");
     
-    player.teleport(sh.game.spawnX, sh.game.spawnY);
+    mdshell.player.teleport(sh.game.spawnX, sh.game.spawnY);
     
     pw.startClock();
     

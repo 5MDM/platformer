@@ -1,4 +1,4 @@
-import { Application, Container, Graphics } from "pixi.js";
+import { Container, Graphics } from "pixi.js";
 
 export class Graph {
     x: number;

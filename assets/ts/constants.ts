@@ -1,7 +1,7 @@
 import { Application, Container, SpritesheetData } from "pixi.js";
 import { PW } from "./lib/physics/physics";
-import { $, convertPathToObj, MDmatrix } from "./lib/util";
-import { Player } from "./lib/player";
+import { $, convertPathToObj } from "./lib/util";
+import { MDmatrix } from "./lib/matrix";
 import { MDshell, ModInfo } from "./lib/md-framework/shell";
 
 export const chunkSize = 16;
@@ -28,6 +28,8 @@ export const app: Application = new Application();
 
 export const blocksEl = $("#ui > #editor .block-row") as HTMLDivElement;
 
+//export const player = new Player(mdshell.game.groups.view, 30, 63);
+
 export const mdshell = new MDshell({
     blockSize,
     gameType: "td",
@@ -44,6 +46,9 @@ export const mdshell = new MDshell({
     app,
 
     imageBlobSize: Number(getComputedStyle(blocksEl).getPropertyValue("--img-size").slice(0, -2)),
+
+    playerWidth: 30,
+    playerHeight: 63,
 });
 
 PW.OnResizeChange((x, y) => {
@@ -51,5 +56,4 @@ PW.OnResizeChange((x, y) => {
     mdshell.game.groups.view.y += y;
 });
 
-export const player = new Player(mdshell.game.groups.view, 30, 63);
-pw.addDynamic(player);
+pw.addDynamic(mdshell.player);

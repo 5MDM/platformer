@@ -6,5 +6,4 @@ import { MDshell } from "../lib/md-framework/shell";
 export function initLevels(sh: MDshell) {
     sh.addLevel("1", level1);
     sh.addLevel("2", level2);
-    //sh.addLevel("3", level3);
 }

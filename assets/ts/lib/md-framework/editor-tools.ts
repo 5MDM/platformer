@@ -1,11 +1,13 @@
 import { Container, Sprite, Texture, TilingSprite } from "pixi.js";
 import { DragController } from "../drag";
-import { $$, degToRad, floorToMultiples, MDmatrix, snapToGrid, ToggleList, ToggleState } from "../util";
-import { MDshell } from "./shell";
-import { player } from "../../constants";
+import { $$, degToRad, floorToMultiples, snapToGrid, ToggleList, ToggleState } from "../util";
+import { MDmatrix } from "../matrix";
+import { BlockInfo, MDshell } from "./shell";
 import { blockRotation } from "../../game/dev/studio";
 import { PWS } from "../physics/objects";
 import { GMOutput, Keymap } from "../keymap";
+import { MD2Columntable, tr } from "../el";
+import { FgBlock } from "./unit";
 
 type EditorKeybinds = 
 "multi placement" | "edit" | "rotate right" | "rotate left" | "level editor" | "movement" | "pan";
@@ -31,6 +33,7 @@ interface EditorToolsOpts {
     gameScale: GameScaleObj;
     maxLevelSize: number;
     moveStateImg: HTMLImageElement;
+    blockDataPopupElContainer: HTMLElement;
 }
 
 export class EditorTools {
@@ -42,6 +45,75 @@ export class EditorTools {
     clearListArr: ToggleList[] = [];
     gameScaleF: (percent: number) => void;
     gameScale: GameScaleObj;
+    blockDataPopupEl: HTMLElement = $$("div", {
+        attrs: {
+            id: "editor-tools-data-popup"
+        },
+        style: {
+            display: "none",
+        },
+        children: [
+            $$("table", {
+                children: [
+                    $$("colgroup", {
+                        children: [
+                            $$("col", {
+                                style: {
+                                    width: "100px"
+                                }
+                            }),
+                        ]
+                    }),
+                    tr(
+                        $$("th", {
+                            text: "Name"
+                        }),
+                        $$("th", {
+                            text: "Data"
+                        }),
+                    ),
+                    tr(
+                        $$("td", {
+                            text: "Block Display Name"
+                        }),
+                        $$("td", {
+                            attrs: {id: "block-display"},
+                            text: "----"
+                        }),
+                    ),
+                    tr(
+                        $$("td", {
+                            text: "Block Internal Name"
+                        }),
+                        $$("td", {
+                            attrs: {id: "block-name"},
+                            text: "----"
+                        }),
+                    ),
+                    tr(
+                        $$("td", {
+                            text: "Block Type"
+                        }),
+                        $$("td", {
+                            attrs: {id: "block-type"},
+                            text: "----"
+                        }),
+                    ),
+                    tr(
+                        $$("td", {
+                            text: "Components"
+                        }),
+                        $$("td", {
+                            attrs: {id: "block-components"},
+                            text: "----"
+                        }),
+                    ),
+                ]
+            }),
+        ]
+    });
+
+    isTyping: boolean = false;
 
     fgListEl: HTMLDivElement;
     bgListEl: HTMLDivElement;
@@ -71,6 +143,7 @@ export class EditorTools {
         this.onRotate = o.onRotate;
         this.gameScale = o.gameScale;
         this.maxLevelSize = o.maxLevelSize;
+        o.blockDataPopupElContainer.appendChild(this.blockDataPopupEl);
 
         this.fgListEl = o.fgListEl;
         this.bgListEl = o.bgListEl;
@@ -105,6 +178,28 @@ export class EditorTools {
         });
 
         this.mdshell.game.groups.view.addChild(this.spriteOutline);
+
+        this.setupCloseButton();
+    }
+
+    private setupCloseButton() {
+        const el = $$("button", {
+            style: {
+                width: "100%",
+                padding: "5px",
+                "margin-top": "5px",
+            }, 
+            text: "Close"
+        });
+
+        const self = this;
+
+        el.onpointerup = function() {
+            self.blockDataPopupElState.disableIfOn();
+            self.updateComponents();
+        };
+
+        this.blockDataPopupEl.appendChild(el);
     }
 
     multiPlacementHover(x: number, y: number) {
@@ -112,12 +207,12 @@ export class EditorTools {
         y *= this.gameScale.y;
     
         const fx = 
-        snapToGrid(x - player.halfWS - this.mdshell.game.container.x * this.gameScale.x - this.mdshell.game.groups.world.x + player.x, 0, this.mdshell.blockSize);
+        snapToGrid(x - this.mdshell.player.halfWS - this.mdshell.game.container.x * this.gameScale.x - this.mdshell.game.groups.world.x + this.mdshell.player.x, 0, this.mdshell.blockSize);
         const fy = 
-        snapToGrid(y - player.halfHS - this.mdshell.game.container.y * this.gameScale.y - this.mdshell.game.groups.world.y + player.y, 0, this.mdshell.blockSize);
+        snapToGrid(y - this.mdshell.player.halfHS - this.mdshell.game.container.y * this.gameScale.y - this.mdshell.game.groups.world.y + this.mdshell.player.y, 0, this.mdshell.blockSize);
         
-        const cursorX = floorToMultiples(player.x + x - player.halfWS - this.mdshell.game.groups.world.x - this.mdshell.game.container.x * this.gameScale.x, this.mdshell.blockSize) / this.mdshell.blockSize;
-        const cursorY = floorToMultiples(player.y + y - player.halfHS - this.mdshell.game.groups.world.y - this.mdshell.game.container.y * this.gameScale.y, this.mdshell.blockSize) / this.mdshell.blockSize;
+        const cursorX = floorToMultiples(this.mdshell.player.x + x - this.mdshell.player.halfWS - this.mdshell.game.groups.world.x - this.mdshell.game.container.x * this.gameScale.x, this.mdshell.blockSize) / this.mdshell.blockSize;
+        const cursorY = floorToMultiples(this.mdshell.player.y + y - this.mdshell.player.halfHS - this.mdshell.game.groups.world.y - this.mdshell.game.container.y * this.gameScale.y, this.mdshell.blockSize) / this.mdshell.blockSize;
     
         const bool = this.mdshell.pw.staticGrid.isOOB(cursorX, cursorY);
         this.dragController.CAD(bool);
@@ -247,9 +342,9 @@ export class EditorTools {
         }
     
         const x = 
-        floorToMultiples(xx - this.mdshell.game.container.x + this.gameScale.nx + player.halfW, this.mdshell.blockSize) / this.mdshell.blockSize;
+        floorToMultiples(xx - this.mdshell.game.container.x + this.gameScale.nx + this.mdshell.player.halfW, this.mdshell.blockSize) / this.mdshell.blockSize;
         const y = 
-        floorToMultiples(yy - this.mdshell.game.container.y + this.gameScale.ny + player.halfH, this.mdshell.blockSize) / this.mdshell.blockSize;
+        floorToMultiples(yy - this.mdshell.game.container.y + this.gameScale.ny + this.mdshell.player.halfH, this.mdshell.blockSize) / this.mdshell.blockSize;
     
         const s = this.mdshell.createBlock({
             x, y, w, h, name: this.selectedBlockName, 
@@ -356,17 +451,17 @@ export class EditorTools {
         x *= this.gameScale.x;
         y *= this.gameScale.y;
         const cursorX = 
-        floorToMultiples(player.x + x - player.halfWS - this.mdshell.game.groups.world.x - this.mdshell.game.container.x * this.gameScale.x, this.mdshell.blockSize)  /this.mdshell.blockSize;
+        floorToMultiples(this.mdshell.player.x + x - this.mdshell.player.halfWS - this.mdshell.game.groups.world.x - this.mdshell.game.container.x * this.gameScale.x, this.mdshell.blockSize)  /this.mdshell.blockSize;
         const cursorY = 
-        floorToMultiples(player.y + y - player.halfHS - this.mdshell.game.groups.world.y - this.mdshell.game.container.y * this.gameScale.y, this.mdshell.blockSize) / this.mdshell.blockSize;
+        floorToMultiples(this.mdshell.player.y + y - this.mdshell.player.halfHS - this.mdshell.game.groups.world.y - this.mdshell.game.container.y * this.gameScale.y, this.mdshell.blockSize) / this.mdshell.blockSize;
     
         const bool = this.mdshell.pw.staticGrid.isOOB(cursorX, cursorY);
         if(bool) return this.dragController.CAD(true);
     
         const fx = 
-        snapToGrid(x - player.halfWS - this.mdshell.game.container.x * this.gameScale.x - this.mdshell.game.groups.world.x + player.x, 0, this.mdshell.blockSize);
+        snapToGrid(x - this.mdshell.player.halfWS - this.mdshell.game.container.x * this.gameScale.x - this.mdshell.game.groups.world.x + this.mdshell.player.x, 0, this.mdshell.blockSize);
         const fy = 
-        snapToGrid(y - player.halfHS - this.mdshell.game.container.y * this.gameScale.y - this.mdshell.game.groups.world.y + player.y, 0, this.mdshell.blockSize);
+        snapToGrid(y - this.mdshell.player.halfHS - this.mdshell.game.container.y * this.gameScale.y - this.mdshell.game.groups.world.y + this.mdshell.player.y, 0, this.mdshell.blockSize);
         
         if(!this.hasInitialPlacement) {
             this.hasInitialPlacement = true;
@@ -387,8 +482,8 @@ export class EditorTools {
         x *= this.gameScale.x;
         y *= this.gameScale.y;
     
-        const fx = floorToMultiples(player.x + x - player.halfWS - this.mdshell.game.container.x * this.gameScale.x - this.mdshell.game.groups.world.x, this.mdshell.blockSize) / this.mdshell.blockSize;
-        const fy = floorToMultiples(player.y + y - player.halfHS - this.mdshell.game.container.y * this.gameScale.y - this.mdshell.game.groups.world.y, this.mdshell.blockSize) / this.mdshell.blockSize;
+        const fx = floorToMultiples(this.mdshell.player.x + x - this.mdshell.player.halfWS - this.mdshell.game.container.x * this.gameScale.x - this.mdshell.game.groups.world.x, this.mdshell.blockSize) / this.mdshell.blockSize;
+        const fy = floorToMultiples(this.mdshell.player.y + y - this.mdshell.player.halfHS - this.mdshell.game.container.y * this.gameScale.y - this.mdshell.game.groups.world.y, this.mdshell.blockSize) / this.mdshell.blockSize;
     
         if(this.mdshell.game.editGrid.isOOB(fx, fy)) return this.dragController.CAD(true);
         if(this.mdshell.game.editGrid.place(fx, fy, this.selectedBlockName)) return;
@@ -487,6 +582,8 @@ export class EditorTools {
         this.movementState.disableIfOn();  
         this.mdshell.game.groups.view.removeChild(this.devSprite);
         this.editState.disableIfOn();
+
+        this.blockDataPopupElState.disableIfOn();
     });
 
     setKeybinds(keybinds: Record<string, EditorKeybinds>) {
@@ -578,12 +675,12 @@ export class EditorTools {
         y *= this.gameScale.y;
     
         const fx = 
-        snapToGrid(x - player.halfWS - this.mdshell.game.container.x * this.gameScale.x - this.mdshell.game.groups.world.x + player.x, 0, this.mdshell.blockSize);
+        snapToGrid(x - this.mdshell.player.halfWS - this.mdshell.game.container.x * this.gameScale.x - this.mdshell.game.groups.world.x + this.mdshell.player.x, 0, this.mdshell.blockSize);
         const fy = 
-        snapToGrid(y - player.halfHS - this.mdshell.game.container.y * this.gameScale.y - this.mdshell.game.groups.world.y + player.y, 0, this.mdshell.blockSize);
+        snapToGrid(y - this.mdshell.player.halfHS - this.mdshell.game.container.y * this.gameScale.y - this.mdshell.game.groups.world.y + this.mdshell.player.y, 0, this.mdshell.blockSize);
         
-        const cursorX = floorToMultiples(player.x + x - player.halfWS - this.mdshell.game.groups.world.x - this.mdshell.game.container.x * this.gameScale.x, this.mdshell.blockSize) / this.mdshell.blockSize;
-        const cursorY = floorToMultiples(player.y + y - player.halfHS - this.mdshell.game.groups.world.y - this.mdshell.game.container.y * this.gameScale.y, this.mdshell.blockSize) / this.mdshell.blockSize;
+        const cursorX = floorToMultiples(this.mdshell.player.x + x - this.mdshell.player.halfWS - this.mdshell.game.groups.world.x - this.mdshell.game.container.x * this.gameScale.x, this.mdshell.blockSize) / this.mdshell.blockSize;
+        const cursorY = floorToMultiples(this.mdshell.player.y + y - this.mdshell.player.halfHS - this.mdshell.game.groups.world.y - this.mdshell.game.container.y * this.gameScale.y, this.mdshell.blockSize) / this.mdshell.blockSize;
     
         const bool = this.mdshell.pw.staticGrid.isOOB(cursorX, cursorY);
         this.dragController.CAD(bool);
@@ -601,12 +698,12 @@ export class EditorTools {
         y *= this.gameScale.y;
     
         const fx = 
-        snapToGrid(x - player.halfWS - this.mdshell.game.container.x * this.gameScale.x - this.mdshell.game.groups.world.x + player.x, 0, this.mdshell.blockSize);
+        snapToGrid(x - this.mdshell.player.halfWS - this.mdshell.game.container.x * this.gameScale.x - this.mdshell.game.groups.world.x + this.mdshell.player.x, 0, this.mdshell.blockSize);
         const fy = 
-        snapToGrid(y - player.halfHS - this.mdshell.game.container.y * this.gameScale.y - this.mdshell.game.groups.world.y + player.y, 0, this.mdshell.blockSize);
+        snapToGrid(y - this.mdshell.player.halfHS - this.mdshell.game.container.y * this.gameScale.y - this.mdshell.game.groups.world.y + this.mdshell.player.y, 0, this.mdshell.blockSize);
         
-        const cursorX = floorToMultiples(player.x + x - player.halfWS - this.mdshell.game.groups.world.x - this.mdshell.game.container.x * this.gameScale.x, this.mdshell.blockSize) / this.mdshell.blockSize;
-        const cursorY = floorToMultiples(player.y + y - player.halfHS - this.mdshell.game.groups.world.y - this.mdshell.game.container.y * this.gameScale.y, this.mdshell.blockSize) / this.mdshell.blockSize;
+        const cursorX = floorToMultiples(this.mdshell.player.x + x - this.mdshell.player.halfWS - this.mdshell.game.groups.world.x - this.mdshell.game.container.x * this.gameScale.x, this.mdshell.blockSize) / this.mdshell.blockSize;
+        const cursorY = floorToMultiples(this.mdshell.player.y + y - this.mdshell.player.halfHS - this.mdshell.game.groups.world.y - this.mdshell.game.container.y * this.gameScale.y, this.mdshell.blockSize) / this.mdshell.blockSize;
 
 
         this.spriteOutline.x = fx;
@@ -628,19 +725,75 @@ export class EditorTools {
         }
     }
 
+    private setBlockDataPopupEntry(id: string, val: string) {
+        const el = this.blockDataPopupEl.querySelector("#" + id);
+        if(!el) return;
+        
+        el.textContent = val;
+    }
+
+    private updateBlockref: BlockInfo | undefined = undefined;
+    private updateDataref: Record<string, any> | undefined = undefined;
+
+    private updateComponents() {
+        if(this.updateBlockref) 
+            if(this.updateBlockref.components) {
+                this.updateBlockref.components = this.updateDataref;
+                this.updateBlockref = undefined;
+                this.updateDataref = undefined;
+            }
+    }
+
+    private updateBlockDataPopup(data: FgBlock) {
+        this.updateComponents();
+        this.updateBlockref = this.mdshell.blocks[data.name];
+
+        const blockInfo = this.mdshell.getBlockInfo(data.name);
+        this.setBlockDataPopupEntry("block-display", blockInfo.name);
+        this.setBlockDataPopupEntry("block-name", data.name);
+        this.setBlockDataPopupEntry("block-type", data.isOverlay ? "Foreground Overlay" : "Foreground");
+
+        this.setBlockDataPopupEntry("block-components", "");
+        if(blockInfo.components) {
+            if(Object.keys(blockInfo.components).length == 0)
+                this.setBlockDataPopupEntry("block-components", "No components");
+            else {
+                const el = this.blockDataPopupEl.querySelector("#block-components")!;
+
+                if(el.children.length > 1) el.removeChild(el.firstChild!);
+
+                const mdTable = new MD2Columntable();
+                const tableEl = mdTable.parseJSON<Record<string, Record<string, any>>>(blockInfo.components);
+
+                el.prepend(tableEl);
+                this.updateDataref = mdTable.currentObj;
+            }
+        } else this.setBlockDataPopupEntry("block-components", "No components");
+    }
+
+    blockDataPopupElState = new ToggleState(() => {
+        this.blockDataPopupEl.style.display = "block";
+    }, () => {
+        this.blockDataPopupEl.style.display = "none";
+    });
+
     private onEditStateClick(x: number, y: number) {
         x *= this.gameScale.x;
         y *= this.gameScale.y;
     
-        const fx = floorToMultiples(player.x + x - player.halfWS - this.mdshell.game.container.x * this.gameScale.x - this.mdshell.game.groups.world.x, this.mdshell.blockSize) / this.mdshell.blockSize;
-        const fy = floorToMultiples(player.y + y - player.halfHS - this.mdshell.game.container.y * this.gameScale.y - this.mdshell.game.groups.world.y, this.mdshell.blockSize) / this.mdshell.blockSize;
+        const fx = floorToMultiples(this.mdshell.player.x + x - this.mdshell.player.halfWS - this.mdshell.game.container.x * this.gameScale.x - this.mdshell.game.groups.world.x, this.mdshell.blockSize) / this.mdshell.blockSize;
+        const fy = floorToMultiples(this.mdshell.player.y + y - this.mdshell.player.halfHS - this.mdshell.game.container.y * this.gameScale.y - this.mdshell.game.groups.world.y, this.mdshell.blockSize) / this.mdshell.blockSize;
     
         if(this.mdshell.game.editGrid.isOOB(fx, fy)) return this.dragController.CAD(true);
 
         const blockRef = this.mdshell.game.grids.fg.get(fx, fy);
         if(!blockRef) return this.dragController.CAD(true);
 
-        const block = this.mdshell.game.blocks.fg[blockRef.id];        
+        const block = this.mdshell.game.blocks.fg[blockRef.pws.id];
+        //if(block.pwb.sprite) block.pwb.sprite.tint = 0xf0aaff;
+
+        this.blockDataPopupElState.enableIfOff();
+        this.updateBlockDataPopup(block);
     }
 
     private editStateMoveF = (e: PointerEvent) => this.changeSpriteOutlinePos(e.pageX, e.pageY);
@@ -650,9 +803,58 @@ export class EditorTools {
         this.placementModeState.disableIfOn();
         this.spriteOutline.visible = true;
         this.dragController.downElement.addEventListener("pointermove", this.editStateMoveF);
-        this.dragController.downElement.addEventListener("click", this.editStateClickF)
+        this.dragController.downElement.addEventListener("click", this.editStateClickF);
     }, () => {
+        this.updateComponents();
+        this.blockDataPopupElState.disableIfOn();
         this.spriteOutline.visible = false;
         this.dragController.downElement.removeEventListener("pointermove", this.editStateMoveF);
+        this.dragController.downElement.removeEventListener("click", this.editStateClickF);
+    });
+
+    private deleteStateMoveF = (a: number, b: number, x: number, y: number) => this.deleteStateMove(x, y);
+
+    private deleteStateMove(x: number, y: number) {
+        x *= this.gameScale.x;
+        y *= this.gameScale.y;
+    
+        const fx = floorToMultiples(this.mdshell.player.x + x - this.mdshell.player.halfWS - this.mdshell.game.container.x * this.gameScale.x - this.mdshell.game.groups.world.x, this.mdshell.blockSize) / this.mdshell.blockSize;
+        const fy = floorToMultiples(this.mdshell.player.y + y - this.mdshell.player.halfHS - this.mdshell.game.container.y * this.gameScale.y - this.mdshell.game.groups.world.y, this.mdshell.blockSize) / this.mdshell.blockSize;
+    
+        if(this.mdshell.game.editGrid.isOOB(fx, fy)) return this.dragController.CAD(true);
+
+        const overlay = this.mdshell.game.grids.overlay.get(fx, fy);
+        if(!overlay) {
+            const fg = this.mdshell.game.grids.fg.get(fx, fy);
+
+            if(!fg) {
+                const bg = this.mdshell.game.grids.bg.get(fx, fy);
+
+                if(!bg) return;
+                this.deleteBg(fx, fy);
+            } else this.deleteFg(fx, fy);
+        } else this.deleteOverlay(fx, fy);
+    }
+
+    private deleteFg(x: number, y: number) {
+        this.mdshell.deleteBlock("fg", x, y);
+    }
+
+    private deleteBg(x: number, y: number) {
+        this.mdshell.deleteBlock("bg", x, y);
+    }
+
+    private deleteOverlay(x: number, y: number) {
+        this.mdshell.deleteBlock("overlay", x, y);
+    }
+
+    deleteState = new ToggleState(() => {
+        this.dragController.onDrag = this.deleteStateMoveF;
+        this.dragController.changeDefaultandNormalGrab("crosshair");
+        this.dragController.changeDefaultAndNormalGrabbing("pointer");
+    }, () => {
+        this.dragController.onDrag = (x: number, y: number) => this.editorPan(x, y);
+        this.dragController.changeDefaultandNormalGrab("default");
+        this.dragController.changeDefaultAndNormalGrabbing("default");
     });
 }

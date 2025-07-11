@@ -35,9 +35,11 @@ img {
 #ui {
     position: fixed;
     top: 0;
-    width: var(--w);
-    height: var(--h);
+    width: 100vw;
+    height: 100vh;
     pointer-events: none;
+    display: flex;
+    flex-direction: column;
 }
 
 #ui > div {

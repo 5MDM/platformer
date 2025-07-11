@@ -1,5 +1,5 @@
 import { LevelJSONoutput } from "./md-framework/shell";
-import { MDmatrix } from "./util";
+import { MDmatrix } from "./matrix";
 
 export interface GMOutput {
     x: number;
@@ -91,6 +91,8 @@ export class Keymap {
     }
 
     static GMBool(m: true[][], type: string) {
+        
+
         const output: GMOutput[] = [];
         const bounds = {
             xmin: Infinity,

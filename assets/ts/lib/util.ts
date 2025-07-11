@@ -1,4 +1,4 @@
-import {Container, Sprite, Texture } from "pixi.js";
+import {Sprite, Texture } from "pixi.js";
 
 export const UTIL_VERSION: number = 1.5;
 
@@ -239,82 +239,6 @@ export function countingSort(arr: number[]) {
   }
 
   arr.splice(count);
-}
-
-export class MDmatrix<T> {
-  public matrix: T[][];
-  w: number;
-  h: number;
-
-  constructor(w: number, h: number) {
-    this.w = w;
-    this.h = h;
-
-    this.matrix = [];
-    for(let y = 0; y < h; y++) this.matrix.push(new Array(w));
-  }
-
-  private OOB(x: number, y: number) {
-    if(this.isOOB(x, y)) throw new Error(
-      `(${x}, ${y})`
-    );
-  }
-
-  isOOB(x: number, y: number): boolean {
-    return x < 0
-    || x > this.w
-    || y < 0
-    || y > this.h;
-  }
-  
-  get(x: number, y: number): T | undefined {   
-    this.OOB(x, y); 
-    return this.matrix[y][x];
-  }
-
-  set(x: number, y: number, s: T) {
-    this.OOB(x, y);
-    this.matrix[y][x] = s;
-  }
-
-  place(x: number, y: number, val: T): boolean {
-    if(this.get(x, y)) return false;
-
-    this.set(x, y, val);
-
-    return true;
-  }
-
-  delete(x: number, y: number) {
-    this.OOB(x, y);
-    delete this.matrix[y][x];
-  }
-
-  destroy() {
-    this.matrix = [];
-  }
-
-  forEach(f: (t: T) => void) {
-    for(const y in this.matrix) {
-      const yo = this.matrix[y];
-
-      for(const x in yo) f(yo[x]);
-    }
-  }
-
-  clear(): Promise<void> {
-    return new Promise(res => {
-      for(const y in this.matrix) {
-        const yo = this.matrix[y];
-
-        for(const x in yo) {
-          delete yo[x];
-        }
-      }
-
-      res();
-    });
-  }
 }
 
 export function normalize(min: number, val: number, max: number): number {

@@ -1,10 +1,12 @@
-import { Application, Assets, BindableTexture, Container, Sprite, Spritesheet, SpritesheetData, Texture, TilingSprite } from "pixi.js";
+import { Application, Assets, BindableTexture, Container, Spritesheet, SpritesheetData, Texture, TilingSprite } from "pixi.js";
 import { GMOutput, Keymap } from "../keymap";
 import { PWS } from "../physics/objects";
 import { PW } from "../physics/physics";
 import { degToRad, getRandom } from "../util";
 import { MDgame, MDgameGridType, MDgameType } from "./game";
 import { parseBlockComponents } from "./components";
+import { Player } from "../player";
+import { BgBlock, FgBlock } from "./unit";
 
 export interface XYWH {
     x: number;
@@ -39,8 +41,11 @@ interface MDshellOpts {
     pw: PW;
     imageBlobSize: number;
     app: Application;
+    playerWidth: number;
+    playerHeight: number;
 }
 
+/*
 export interface BgObj extends XYWH {
     sprite: Container;
     type: string;
@@ -50,8 +55,9 @@ export interface BgObj extends XYWH {
 
 export interface FgObj extends BgObj {
     pwb: PWS;
-    
+    components?: Record<string, Record<string, any>>;
 }
+*/
 
 // name: the id of the block
 // display: the displayed name of a block
@@ -67,6 +73,7 @@ export interface BlockCreationOpts extends XYWH {
 export class MDshell {
     playerSpawnString = "@";
     levels: Record<string, LevelJSONoutput[]> = {};
+    player: Player;
 
     blockSize: number;
     blockSizeHalf: number;
@@ -151,6 +158,8 @@ export class MDshell {
         });
 
         this.spritesheet.then(s => this.initSpritesheet(s));
+
+        this.player = new Player(this.game.groups.view, o.playerWidth, o.playerHeight);
     }
 
     async init(): Promise<void> {
@@ -237,26 +246,24 @@ export class MDshell {
             const pws = 
             new PWS(o.x * this.blockSize, o.y * this.blockSize, o.w * this.blockSize, o.h * this.blockSize, info.texture);
 
-            this.game.blocks.fg[pws.id] = {
+            const fgBlock = new FgBlock({
                 x: o.x,
                 y: o.y,
                 w: o.w,
                 h: o.h,
-                type: info.texture,
-                sprite: pws.sprite!,
+                name: info.texture,
                 rotation: o.rotation,
-                pwb: pws,
-                overlay: false,
-            };
+                pws: pws,
+                isOverlay: false,
+                shell: this,
+                id: pws.id,
+            });
 
+            this.game.blocks.fg[pws.id] = fgBlock;
             pws.sprite = s;
 
             Keymap.IterateGMrect(o.x, o.y, o.w, o.h, (x, y) => {
-                this.game.grids.fg.set(x, y, {
-                    name: o.name,
-                    id: pws.id,
-                    type: this.blocks[o.name].texture,
-                });
+                this.game.grids.fg.set(x, y, fgBlock);
 
                 this.pw.addStatic(x, y, pws);
             });
@@ -270,45 +277,48 @@ export class MDshell {
             return {isPassable: false, id: pws.id};
         } else if(info.type == "bg") {
             const id = this.game.getNewId();
-            this.game.blocks.bg[id] = {
-                sprite: s,
+
+            const bgBlock = new BgBlock({
                 x: o.x,
                 y: o.y,
                 w: o.w,
                 h: o.h,
-                type: info.texture,
+                name: info.texture,
                 rotation: o.rotation,
-                overlay: false,
-            };
+                shell: this,
+                id,
+            });
+
+            bgBlock.sprite = s;
+
+            this.game.blocks.bg[id] = bgBlock;
 
             Keymap.IterateGMrect(o.x, o.y, o.w, o.h, (x, y) => {
-                this.game.grids.bg.set(x, y, {
-                    name: o.name,
-                    id,
-                    type: info.texture,
-                });
+                this.game.grids.bg.set(x, y, bgBlock);
             });
 
             return {isPassable: true, id};
         } else {
             const id = this.game.getNewId();
-            this.game.blocks.overlay[id] = {
-                sprite: s,
+
+            const bgBlock = new BgBlock({
                 x: o.x,
                 y: o.y,
                 w: o.w,
                 h: o.h,
-                type: info.texture,
+                name: info.texture,
                 rotation: o.rotation,
-                overlay: true,
-            };
+                isOverlay: true,
+                shell: this,
+                id,
+            });
+
+            bgBlock.sprite = s;
+
+            this.game.blocks.overlay[id] = bgBlock;
 
             Keymap.IterateGMrect(o.x, o.y, o.w, o.h, (x, y) => {
-                this.game.grids.bg.set(x, y, {
-                    name: o.name,
-                    id,
-                    type: info.texture,
-                });
+                this.game.grids.overlay.set(x, y, bgBlock);
             });
 
             return {isPassable: true, id};
@@ -406,6 +416,15 @@ export class MDshell {
                 });
             }
         }
+    }
+
+    deleteBlock(type: MDgameGridType, x: number, y: number) {
+        const block = this.game.grids[type].get(x, y);
+        if(!block) return;
+
+        block.deletePart(x, y);
+
+        if(type == "fg") this.pw.removeStatic(x, y);
     }
 }
 

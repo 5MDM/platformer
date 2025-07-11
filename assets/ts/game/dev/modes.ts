@@ -44,6 +44,11 @@ const modeArr: Elt[] = [
         name: "edit",
         src: "interact-btn.png",
         state: editorTools.editState,
+    },
+    {
+        name: "delete",
+        src: "trash.png",
+        state: editorTools.deleteState,
     }
 ];
 

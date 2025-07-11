@@ -1,11 +1,11 @@
 import { Texture, TilingSprite } from "pixi.js";
 import { $, $$, degToRad, ToggleList, ToggleState } from "../../lib/util";
-import { app, blockSizeHalf, maxLevelSize } from "../../constants";
+import { blockSizeHalf, maxLevelSize } from "../../constants";
 import { mdshell } from "../../constants";
 import { DragController } from "../../lib/drag";
 import { c } from "../../canvas";
-import { blocksEl, blockSize, player, pw } from "../../constants";
-import { scale, startStats, studio } from "./stats";
+import { blocksEl, blockSize, pw } from "../../constants";
+import { studio } from "./stats";
 import { gameScale, setGameScale } from "./zoom";
 import { promptLevelInput } from "./level-inserter";
 import { EditorTools } from "../../lib/md-framework/editor-tools";
@@ -57,6 +57,7 @@ export const editorTools = new EditorTools({
     gameScale,
     maxLevelSize,
     moveStateImg:  $("#ui > #move-arrow") as HTMLImageElement,
+    blockDataPopupElContainer: $("#ui > #block-data-popup"),
 });
 
 export const studioState = new ToggleState(() => {

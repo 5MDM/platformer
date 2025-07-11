@@ -1,7 +1,8 @@
 import { MDgame } from "./game";
 import { touchingBlocks } from "./interact";
-import { FgObj, MDshell } from "./shell";
+import { MDshell } from "./shell";
 import { Sprite } from "pixi.js";
+import { FgBlock } from "./unit";
 
 export interface BlockComponent {
     door?: DoorComponent;
@@ -31,10 +32,10 @@ export function parseBlockComponents(mdshell: MDshell, game: MDgame, components:
     if(components.doorpoint) parseDoorpoint(mdshell, components, fgObj);
 }
 
-function parseDoorpoint(mdshell: MDshell, components: BlockComponent, {pwb}: FgObj) {
+function parseDoorpoint(mdshell: MDshell, components: BlockComponent, {pws}: FgBlock) {
     var hasCollided = false;
 
-    pwb.onCollide.push(() => {
+    pws.onCollide.push(() => {
         if(hasCollided) return;
         hasCollided = true;
         
@@ -43,26 +44,26 @@ function parseDoorpoint(mdshell: MDshell, components: BlockComponent, {pwb}: FgO
     });
 }
 
-function parseDoor(mdshell: MDshell, game: MDgame, components: BlockComponent, {pwb}: FgObj) {
-    const ogTextureName = pwb.type;
+function parseDoor(mdshell: MDshell, game: MDgame, components: BlockComponent, {pws}: FgBlock) {
+    const ogTextureName = pws.type;
     const {onOpen} = components.door as DoorComponent;
 
-    pwb.hasCollisionLeaveEvents = true;
+    pws.hasCollisionLeaveEvents = true;
     var isOpen = false;
 
-    pwb.onCollide.push(pws => {
+    pws.onCollide.push(o => {
         if(!isOpen) {
             isOpen = true;
-            pws.sprite!.texture = mdshell.getTexture(onOpen);
+            o.sprite!.texture = mdshell.getTexture(onOpen);
         }
 
         return true;
     });
 
-    pwb.onCollisionLeave.push(pws => {
+    pws.onCollisionLeave.push(o => {
         if(isOpen) {
             isOpen = false;
-            pws.sprite!.texture = mdshell.getTexture(ogTextureName);
+            o.sprite!.texture = mdshell.getTexture(ogTextureName);
         }
     });
 }
@@ -78,17 +79,18 @@ const questionSprite = new Sprite({
 
 var isQuestionSpriteDefined = false;
 var isNearInteraction = false;
-function parseInteract(mdshell: MDshell, game: MDgame, components: BlockComponent, {pwb}: FgObj) {
+
+function parseInteract(mdshell: MDshell, game: MDgame, components: BlockComponent, {pws}: FgBlock) {
     if(!isQuestionSpriteDefined) {
         isQuestionSpriteDefined = true;
         questionSprite.texture = mdshell.getTexture("question.png");
         mdshell.game.container.addChild(questionSprite);
     }
 
-    pwb.hasCollisionLeaveEvents = true;
+    pws.hasCollisionLeaveEvents = true;
 
-    pwb.onCollide.push(() => {
-        touchingBlocks[pwb.id] = components.interact!;
+    pws.onCollide.push(() => {
+        touchingBlocks[pws.id] = components.interact!;
 
         if(!isNearInteraction) {
             isNearInteraction = true;
@@ -96,8 +98,8 @@ function parseInteract(mdshell: MDshell, game: MDgame, components: BlockComponen
         }
     });
 
-    pwb.onCollisionLeave.push(() => {
-        delete touchingBlocks[pwb.id];
+    pws.onCollisionLeave.push(() => {
+        delete touchingBlocks[pws.id];
 
         if(isNearInteraction) {
             if(Object.keys(touchingBlocks).length != 0) return;

@@ -1,11 +1,9 @@
-import { $, round, ToggleState } from "../lib/util";
-
-import { deltaTime } from "./dev/stats";
+import { $ } from "../lib/util";
 import { Joystick } from "../lib/joystick";
-import { player, pw } from "../constants";
-import { playerInteract } from "../lib/md-framework/interact";
+import { mdshell, pw } from "../constants";
 import { isMobile } from "pixi.js";
 import { areControlsEnabled } from "./dev/studio";
+import { playerInteract } from "../lib/md-framework/interact";
 
 const speed = 0.3;
 var isMovingLeft = false;
@@ -49,34 +47,34 @@ export function startControlLoop() {
         if(isMovingLeft) {
             finalX -= calcSpeed;
             isMoving = true;
-            player.playAnimation("walk-l", mspeed);
+            mdshell.player.playAnimation("walk-l", mspeed);
             lastMoveUDwasUp = false;
         }
 
         if(isMovingRight) {
             finalX += calcSpeed;
             isMoving = true;
-            player.playAnimation("walk-r", mspeed);
+            mdshell.player.playAnimation("walk-r", mspeed);
             lastMoveUDwasUp = false;
         }
 
         if(isJumping) {
             finalY -= calcSpeed;
             isMoving = true;
-            player.playAnimation("walk-ud-up", mspeed);
+            mdshell.player.playAnimation("walk-ud-up", mspeed);
             lastMoveUDwasUp = true;
         }
 
         if(isGoingDown) {
             finalY += calcSpeed;
             isMoving = true;
-            player.playAnimation("walk-ud-down", mspeed);
+            mdshell.player.playAnimation("walk-ud-down", mspeed);
             lastMoveUDwasUp = false;
         }
 
         if(!isMoving) {
-            if(lastMoveUDwasUp) player.playSprite("stand-ud-up");
-            else player.playSprite("stand-ud-down");
+            if(lastMoveUDwasUp) mdshell.player.playSprite("stand-ud-up");
+            else mdshell.player.playSprite("stand-ud-down");
         }
 
         if(finalX != 0 && finalY != 0) {
@@ -84,8 +82,8 @@ export function startControlLoop() {
             finalY = Math.sign(finalY) * calcSpeed / Math.SQRT2;
         }
 
-        player.vx += finalX;
-        player.vy += finalY;
+        mdshell.player.vx += finalX;
+        mdshell.player.vy += finalY;
     }
 
     pw.onPhysicsTick = loop;
