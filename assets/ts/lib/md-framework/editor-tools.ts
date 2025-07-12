@@ -12,6 +12,8 @@ import { FgBlock } from "./unit";
 type EditorKeybinds = 
 "multi placement" | "edit" | "rotate right" | "rotate left" | "level editor" | "movement" | "pan";
 
+type StateNames = "multiplacement" | "edit" | "delete";
+
 export interface GameScaleObj {
     x: number;
     y: number;
@@ -437,10 +439,14 @@ export class EditorTools {
         this.resetDevSprite();
         this.switchToPanMode();
         this.dragController.touchEl.addEventListener("pointerdown", this.multiPlacementListenerDownF);
+
+        this.activeStates.multiplacement = this.multiPlacementState;
     }, () => {
         this.dragController.touchEl.removeEventListener("pointerdown", this.multiPlacementListenerDownF);
         this.hasInitialPlacement = false;
         if(this.placementModeState.isToggled) this.dragController.onDrag = (rx, ry, x, y) => this.placeBlock(rx, ry, x, y);
+
+        this.activeStates.multiplacement = null;
     });
 
     private onPlacementModeDown(e: PointerEvent) {
@@ -546,6 +552,12 @@ export class EditorTools {
         this.dragController.changeDefaultandNormalGrab("grab");
         this.dragController.changeDefaultAndNormalGrabbing("grabbing");
     });
+
+    activeStates: Record<StateNames, ToggleState | null> = {
+        edit: null,
+        multiplacement: null,
+        delete: null,
+    };
     
     levelEditorState = new ToggleState(() => {
         this.mdshell.pw.stopClock();
@@ -558,6 +570,15 @@ export class EditorTools {
         
         this.placementModeState.disableIfOn();
         this.mdshell.game.groups.view.addChild(this.devSprite);
+
+        for(const name in this.activeStates) {
+            const state = this.activeStates[name as StateNames];
+            //console.log(this.activeStates)
+            if(!state) continue;
+            
+            //console.log(name);
+            state.enableIfOff();
+        }
     }, () => {
         this.mdshell.pw.startClock();
         this.gameScaleF(0);
@@ -581,9 +602,16 @@ export class EditorTools {
     
         this.movementState.disableIfOn();  
         this.mdshell.game.groups.view.removeChild(this.devSprite);
-        this.editState.disableIfOn();
 
         this.blockDataPopupElState.disableIfOn();
+    
+        for(const name in this.activeStates) {
+            const state = this.activeStates[name as StateNames];
+            if(!state) continue;
+            
+            state.disableIfOn();
+            this.activeStates[name as StateNames] = state;
+        }
     });
 
     setKeybinds(keybinds: Record<string, EditorKeybinds>) {
@@ -804,12 +832,14 @@ export class EditorTools {
         this.spriteOutline.visible = true;
         this.dragController.downElement.addEventListener("pointermove", this.editStateMoveF);
         this.dragController.downElement.addEventListener("click", this.editStateClickF);
+        this.activeStates.edit = this.editState;
     }, () => {
         this.updateComponents();
         this.blockDataPopupElState.disableIfOn();
         this.spriteOutline.visible = false;
         this.dragController.downElement.removeEventListener("pointermove", this.editStateMoveF);
         this.dragController.downElement.removeEventListener("click", this.editStateClickF);
+        this.activeStates.edit = null;
     });
 
     private deleteStateMoveF = (a: number, b: number, x: number, y: number) => this.deleteStateMove(x, y);
@@ -841,7 +871,6 @@ export class EditorTools {
     }
 
     private deleteBg(x: number, y: number) {
-        console.log(x, y);
         this.mdshell.deleteBlock("bg", x, y);
     }
 
@@ -853,9 +882,11 @@ export class EditorTools {
         this.dragController.onDrag = this.deleteStateMoveF;
         this.dragController.changeDefaultandNormalGrab("crosshair");
         this.dragController.changeDefaultAndNormalGrabbing("pointer");
+        this.activeStates.delete = this.deleteState;
     }, () => {
         this.dragController.onDrag = (x: number, y: number) => this.editorPan(x, y);
         this.dragController.changeDefaultandNormalGrab("default");
         this.dragController.changeDefaultAndNormalGrabbing("default");
+        this.activeStates.delete = null;
     });
 }
