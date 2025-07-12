@@ -47,6 +47,16 @@ export class PWB {
         this.cy = y + this.halfH;
     }
 
+    setW(w: number) {
+        this.w = w;
+        this.halfW = w / 2;
+    }
+
+    setH(h: number) {
+        this.h = h;
+        this.halfH = h / 2;
+    }
+
     testAABB(o: AnyObj): boolean {
         // console.log(`${this.x} < ${o.maxX} 
         //     ${this.maxX} > ${o.x}

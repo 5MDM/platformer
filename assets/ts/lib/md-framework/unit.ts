@@ -146,6 +146,7 @@ export class FgBlock extends BgBlock {
         this.components = o.components;
 
         this.pws = o.pws;
+        this.sprite = o.pws.sprite;
     }
 
     destroy() {
@@ -168,26 +169,27 @@ export class FgBlock extends BgBlock {
         } else {
             const output: GMOutput[] = Keymap.GMBool(matrix.matrix, this.name);
             this.shell.game.grids[this.type].delete(x, y);
-            //console.log("split into " + output.length + " parts");
-            // x: 0, w: 5
-            // x: 1. w: 4
+            
 
             for(const i of output) {
                 i.x += this.x;
                 i.y += this.y;
             }
 
-            if(output.length == 1) this.shrink(output[0]);
+            if(output.length == 1) {
+                this.shrink(output[0]);
+            }
             else this.split(x, y, output);
         }
     }
 
     protected shrink(o: GMOutput): void {
+        if(!this.sprite) this.sprite = this.pws.sprite;
+        this.pws.setX(o.x * this.shell.blockSize);
+        this.pws.setY(o.y * this.shell.blockSize);
+        this.pws.setW(o.w * this.shell.blockSize);
+        this.pws.setH(o.h * this.shell.blockSize);
         super.shrink(o);
-        this.pws.x = o.x;
-        this.pws.y = o.y;
-        this.pws.w = o.w;
-        this.pws.h = o.h;
     }
 
     protected split(x: number, y: number, arr: GMOutput[]) {
