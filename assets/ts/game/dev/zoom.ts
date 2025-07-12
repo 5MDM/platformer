@@ -1,7 +1,9 @@
+import { c } from "../../canvas";
 import { mdshell } from "../../constants";
 import { MDslider } from "../../lib/el";
 import { GameScaleObj } from "../../lib/md-framework/editor-tools";
-import { $, ToggleState } from "../../lib/util";
+import { $, clamp, round, ToggleState } from "../../lib/util";
+import { editorTools } from "./studio";
 
 export const gameScale: GameScaleObj = {
     x: 1,
@@ -36,6 +38,14 @@ var lastVal = 1;
 slider.el.addEventListener("input", () => {
     scale(Number(slider.el.value));
 });
+
+addEventListener("wheel", e => {
+    e.preventDefault();
+    //lastVal += e.deltaY / 10;
+    if(!editorTools.levelEditorState.isToggled) return;
+    slider.setValue(clamp(-95, Math.round(Number(slider.el.value) - e.deltaY), 100));
+    scale(Number(slider.el.value));
+}, {passive: false});
 
 function scale(percent: number) {
     const val = (percent + 100) / 100;

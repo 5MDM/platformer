@@ -77,6 +77,8 @@ addEventListener("keydown", e => {
         editorTools.movementState.disableIfOn();
     } else if(e.key == "L") {
         promptLevelInput();
+    } else if(e.key == " ") {
+        //editorTools.switchToPanMode();
     }
 });
 

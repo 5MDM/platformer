@@ -363,6 +363,7 @@ export class EditorTools {
 
     switchToPanMode() {
         this.dragController.onDrag = (x, y) => this.editorPan(x, y);
+        this.dragController.setCursorToDefault();
     }
 
     private editorPan(x: number, y: number) {
@@ -880,13 +881,12 @@ export class EditorTools {
 
     deleteState = new ToggleState(() => {
         this.dragController.onDrag = this.deleteStateMoveF;
-        this.dragController.changeDefaultandNormalGrab("crosshair");
-        this.dragController.changeDefaultAndNormalGrabbing("pointer");
+        this.dragController.changeGrab("crosshair");
+        this.dragController.grabbing = "pointer";
         this.activeStates.delete = this.deleteState;
     }, () => {
         this.dragController.onDrag = (x: number, y: number) => this.editorPan(x, y);
-        this.dragController.changeDefaultandNormalGrab("default");
-        this.dragController.changeDefaultAndNormalGrabbing("default");
+        this.dragController.setCursorToDefault();
         this.activeStates.delete = null;
     });
 }

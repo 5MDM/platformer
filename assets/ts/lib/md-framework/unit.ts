@@ -171,7 +171,6 @@ export class FgBlock extends BgBlock {
         } else {
             const output: GMOutput[] = Keymap.GMBool(matrix.matrix, this.name);
             this.shell.game.grids[this.type].delete(x, y);
-            
 
             for(const i of output) {
                 i.x += this.x;
