@@ -841,6 +841,7 @@ export class EditorTools {
     }
 
     private deleteBg(x: number, y: number) {
+        console.log(x, y);
         this.mdshell.deleteBlock("bg", x, y);
     }
 

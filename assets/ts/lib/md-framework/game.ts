@@ -53,14 +53,6 @@ export class MDgame {
         overlay: {},
     };
 
-    internalDeleteWholeSingleBlock(type: MDgameGridType, x: number, y: number, id: number) {
-        const block = this.blocks[type][id];
-        if(!block) return MDshell.Err(`Couldn't delete block of id "${id}" and of type "${type}"`);
-
-        this.grids[type].delete(block.x, block.y);
-        delete this.blocks[type][id];
-    }
-
     clearAndDestroyItems() {
         for(const id in this.blocks.fg) {
             const block = this.blocks.fg[id];

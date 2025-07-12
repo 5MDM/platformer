@@ -63,6 +63,8 @@ export class BgBlock {
     }
 
     destroy() {
+        delete this.shell.game.blocks[this.type][this.id];
+
         this.name = "";
         this.sprite?.destroy();
     }
@@ -77,14 +79,13 @@ export class BgBlock {
     deletePart(x: number, y: number): void {
         if(!this.isInBounds(x, y)) return;
 
-        if(this.sprite) this.sprite.tint = 0xfff000;
-
         const matrix = MDmatrix.GenerateFromBounds<true>(this.w, this.h, true);
         matrix.delete(x - this.x, y - this.y);
 
         if(matrix.checkIfEMpty()) {
             this.destroy();
-            this.shell.game.internalDeleteWholeSingleBlock(this.type, x, y, this.id);
+            this.shell.game.grids[this.type].delete(x, y);
+            delete this.shell.game.blocks[this.type][this.id];
         } else {
             const output: GMOutput[] = Keymap.GMBool(matrix.matrix, this.name);
             this.shell.game.grids[this.type].delete(x, y);
@@ -150,7 +151,7 @@ export class FgBlock extends BgBlock {
     }
 
     destroy() {
-        this.name = "";
+        super.destroy();
         this.pws.destroy();
         delete this.components;
     }
@@ -165,7 +166,8 @@ export class FgBlock extends BgBlock {
 
         if(matrix.checkIfEMpty()) {
             this.destroy();
-            this.shell.game.internalDeleteWholeSingleBlock(this.type, x, y, this.id);
+            this.shell.game.grids[this.type].delete(x, y);
+            delete this.shell.game.blocks[this.type][this.id];
         } else {
             const output: GMOutput[] = Keymap.GMBool(matrix.matrix, this.name);
             this.shell.game.grids[this.type].delete(x, y);
@@ -193,9 +195,6 @@ export class FgBlock extends BgBlock {
     }
 
     protected split(x: number, y: number, arr: GMOutput[]) {
-        //this.destroy();
-        //const grid = this.shell.game.grids[this.type] as MDmatrix<BgBlock>;
-
         for(const {x, y, w, h} of arr) {
             this.shell.createBlock({
                 x,
