@@ -3,7 +3,6 @@
     display: flex;
     position: fixed;
     bottom: 0;
-    color: red;
     height: auto;
     pointer-events: none;
     z-index: -1;
@@ -14,18 +13,20 @@
     margin: auto;
     pointer-events: none;
     width: min(600px, var(--w));
+    border: 5px solid #222222;
+    border-bottom: none;
 }
 
 #ui > #dialogue > #dialogue-c > #text {
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(var(--blue-bg-2), blue);
-    border: 5px outset darkblue;
-    font-size: 2em;
-    padding: 5px;
+    background: linear-gradient(var(--blue-bg-2), black);
+    font-size: 1.5rem;
+    padding: 8px;
+    color: whitesmoke;
 }
 
 #ui > #dialogue > #dialogue-c > #footnote {
-    color: white;
+    color: gray;
     background-color: black;
     font-size: 1em;
 }
@@ -33,27 +34,35 @@
 /* Mobile */
 @media (max-width: 5.6in) {
     #ui > #dialogue {
-        font-size: 0.4em;
         top: 30px;
         bottom: auto;
     }
 
     #ui > #dialogue > #dialogue-c {
-        width: 70%;
-        border: 3px solid darkblue;
+        width: 90%;
     }
 
     #ui > #dialogue > #dialogue-c > #text {
-        height: 80px;
+        font-size: 0.7rem;
+        height: 60px;
+    }
+
+    #ui > #dialogue > #dialogue-c > #footnote {
+        font-size: 0.5rem;
     }
 }
 
+/* tablet */
 @media (min-width: 5.6in) and (max-width: 8in) {
-    #ui > #dialogue {
-        font-size: 0.6em;
+    #ui > #dialogue > #dialogue-c > #text {
+        font-size: 1.2rem;
     }
 
     #ui > #dialogue > #dialogue-c {
         width: 60%;
+    }
+
+    #ui > #dialogue > #dialogue-c > #footnote {
+        font-size: 0.5rem;
     }
 }

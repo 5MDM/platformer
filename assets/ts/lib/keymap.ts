@@ -250,24 +250,6 @@ export class Keymap {
         return output;
     }
 
-    /*run(txt: string) {
-        const m: string[] = txt.split("\n");  
-        const yMax = m.length;
-
-        for(let y = 0; y != yMax; y++) {
-            let x = 0;
-            
-            // Horizontal slice
-            const hSlice = m[y];
-            for(const char of hSlice) {
-                this.keys[char]?.(x, y);
-                x++;
-            }
-        }
-
-        this.onEnd();
-    }*/
-
     key(char: string, f: (x: number, y: number, w: number, h: number, rotation: number) => void) {
         this.keys[char] = f;
     }

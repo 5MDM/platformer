@@ -310,3 +310,11 @@ export function decToFrac(val: number, denom: number): string {
   return `${denom / val}/${denom}`;
 }
 
+export async function timeArrAsync<T>(arr: T[], f: (val: T) => Promise<void | true>, time: number) {
+  for(const i of arr) {
+    const output = await f(i);
+    if(output) return;
+
+    await new Promise(res => setTimeout(res, time));
+  }
+}

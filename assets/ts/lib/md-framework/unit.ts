@@ -1,9 +1,11 @@
 import { GMOutput, Keymap } from "../keymap";
 import { PWS } from "../physics/objects";
 import { MDmatrix } from "../matrix";
-import { LevelJSONoutput, MDshell } from "./shell";
+import { ComponentType, LevelJSONoutput, MDshell } from "./shell";
 import { Sprite, TilingSprite } from "pixi.js";
 import { MDgameGridType } from "./game";
+import { BlockComponent } from "./components";
+import { radToDeg } from "../util";
 
 interface BgUnitObj {
     shell: MDshell;
@@ -22,7 +24,16 @@ interface FgUnitObj extends BgUnitObj {
     pws: PWS;
 }
 
-export class BgBlock {
+export type Block = FgBlock | BgBlock;
+
+export interface BlockDefinition {
+    name: string; // this is the texture
+    type: MDgameGridType;
+    displayName: string;
+    components?: BlockComponent;
+}
+
+export class BgBlock implements BlockDefinition {
     shell: MDshell;
     x: number;
     y: number;
@@ -35,6 +46,7 @@ export class BgBlock {
 
     isOverlay = false;
     type: MDgameGridType = "bg";
+    displayName = "idk";
 
     constructor(o: BgUnitObj) {
         this.shell = o.shell;
@@ -57,7 +69,7 @@ export class BgBlock {
             y: this.y,
             w: this.w,
             h: this.h,
-            rotation: this.rotation,
+            rotation: radToDeg(this.rotation),
             type: this.name,
         }
     }
@@ -138,6 +150,7 @@ export class BgBlock {
 
 export class FgBlock extends BgBlock {
     components?: Record<string, Record<string, any>>;
+    hasCustomComponents = false;
     isOverlay = false;
     pws: PWS;
     type: MDgameGridType = "fg";
@@ -206,5 +219,25 @@ export class FgBlock extends BgBlock {
         }
 
         this.destroy();
+    }
+
+    addComponents(o: ComponentType) {
+        this.hasCustomComponents = true;
+        for(const name in o) {
+            this.setComponent(name, o[name]);
+        }
+    }
+
+    setComponent(name: string, val: Record<string, any>) {
+        this.hasCustomComponents = true;
+        if(!this.components) this.components = {};
+        this.components[name] = val;
+    }
+
+    toJSON(): LevelJSONoutput {
+        const o = super.toJSON();
+        if(this.components) o.components = this.components;
+
+        return o;
     }
 }

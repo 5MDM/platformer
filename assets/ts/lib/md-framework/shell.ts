@@ -6,7 +6,11 @@ import { degToRad, getRandom } from "../util";
 import { MDgame, MDgameGridType, MDgameType } from "./game";
 import { parseBlockComponents } from "./components";
 import { Player } from "../player";
-import { BgBlock, FgBlock } from "./unit";
+import { BgBlock, BlockDefinition, FgBlock } from "./unit";
+import { MDaudio } from "../audio";
+import { MDlevelGenerator } from "./level-gen";
+
+export type ComponentType = Record<string, Record<string, any>>;
 
 export interface XYWH {
     x: number;
@@ -17,13 +21,14 @@ export interface XYWH {
 
 export interface LevelJSONoutput extends GMOutput {
     rotation: number;
+    components?: ComponentType;
 }
 
 export interface BlockInfo {
     name: string;
     type?: MDgameGridType;
     texture: string;
-    components?: Record<string, Record<string, any>>;
+    components?: ComponentType;
 }
 
 export interface ModInfo {
@@ -68,6 +73,7 @@ export interface BlockCreationOpts extends XYWH {
     name: string;
     rotation?: number;
     overlay?: boolean;
+    components?: ComponentType;
 }
 
 export class MDshell {
@@ -89,6 +95,14 @@ export class MDshell {
     levelGenerator = new Keymap();
     blocks: Record<string, BlockInfo> = {};
     imageBlobSize: number;
+    audio = new MDaudio();
+    levelGen = new MDlevelGenerator<BlockCreationOpts>((o: BlockCreationOpts) => {
+        if(o.name == this.playerSpawnString) 
+            return this.game.setSpawn(o.x * this.blockSize, o.y * this.blockSize);
+
+        if(o.rotation) o.rotation = degToRad(o.rotation);
+        this.createBlock(o);
+    });
 
     internalCanvas = new OffscreenCanvas(256, 256);
     ictx: OffscreenCanvasRenderingContext2D;
@@ -118,6 +132,7 @@ export class MDshell {
             gameType: o.gameType,
             maxLevelWidth: o.pw.size,
             maxLevelHeight: o.pw.size,
+            shell: this,
         });
 
         this.atlasImgURL = o.atlasImgURL;
@@ -140,7 +155,7 @@ export class MDshell {
             } else this.mods[mod.name] = mod;
         }
 
-        this.levelGenerator.key(this.playerSpawnString, (x, y) => this.game.setSpawn(x * this.blockSize, y * this.blockSize));
+        //this.levelGen.setBlockDef(this.playerSpawnString, (o: BlockDefinition) => this.game.setSpawn(x * this.blockSize, y * this.blockSize));
         this.pw = o.pw;
 
         this.spritesheet = new Promise(async res => {
@@ -268,10 +283,10 @@ export class MDshell {
                 this.pw.addStatic(x, y, pws);
             });
 
-            const components = this.blocks[o.name].components || {};
+            const components = o.components || this.blocks[o.name].components || {};
 
             if(Object.keys(components).length != 0) {
-                parseBlockComponents(this, this.game, this.blocks[o.name].components!, pws.id);
+                parseBlockComponents(this, this.game, components, pws.id);
             }
 
             return {isPassable: false, id: pws.id};
@@ -326,6 +341,15 @@ export class MDshell {
     }
 
     private registerBlock(name: string, block: BlockInfo) {
+        //if(name == this.playerSpawnString) return;
+
+        this.levelGen.setBlockDef(name, {
+            name: block.texture,
+            type: block.type || "fg",
+            displayName: block.name,
+            components: block.components, // default components
+        });
+
         var hasComponents = false;
         block.type ??= "fg";
 
@@ -339,6 +363,8 @@ export class MDshell {
         block.components ||= {};
 
         this.blocks[name] = block;
+
+        /*
 
         if(hasComponents) {
             this.levelGenerator.key(block.texture, (x, y, w, h, rotation) => {
@@ -356,7 +382,7 @@ export class MDshell {
                     rotation: degToRad(rotation),
                 });
             });
-        }
+        }*/
     }
 
     async getBlocksAsImages() {    
@@ -390,7 +416,20 @@ export class MDshell {
         const arr: LevelJSONoutput[] | undefined = this.levels[name];
         if(!arr) return MDshell.Err(`Couldn't find level "${name}"`);
 
-        this.levelGenerator.runRaw(arr);
+        for(const block of arr) {
+            //const blockInfo = this.getBlockInfo(block.type);
+
+            this.levelGen.generateBlock({
+                name: block.type,
+                rotation: block.rotation,
+                x: block.x,
+                y: block.y,
+                w: block.w,
+                h: block.h,
+                components: block.components,
+            });
+        }
+        //this.levelGenerator.runRaw(arr);
     }
 
     destroyCurrentLevel() {

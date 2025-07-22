@@ -13,8 +13,9 @@
   "author": "5MDM",
   "license": "MIT",
   "dependencies": {
-    "pixi.js": "^8.10.1",
-    "pnpm": "^10.12.1"
+    "pixi.js": "^8.11.0",
+    "pnpm": "^10.13.1",
+    "yaml": "^2.8.0"
   },
   "devDependencies": {
     "typescript": "^5.8.3",

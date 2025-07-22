@@ -22,6 +22,27 @@ export interface InteractComponent {
     text: string;
 }
 
+export function checkIfComponentsAreEqual
+(obj1: Record<string, Record<string, any>>, obj2: Record<string, Record<string, any>>): boolean {
+    const componentList: Record<string, true> = {};
+
+    for(const component in obj1) componentList[component] = true;
+
+    for(const component in obj2)
+        if(!componentList[component]) return false;
+    
+    for(const component in obj1)
+        for(const prop in obj1[component]) {
+            const prop1 = obj1[component][prop];
+            const prop2 = obj2[component]?.[prop];
+
+            if(prop1 != prop2) return false;
+        }
+
+
+    return true;
+}
+
 export function parseBlockComponents(mdshell: MDshell, game: MDgame, components: BlockComponent, id: number) {
     const fgObj = game.blocks.fg[id];
 

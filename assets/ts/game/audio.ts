@@ -1,12 +1,11 @@
-import { MDaudio } from "../lib/audio";
 import music from "../../audio/music/June 7.mp3";
+import { mdshell } from "../constants";
 
-const mdaudio = new MDaudio();
-mdaudio.loadAudio({
+mdshell.audio.loadAudio({
     "awake": music,
 })
-.then(() => mdaudio.startListening());
+.then(() => mdshell.audio.startListening());
 
-mdaudio.onStart = function() {
-    mdaudio.playAudio("awake");
+mdshell.audio.onStart = function() {
+    mdshell.audio.playAudio("awake");
 };

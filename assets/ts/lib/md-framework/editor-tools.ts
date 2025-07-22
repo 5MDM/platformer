@@ -7,7 +7,8 @@ import { blockRotation } from "../../game/dev/studio";
 import { PWS } from "../physics/objects";
 import { GMOutput, Keymap } from "../keymap";
 import { MD2Columntable, tr } from "../el";
-import { FgBlock } from "./unit";
+import { Block, FgBlock } from "./unit";
+import { checkIfComponentsAreEqual } from "./components";
 
 type EditorKeybinds = 
 "multi placement" | "edit" | "rotate right" | "rotate left" | "level editor" | "movement" | "pan";
@@ -198,7 +199,7 @@ export class EditorTools {
 
         el.onpointerup = function() {
             self.blockDataPopupElState.disableIfOn();
-            self.updateComponents();
+            //self.updateComponents();
         };
 
         this.blockDataPopupEl.appendChild(el);
@@ -574,10 +575,8 @@ export class EditorTools {
 
         for(const name in this.activeStates) {
             const state = this.activeStates[name as StateNames];
-            //console.log(this.activeStates)
             if(!state) continue;
             
-            //console.log(name);
             state.enableIfOff();
         }
     }, () => {
@@ -761,22 +760,29 @@ export class EditorTools {
         el.textContent = val;
     }
 
-    private updateBlockref: BlockInfo | undefined = undefined;
-    private updateDataref: Record<string, any> | undefined = undefined;
+    private lastEditedBlock?: FgBlock;
+    private lastBlockInfo?: BlockInfo;
 
     private updateComponents() {
-        if(this.updateBlockref) 
-            if(this.updateBlockref.components) {
-                this.updateBlockref.components = this.updateDataref;
-                this.updateBlockref = undefined;
-                this.updateDataref = undefined;
-            }
+        if(!this.lastEditedBlock?.components || !this.lastBlockInfo?.components) return;
+
+        const isEqual = 
+        checkIfComponentsAreEqual(this.lastEditedBlock.components, this.lastBlockInfo.components);
+
+        if(isEqual) {
+            delete this.lastEditedBlock.components;
+            this.lastEditedBlock.hasCustomComponents = false;
+        }
+        else {
+            this.lastEditedBlock.hasCustomComponents = true;
+        }
+
+        this.lastBlockInfo = undefined;
+        this.lastEditedBlock = undefined;
     }
 
     private updateBlockDataPopup(data: FgBlock) {
         this.updateComponents();
-        this.updateBlockref = this.mdshell.blocks[data.name];
-
         const blockInfo = this.mdshell.getBlockInfo(data.name);
         this.setBlockDataPopupEntry("block-display", blockInfo.name);
         this.setBlockDataPopupEntry("block-name", data.name);
@@ -792,10 +798,13 @@ export class EditorTools {
                 if(el.children.length > 1) el.removeChild(el.firstChild!);
 
                 const mdTable = new MD2Columntable();
-                const tableEl = mdTable.parseJSON<Record<string, Record<string, any>>>(blockInfo.components);
+
+                if(!data.components) data.components = structuredClone(blockInfo.components);
+                const tableEl = mdTable.parseJSON<Record<string, Record<string, any>>>(data.components);
+                this.lastEditedBlock = data;
+                this.lastBlockInfo = blockInfo;
 
                 el.prepend(tableEl);
-                this.updateDataref = mdTable.currentObj;
             }
         } else this.setBlockDataPopupEntry("block-components", "No components");
     }
@@ -804,6 +813,7 @@ export class EditorTools {
         this.blockDataPopupEl.style.display = "block";
     }, () => {
         this.blockDataPopupEl.style.display = "none";
+        this.updateComponents();
     });
 
     private onEditStateClick(x: number, y: number) {
@@ -819,7 +829,6 @@ export class EditorTools {
         if(!blockRef) return this.dragController.CAD(true);
 
         const block = this.mdshell.game.blocks.fg[blockRef.pws.id];
-        //if(block.pwb.sprite) block.pwb.sprite.tint = 0xf0aaff;
 
         this.blockDataPopupElState.enableIfOff();
         this.updateBlockDataPopup(block);
@@ -835,12 +844,12 @@ export class EditorTools {
         this.dragController.downElement.addEventListener("click", this.editStateClickF);
         this.activeStates.edit = this.editState;
     }, () => {
-        this.updateComponents();
         this.blockDataPopupElState.disableIfOn();
         this.spriteOutline.visible = false;
         this.dragController.downElement.removeEventListener("pointermove", this.editStateMoveF);
         this.dragController.downElement.removeEventListener("click", this.editStateClickF);
         this.activeStates.edit = null;
+        this.updateComponents();
     });
 
     private deleteStateMoveF = (a: number, b: number, x: number, y: number) => this.deleteStateMove(x, y);

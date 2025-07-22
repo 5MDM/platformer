@@ -1,1 +1,1 @@
-[{"x":62,"y":60,"w":16,"h":3,"rotation":0,"type":"floor-tile.png"},{"x":64,"y":64,"w":1,"h":1,"type":"@","rotation":0}]
+[{"x":68,"y":65,"w":1,"h":1,"rotation":0,"type":"doorpoint.png","components":{"doorpoint":{"toLevel":"1"}}},{"x":62,"y":60,"w":16,"h":3,"rotation":0,"type":"floor-tile.png"},{"x":64,"y":64,"w":1,"h":1,"type":"@","rotation":0}]

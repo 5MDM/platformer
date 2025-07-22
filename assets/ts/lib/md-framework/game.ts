@@ -1,13 +1,15 @@
 import { Container } from "pixi.js";
-import { $, radToDeg, ToggleState } from "../util";
+import { $, radToDeg, timeArrAsync, ToggleState } from "../util";
 import { MDmatrix } from "../matrix";
 import { LevelJSONoutput, MDshell } from "./shell";
 import { BgBlock, FgBlock } from "./unit";
+import { checkIfComponentsAreEqual } from "./components";
 
 export interface MDgameOpts {
     maxLevelWidth: number;
     maxLevelHeight: number;
     gameType: MDgameType;
+    shell: MDshell;
 }
 
 export type MDgameType = "td" | "side";
@@ -18,6 +20,7 @@ export type MDgameGridType = "fg" | "bg" | "overlay";
 export class MDgame {
     dialogueElement = $("#ui > #dialogue > #dialogue-c");
     dialogueParagraphElement = $("#ui > #dialogue > #dialogue-c > #text") as HTMLParagraphElement;
+    shell: MDshell;
 
     //pwObjects: Record<number, FgObj> = {};
     //bgObjects: Record<number, BgObj> = {};
@@ -101,17 +104,11 @@ export class MDgame {
     getBlocksAsArray(): LevelJSONoutput[] {
         const arr: LevelJSONoutput[] = [];
 
-        this.iterateFGblocks(({x, y, w, h, rotation, name}) => {
-            arr.push({x, y, w, h, rotation: radToDeg(rotation), type: name});
-        });
+        this.iterateFGblocks(block => arr.push(block.toJSON()));
 
-        this.iterateBGblocks(({x, y, w, h, rotation, name}) => {
-            arr.push({x, y, w, h, rotation: radToDeg(rotation), type: name});
-        });
+        this.iterateBGblocks(block => arr.push(block.toJSON()));
 
-        this.iterateOverlayblocks(({x, y, w, h, rotation, name}) => {
-            arr.push({x, y, w, h, rotation: radToDeg(rotation), type: name});
-        });
+        this.iterateOverlayblocks(block => arr.push(block.toJSON()));
 
         return arr;
     }
@@ -125,6 +122,7 @@ export class MDgame {
         };
 
         this.editGrid = new MDmatrix<string>(o.maxLevelWidth, o.maxLevelHeight);
+        this.shell = o.shell;
 
         this.groups.static.addChild(this.groups.bg);
         this.groups.static.addChild(this.groups.fg);
@@ -159,10 +157,25 @@ export class MDgame {
     }
 
     private playerDialogueState = new ToggleState(() => {
-        this.dialogueParagraphElement.textContent = this.currentDialogue;
+        this.dialogueRead(this.dialogueParagraphElement, this.currentDialogue, .04);
+
         this.dialogueElement.style.display = "block";
     }, () => {
         this.dialogueParagraphElement.textContent = "(no text)";
         this.dialogueElement.style.display = "none";
     });
+
+    private dialogueRead(el: HTMLElement, text: string, speed: number) {
+        const arr: string[] = text.split("");
+        el.textContent = "";
+
+        timeArrAsync<string>(arr, async (char: string) => {
+            if(!this.playerDialogueState.isToggled) return true;
+
+            el.textContent += char;
+            if(char == ".") await new Promise(res => setTimeout(res, 200));
+
+            this.shell.audio.playAudio
+        }, speed * 1000); 
+    }
 }
