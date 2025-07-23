@@ -233,7 +233,6 @@ export class PW {
             } else if(!moving.tweenMatches()) {
                 moving.addTween(dx, dy, this.lerpTime);
             }
-            
 
             //if(moving.sprite) moving.updateSprite();
             moving.vx = 0;

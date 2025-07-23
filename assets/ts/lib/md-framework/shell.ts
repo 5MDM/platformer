@@ -417,8 +417,6 @@ export class MDshell {
         if(!arr) return MDshell.Err(`Couldn't find level "${name}"`);
 
         for(const block of arr) {
-            //const blockInfo = this.getBlockInfo(block.type);
-
             this.levelGen.generateBlock({
                 name: block.type,
                 rotation: block.rotation,
@@ -429,7 +427,8 @@ export class MDshell {
                 components: block.components,
             });
         }
-        //this.levelGenerator.runRaw(arr);
+
+        this.player.completeTweeningEarly(this.pw.lerpTime);
     }
 
     destroyCurrentLevel() {

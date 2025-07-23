@@ -31,8 +31,8 @@ export async function startGame(sh: MDshell) {
     mdshell.player.displayTo(mdshell.game.groups.world);
 
     sh.setCurrentLevel("1");
-    
-    mdshell.player.teleport(sh.game.spawnX, sh.game.spawnY);
+
+    sh.player.teleport(sh.game.spawnX, sh.game.spawnY);
     
     pw.startClock();
     

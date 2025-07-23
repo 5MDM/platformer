@@ -45,6 +45,7 @@ export class Player extends PWD {
     teleport(x: number, y: number) {
         this.setX(x);
         this.setY(y);
+
         this.updateSprite();
     }
 
@@ -56,7 +57,6 @@ export class Player extends PWD {
     }
 
     addY(y: number) {
-        //this.wc.y -= y;
         this.y += y;
         this.maxY += y;
         this.cy += y;
@@ -66,7 +66,6 @@ export class Player extends PWD {
         this.y = y;
         this.maxY = y + this.h;
         this.cy = y + this.halfH;
-        //this.wc.y = this.halfHS - y;
     }
 
     updateSprite(): void {

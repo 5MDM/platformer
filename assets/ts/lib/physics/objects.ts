@@ -313,6 +313,14 @@ export class PWD extends PWB {
         this.container.x += lerp(0, x, lerpTime);
         this.container.y += lerp(0, y, lerpTime);
     }
+
+    completeTweeningEarly(lerpTime: number) {
+        if(!this.tweenMatches()) {
+            while(this.tweenList.length > 0) {
+                this.tweenStep(lerpTime);
+            }
+        }
+    }
 }
 
 export type NotDynamicObj = PWS;
