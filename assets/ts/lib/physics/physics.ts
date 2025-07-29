@@ -190,21 +190,24 @@ export class PW {
                     this.recentCollisions[col.id] = col;
                 }
 
-                if (col.testAABB(moving)) {
-                    for (const f of col.onCollide) {
-                        if (f(col)) continue loop;
+                if(col.testAABB(moving)) {
+                    var test = false
+                    for(const f of col.onCollide) {
+                        var res = f(col);
+                        test = true;
+                        if(res) continue loop;
                     }
 
-                    const resolution = this.separate(moving, col);
+                    this.separate(moving, col);
                 }
             }
         }
 
-        for (const id in this.recentCollisions) {
+        for(const id in this.recentCollisions) {
             const block = this.recentCollisions[id];
-            if (!block.hasCollidedRecently) {
+            if(!block.hasCollidedRecently) {
 
-                if (!block.testSmallAABB(moving)) {
+                if(!block.testSmallAABB(moving)) {
                     for (const f of block.onCollisionLeave) f(block);
                     delete this.recentCollisions[id];
                 }

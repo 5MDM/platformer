@@ -1,4 +1,3 @@
-import { mdshell } from "../../constants";
 import { ElList } from "../../lib/el";
 import { MDshell } from "../../lib/md-framework/shell";
 import { $, $$, ToggleState } from "../../lib/util";

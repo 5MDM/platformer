@@ -8,7 +8,8 @@ import { PWS } from "../physics/objects";
 import { GMOutput, Keymap } from "../keymap";
 import { MD2Columntable, tr } from "../el";
 import { Block, FgBlock } from "./unit";
-import { checkIfComponentsAreEqual } from "./components";
+import { checkIfComponentsAreEqual } from "./block-components/main";
+import { ComponentList } from "./block-components/parser";
 
 type EditorKeybinds = 
 "multi placement" | "edit" | "rotate right" | "rotate left" | "level editor" | "movement" | "pan";
@@ -73,6 +74,15 @@ export class EditorTools {
                         }),
                         $$("th", {
                             text: "Data"
+                        }),
+                    ),
+                    tr(
+                        $$("td", {
+                            text: "Id"
+                        }),
+                        $$("td", {
+                            attrs: {id: "block-id"},
+                            text: "----"
                         }),
                     ),
                     tr(
@@ -199,6 +209,7 @@ export class EditorTools {
 
         el.onpointerup = function() {
             self.blockDataPopupElState.disableIfOn();
+            self.isTyping = false;
             //self.updateComponents();
         };
 
@@ -616,6 +627,8 @@ export class EditorTools {
 
     setKeybinds(keybinds: Record<string, EditorKeybinds>) {
         addEventListener("keydown", ({key}) => {
+            if(this.isTyping) return;
+
             const got: undefined | EditorKeybinds = keybinds[key];
             if(!got) return;
 
@@ -772,8 +785,11 @@ export class EditorTools {
         if(isEqual) {
             delete this.lastEditedBlock.components;
             this.lastEditedBlock.hasCustomComponents = false;
-        }
-        else {
+        } else {
+            //this.mdshell.deleteBlock("fg", this.lastEditedBlock.x, this.lastEditedBlock.y);
+            this.lastEditedBlock.updateComponents(
+                () => this.mdshell.componentParser.parseComponents(this.lastEditedBlock!)
+            );
             this.lastEditedBlock.hasCustomComponents = true;
         }
 
@@ -787,6 +803,7 @@ export class EditorTools {
         this.setBlockDataPopupEntry("block-display", blockInfo.name);
         this.setBlockDataPopupEntry("block-name", data.name);
         this.setBlockDataPopupEntry("block-type", data.isOverlay ? "Foreground Overlay" : "Foreground");
+        this.setBlockDataPopupEntry("block-id", data.id.toString());
 
         this.setBlockDataPopupEntry("block-components", "");
         if(blockInfo.components) {
@@ -799,8 +816,10 @@ export class EditorTools {
 
                 const mdTable = new MD2Columntable();
 
-                if(!data.components) data.components = structuredClone(blockInfo.components);
-                const tableEl = mdTable.parseJSON<Record<string, Record<string, any>>>(data.components);
+                if(!data.components || !data.hasCustomComponents)
+                    data.components = structuredClone(blockInfo.components);
+                
+                const tableEl = mdTable.parseJSON<ComponentList>(data.components);
                 this.lastEditedBlock = data;
                 this.lastBlockInfo = blockInfo;
 
@@ -811,8 +830,10 @@ export class EditorTools {
 
     blockDataPopupElState = new ToggleState(() => {
         this.blockDataPopupEl.style.display = "block";
+        this.isTyping = true;
     }, () => {
         this.blockDataPopupEl.style.display = "none";
+        this.isTyping = false;
         this.updateComponents();
     });
 

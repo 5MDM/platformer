@@ -1,5 +1,5 @@
 import { mdshell } from "../../constants";
-import { InteractComponent } from "./components";
+import { InteractComponent } from "./block-components/interact";
 
 export const touchingBlocks: Record<number, InteractComponent> = {}
 

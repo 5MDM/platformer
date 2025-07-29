@@ -136,7 +136,7 @@
             "type": "fg",
             "components": {
                 "doorpoint": {
-                    "toLevel": "2"
+                    "toLevel": "error"
                 }
             }
         },
@@ -144,6 +144,16 @@
             "name": "kitchen table",
             "texture": "kitchen-table.png",
             "type": "fg"
+        },
+        {
+            "name": "sign",
+            "texture": "sign.png",
+            "type": "fg",
+            "components": {
+                "interact": {
+                    "text": "DEV NOTE: I forgot to add text to this sign. This is default text"
+                }
+            }
         }
     ]
 }

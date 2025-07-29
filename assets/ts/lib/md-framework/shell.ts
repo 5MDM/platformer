@@ -1,16 +1,15 @@
-import { Application, Assets, BindableTexture, Container, Spritesheet, SpritesheetData, Texture, TilingSprite } from "pixi.js";
+import { Application, Assets, BindableTexture, Spritesheet, SpritesheetData, Texture, TilingSprite } from "pixi.js";
 import { GMOutput, Keymap } from "../keymap";
 import { PWS } from "../physics/objects";
 import { PW } from "../physics/physics";
 import { degToRad, getRandom } from "../util";
 import { MDgame, MDgameGridType, MDgameType } from "./game";
-import { parseBlockComponents } from "./components";
 import { Player } from "../player";
-import { BgBlock, BlockDefinition, FgBlock } from "./unit";
+import { BgBlock, FgBlock } from "./unit";
 import { MDaudio } from "../audio";
 import { MDlevelGenerator } from "./level-gen";
-
-export type ComponentType = Record<string, Record<string, any>>;
+import { MDcomponentParser } from "./block-components/main";
+import { ComponentList } from "./block-components/parser";
 
 export interface XYWH {
     x: number;
@@ -21,14 +20,14 @@ export interface XYWH {
 
 export interface LevelJSONoutput extends GMOutput {
     rotation: number;
-    components?: ComponentType;
+    components?: ComponentList;
 }
 
 export interface BlockInfo {
     name: string;
     type?: MDgameGridType;
     texture: string;
-    components?: ComponentType;
+    components?: ComponentList;
 }
 
 export interface ModInfo {
@@ -50,20 +49,6 @@ interface MDshellOpts {
     playerHeight: number;
 }
 
-/*
-export interface BgObj extends XYWH {
-    sprite: Container;
-    type: string;
-    rotation: number;
-    overlay: boolean;
-}
-
-export interface FgObj extends BgObj {
-    pwb: PWS;
-    components?: Record<string, Record<string, any>>;
-}
-*/
-
 // name: the id of the block
 // display: the displayed name of a block
 // texture: texture url
@@ -73,13 +58,15 @@ export interface BlockCreationOpts extends XYWH {
     name: string;
     rotation?: number;
     overlay?: boolean;
-    components?: ComponentType;
+    components?: ComponentList;
 }
 
 export class MDshell {
     playerSpawnString = "@";
     levels: Record<string, LevelJSONoutput[]> = {};
     player: Player;
+
+    componentParser: MDcomponentParser;
 
     blockSize: number;
     blockSizeHalf: number;
@@ -123,6 +110,10 @@ export class MDshell {
         this.blockSizeHalf = this.blockSize / 2;
         this.imageBlobSize = o.imageBlobSize;
 
+        this.componentParser = new MDcomponentParser({
+            shell: this,
+        });
+
         const ictx = this.internalCanvas.getContext("2d");
         if(!ictx) throw MDshell.Err("canvas context rejected");
 
@@ -155,7 +146,6 @@ export class MDshell {
             } else this.mods[mod.name] = mod;
         }
 
-        //this.levelGen.setBlockDef(this.playerSpawnString, (o: BlockDefinition) => this.game.setSpawn(x * this.blockSize, y * this.blockSize));
         this.pw = o.pw;
 
         this.spritesheet = new Promise(async res => {
@@ -211,6 +201,13 @@ export class MDshell {
                 this.registerBlock(block.texture, block);
             }
         }
+
+        // DELETE LATER
+        for(const i in this.blocks) {
+            if(this.blocks[i].components?.doorpoint) {
+                Object.freeze(this.blocks[i].components.doorpoint);
+            }
+        }
     }
 
     createMergedSprite(x: number, y: number, w: number, h: number, t: Texture, rotation: number = 0): TilingSprite {
@@ -261,6 +258,8 @@ export class MDshell {
             const pws = 
             new PWS(o.x * this.blockSize, o.y * this.blockSize, o.w * this.blockSize, o.h * this.blockSize, info.texture);
 
+            const components = o.components || this.blocks[o.name].components || {};
+
             const fgBlock = new FgBlock({
                 x: o.x,
                 y: o.y,
@@ -272,6 +271,7 @@ export class MDshell {
                 isOverlay: false,
                 shell: this,
                 id: pws.id,
+                components,
             });
 
             this.game.blocks.fg[pws.id] = fgBlock;
@@ -283,10 +283,9 @@ export class MDshell {
                 this.pw.addStatic(x, y, pws);
             });
 
-            const components = o.components || this.blocks[o.name].components || {};
-
             if(Object.keys(components).length != 0) {
-                parseBlockComponents(this, this.game, components, pws.id);
+                //parseBlockComponents(this, this.game, components, pws.id);
+                this.componentParser.parseComponents(fgBlock);
             }
 
             return {isPassable: false, id: pws.id};
@@ -412,9 +411,17 @@ export class MDshell {
         this.levels[name] = data;
     }
 
+    currentLevelName: string = "";
+
     setCurrentLevel(name: string) {
         const arr: LevelJSONoutput[] | undefined = this.levels[name];
         if(!arr) return MDshell.Err(`Couldn't find level "${name}"`);
+
+        if(this.currentLevelName == name) return MDshell.Err(
+            `Tried to load same level twice. Level name: "${name}"`
+        );
+
+        this.currentLevelName = name;
 
         for(const block of arr) {
             this.levelGen.generateBlock({

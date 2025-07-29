@@ -3,7 +3,7 @@ import { $, radToDeg, timeArrAsync, ToggleState } from "../util";
 import { MDmatrix } from "../matrix";
 import { LevelJSONoutput, MDshell } from "./shell";
 import { BgBlock, FgBlock } from "./unit";
-import { checkIfComponentsAreEqual } from "./components";
+import { checkIfComponentsAreEqual } from "./block-components/main";
 
 export interface MDgameOpts {
     maxLevelWidth: number;

@@ -67,6 +67,8 @@ export const studioState = new ToggleState(() => {
 });
 
 addEventListener("keydown", e => {
+    if(editorTools.isTyping) return;
+    
     if(e.key == "p") {
         studioState.toggle();
     } else if(e.key == "C") {

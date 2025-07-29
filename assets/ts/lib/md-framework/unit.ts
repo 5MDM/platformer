@@ -1,11 +1,11 @@
 import { GMOutput, Keymap } from "../keymap";
 import { PWS } from "../physics/objects";
 import { MDmatrix } from "../matrix";
-import { ComponentType, LevelJSONoutput, MDshell } from "./shell";
+import { LevelJSONoutput, MDshell } from "./shell";
 import { Sprite, TilingSprite } from "pixi.js";
 import { MDgameGridType } from "./game";
-import { BlockComponent } from "./components";
 import { radToDeg } from "../util";
+import { ComponentList, ComponentName, ComponentValue } from "./block-components/parser";
 
 interface BgUnitObj {
     shell: MDshell;
@@ -20,7 +20,7 @@ interface BgUnitObj {
 }
 
 interface FgUnitObj extends BgUnitObj {
-    components?: Record<string, Record<string, any>>;
+    components?: ComponentList;
     pws: PWS;
 }
 
@@ -30,7 +30,7 @@ export interface BlockDefinition {
     name: string; // this is the texture
     type: MDgameGridType;
     displayName: string;
-    components?: BlockComponent;
+    components?: ComponentList;
 }
 
 export class BgBlock implements BlockDefinition {
@@ -149,7 +149,7 @@ export class BgBlock implements BlockDefinition {
 }
 
 export class FgBlock extends BgBlock {
-    components?: Record<string, Record<string, any>>;
+    components?: ComponentList;
     hasCustomComponents = false;
     isOverlay = false;
     pws: PWS;
@@ -221,14 +221,14 @@ export class FgBlock extends BgBlock {
         this.destroy();
     }
 
-    addComponents(o: ComponentType) {
+    addComponents(o: ComponentList) {
         this.hasCustomComponents = true;
         for(const name in o) {
-            this.setComponent(name, o[name]);
+            this.setComponent(name as ComponentName, o[name as ComponentName] as ComponentValue);
         }
     }
 
-    setComponent(name: string, val: Record<string, any>) {
+    setComponent(name: ComponentName, val: ComponentValue) {
         this.hasCustomComponents = true;
         if(!this.components) this.components = {};
         this.components[name] = val;
@@ -239,5 +239,15 @@ export class FgBlock extends BgBlock {
         if(this.components) o.components = this.components;
 
         return o;
+    }
+
+    updateComponents(componentParser: () => void) {
+        this.pws.hasCollisionLeaveEvents = false;
+        this.pws.onCollisionLeave = [];
+        this.pws.onCollide = [];
+
+        if(!this.components) return;
+
+        componentParser();
     }
 }

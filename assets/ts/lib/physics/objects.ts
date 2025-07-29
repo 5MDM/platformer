@@ -7,6 +7,7 @@ export function getNewID(): number { return id++; }
 
 export class PWB {
     isPlayer = false;
+    isDeleted = false;
     sprite?: Sprite | TilingSprite;
     id: number = 0;
 
@@ -132,6 +133,8 @@ export class PWB {
     destroy() {
         this.sprite?.destroy();
         this.sprite = undefined;
+
+        /*
         this.x = 0;
         this.y = 0;
         this.w = 1;
@@ -139,7 +142,8 @@ export class PWB {
         this.cx = .5;
         this.cy = .5;
         this.halfW = .5;
-        this.halfH = .5;
+        this.halfH = .5;*/
+        this.isDeleted = true;
     }
 }
 
@@ -159,8 +163,9 @@ export class PWS extends PWB {
     onCollide: ((pws: PWS) => boolean | void)[] = [];
 
     destroy(): void {
-        this.sprite?.destroy();
-        this.sprite = undefined;
+        super.destroy();
+
+        /*
         this.x = 0;
         this.y = 0;
         this.w = 1;
@@ -169,10 +174,11 @@ export class PWS extends PWB {
         this.cy = .5;
         this.halfW = .5;
         this.halfH = .5;
-        this.onCollisionLeave = [];
-        this.onCollide = [];
-        this.hasCollidedRecently = false;
-        this.hasCollisionLeaveEvents = false;
+        */
+        //this.onCollisionLeave = [];
+        //this.onCollide = [];
+        //this.hasCollidedRecently = false;
+        //this.hasCollisionLeaveEvents = false;
     }
 }
 
