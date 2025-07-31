@@ -1,6 +1,6 @@
 import {Sprite, Texture } from "pixi.js";
 
-export const UTIL_VERSION: number = 1.5;
+export const UTIL_VERSION: number = 1.6;
 
 export const RADIAN_QUARTER = 28.6479;
 
@@ -316,5 +316,20 @@ export async function timeArrAsync<T>(arr: T[], f: (val: T) => Promise<void | tr
     if(output) return;
 
     await new Promise(res => setTimeout(res, time));
+  }
+}
+
+export class SimpleExpander<Data, ExpandedData> {
+  generator: (arg: Data) => ExpandedData;
+
+  constructor(f: (arg: Data) => ExpandedData) {
+    this.generator = f;
+  }
+
+  parse(arr: Data[]): ExpandedData[] {
+    const output: ExpandedData[] = [];
+    for(const i of arr) output.push(this.generator(i));
+
+    return output;
   }
 }

@@ -7,7 +7,7 @@ import { MDgame, MDgameGridType, MDgameType } from "./game";
 import { Player } from "../player";
 import { BgBlock, FgBlock } from "./unit";
 import { MDaudio } from "../audio";
-import { MDlevelGenerator } from "./level-gen";
+import { LevelData, MDlevelGenerator } from "./level-gen";
 import { MDcomponentParser } from "./block-components/main";
 import { ComponentList } from "./block-components/parser";
 
@@ -63,7 +63,7 @@ export interface BlockCreationOpts extends XYWH {
 
 export class MDshell {
     playerSpawnString = "@";
-    levels: Record<string, LevelJSONoutput[]> = {};
+    levels: Record<string, LevelData> = {};
     player: Player;
 
     componentParser: MDcomponentParser;
@@ -79,16 +79,39 @@ export class MDshell {
     atlasData: SpritesheetData;
     spritesheet: Promise<Spritesheet>;
     mods: Record<string, ModInfo> = {};
-    levelGenerator = new Keymap();
     blocks: Record<string, BlockInfo> = {};
     imageBlobSize: number;
     audio = new MDaudio();
-    levelGen = new MDlevelGenerator<BlockCreationOpts>((o: BlockCreationOpts) => {
+
+    backgroundTextureName?: string;
+
+    backgroundSprite = new TilingSprite({
+        width: innerWidth,
+        height: innerHeight,
+        texture: Texture.WHITE,
+        zIndex: -1,
+        visible: false,
+        anchor: .5,
+        x: innerWidth / 2,
+        y: innerHeight / 2,
+    });
+
+    levelGen = new MDlevelGenerator(this, (o: BlockCreationOpts) => {
         if(o.name == this.playerSpawnString) 
             return this.game.setSpawn(o.x * this.blockSize, o.y * this.blockSize);
 
         if(o.rotation) o.rotation = degToRad(o.rotation);
         this.createBlock(o);
+    }, ({name}) => {
+        const t = this.getTexture(name);
+
+        //console.log(this.atlasData.frames);
+        if(!t) return MDshell.Err(`Level data error: couldn't find texture "${name}"`);
+        //this.backgroundSprite.x = this.player.x;
+        //this.backgroundSprite.y = this.player.y;
+        this.backgroundTextureName = name;
+        this.backgroundSprite.texture = t;
+        this.backgroundSprite.visible = true;
     });
 
     internalCanvas = new OffscreenCanvas(256, 256);
@@ -165,6 +188,8 @@ export class MDshell {
         this.spritesheet.then(s => this.initSpritesheet(s));
 
         this.player = new Player(this.game.groups.view, o.playerWidth, o.playerHeight);
+
+        this.game.container.addChild(this.backgroundSprite);
     }
 
     async init(): Promise<void> {
@@ -199,13 +224,6 @@ export class MDshell {
 
             for(const block of blocks) {
                 this.registerBlock(block.texture, block);
-            }
-        }
-
-        // DELETE LATER
-        for(const i in this.blocks) {
-            if(this.blocks[i].components?.doorpoint) {
-                Object.freeze(this.blocks[i].components.doorpoint);
             }
         }
     }
@@ -407,15 +425,15 @@ export class MDshell {
         return images;
     }
 
-    addLevel(name: string, data: LevelJSONoutput[]): void {
+    addLevel(name: string, data: LevelData): void {
         this.levels[name] = data;
     }
 
     currentLevelName: string = "";
 
     setCurrentLevel(name: string) {
-        const arr: LevelJSONoutput[] | undefined = this.levels[name];
-        if(!arr) return MDshell.Err(`Couldn't find level "${name}"`);
+        const data: LevelData | undefined = this.levels[name];
+        if(!data) return MDshell.Err(`Couldn't find level "${name}"`);
 
         if(this.currentLevelName == name) return MDshell.Err(
             `Tried to load same level twice. Level name: "${name}"`
@@ -423,17 +441,7 @@ export class MDshell {
 
         this.currentLevelName = name;
 
-        for(const block of arr) {
-            this.levelGen.generateBlock({
-                name: block.type,
-                rotation: block.rotation,
-                x: block.x,
-                y: block.y,
-                w: block.w,
-                h: block.h,
-                components: block.components,
-            });
-        }
+        this.levelGen.generateLevelFromData(data)
 
         this.player.completeTweeningEarly(this.pw.lerpTime);
     }

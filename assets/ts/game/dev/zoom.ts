@@ -1,7 +1,7 @@
 import { c } from "../../canvas";
 import { mdshell } from "../../constants";
 import { MDslider } from "../../lib/el";
-import { GameScaleObj } from "../../lib/md-framework/editor-tools";
+import { GameScaleObj } from "../../lib/md-framework/editor-tools/main";
 import { $, clamp, round, ToggleState } from "../../lib/util";
 import { editorTools } from "./studio";
 
@@ -63,6 +63,9 @@ function scale(percent: number) {
     gameScale.y = 1 / ((val == 0) ? 1 : val);
     gameScale.nx += nx;
     gameScale.ny += ny;
+
+    mdshell.backgroundSprite.scale.x = gameScale.x;
+    mdshell.backgroundSprite.scale.y = gameScale.y;
 }
 
 export function setGameScale(percent: number) {

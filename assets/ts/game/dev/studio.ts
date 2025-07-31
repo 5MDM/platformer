@@ -8,8 +8,7 @@ import { blocksEl, blockSize, pw } from "../../constants";
 import { studio } from "./stats";
 import { gameScale, setGameScale } from "./zoom";
 import { promptLevelInput } from "./level-inserter";
-import { EditorTools } from "../../lib/md-framework/editor-tools";
-import { LevelJSONoutput } from "../../lib/md-framework/shell";
+import { EditorTools } from "../../lib/md-framework/editor-tools/main";
 
 export var areControlsEnabled = true;
 
@@ -58,6 +57,7 @@ export const editorTools = new EditorTools({
     maxLevelSize,
     moveStateImg:  $("#ui > #move-arrow") as HTMLImageElement,
     blockDataPopupElContainer: $("#ui > #block-data-popup"),
+    levelSettingsPopupContainer: $("#ui > #settings-popup") as HTMLDivElement,
 });
 
 export const studioState = new ToggleState(() => {
@@ -81,13 +81,16 @@ addEventListener("keydown", e => {
         promptLevelInput();
     } else if(e.key == " ") {
         //editorTools.switchToPanMode();
+    } else if(e.key == "l") {
+        settingsEl.style.display = "none";
     }
 });
 
 export function copyLevel() {
-    const arr: LevelJSONoutput[] = mdshell.game.getBlocksAsArray();
+    const level = mdshell.levelGen.getLevelData();
+    //const arr: LevelJSONoutput[] = mdshell.game.getBlocksAsArray();
 
-    arr.push({
+    level.blocks.push({
         x: 64,
         y: 64,
         w: 1,
@@ -96,13 +99,15 @@ export function copyLevel() {
         rotation: 0,
     });
 
-    navigator.clipboard.writeText(JSON.stringify(arr))
+    navigator.clipboard.writeText(JSON.stringify(level))
         .then(() => alert("Copied level json"))
         .catch(err => alert(err));
 }
 
 const cat = $("#ui > #editor > #cat") as HTMLDivElement;
-const catList = new ToggleList([
+const settingsEl = $("#ui > #settings-popup");
+
+new ToggleList([
     $$("button", {
         text: "Foreground",
         attrs: { "data-type": "fg-row" },
@@ -111,19 +116,35 @@ const catList = new ToggleList([
         text: "Background",
         attrs: { "data-type": "bg-row" },
     }),
+    $$("button", {
+        text: "Settings",
+        attrs: { "data-type": "settings" },
+    }),
 ], el => {
     const type = el.getAttribute("data-type")!;
-    const row = $("#ui > #editor > #" + type) as HTMLDivElement;
-    row.style.display = "flex";
+
+    if(type == "settings") {
+        settingsEl.style.display = "block";
+    } else {
+        const row = $("#ui > #editor > #" + type) as HTMLDivElement;
+        row.style.display = "flex";
+    }
 
     el.classList.add("toggled");
 }, el => {
     const type = el.getAttribute("data-type")!;
-    const row = $("#ui > #editor > #" + type) as HTMLDivElement;
-    row.style.display = "none";
+
+    if(type == "settings") {
+        settingsEl.style.display = "none";
+    } else {
+        const row = $("#ui > #editor > #" + type) as HTMLDivElement;
+        row.style.display = "none";
+    }
 
     el.classList.remove("toggled");
-}, cat);export var blockRotation = 0;
+}, cat);
+
+export var blockRotation = 0;
 
 const con = $("#ui > #editor").getElementsByClassName("block-row");
 

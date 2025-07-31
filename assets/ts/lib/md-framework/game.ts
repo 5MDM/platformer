@@ -1,9 +1,8 @@
 import { Container } from "pixi.js";
 import { $, radToDeg, timeArrAsync, ToggleState } from "../util";
 import { MDmatrix } from "../matrix";
-import { LevelJSONoutput, MDshell } from "./shell";
+import { MDshell } from "./shell";
 import { BgBlock, FgBlock } from "./unit";
-import { checkIfComponentsAreEqual } from "./block-components/main";
 
 export interface MDgameOpts {
     maxLevelWidth: number;
@@ -99,18 +98,6 @@ export class MDgame {
     iterateOverlayblocks(f: (block: BgBlock, id: string) => void) {
         for(const id in this.blocks.overlay)
             f(this.blocks.overlay[id], id);
-    }
-
-    getBlocksAsArray(): LevelJSONoutput[] {
-        const arr: LevelJSONoutput[] = [];
-
-        this.iterateFGblocks(block => arr.push(block.toJSON()));
-
-        this.iterateBGblocks(block => arr.push(block.toJSON()));
-
-        this.iterateOverlayblocks(block => arr.push(block.toJSON()));
-
-        return arr;
     }
 
     constructor(o: MDgameOpts) {

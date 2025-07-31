@@ -14,6 +14,7 @@ body {
     user-select: none;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
+    --blue-bg-1: rgba(50, 50, 100, .95);
     --blue-bg-2: rgba(40, 40, 100, 1);
     background-color: darkcyan;
 }
