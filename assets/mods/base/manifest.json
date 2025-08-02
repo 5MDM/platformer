@@ -154,6 +154,16 @@
                     "text": "DEV NOTE: I forgot to add text to this sign. This is default text"
                 }
             }
+        },
+        {
+            "name": "Forest Grass 2",
+            "texture": "forest-grass-2.png",
+            "type": "bg"
+        },
+        {
+            "name": "Forest Bush Wall",
+            "texture": "forest-bush-wall.png",
+            "type": "fg"
         }
     ]
 }

@@ -5,6 +5,9 @@ import { GameScaleObj } from "../../lib/md-framework/editor-tools/main";
 import { $, clamp, round, ToggleState } from "../../lib/util";
 import { editorTools } from "./studio";
 
+export const defaultScale = clamp(1, (innerWidth / 20) - 20, 100);
+console.log(defaultScale);
+
 export const gameScale: GameScaleObj = {
     x: 1,
     y: 1,
@@ -72,3 +75,5 @@ export function setGameScale(percent: number) {
     slider.setValue(percent);
     scale(percent);
 }
+
+setGameScale(defaultScale);

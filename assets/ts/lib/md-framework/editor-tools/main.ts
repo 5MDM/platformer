@@ -13,6 +13,7 @@ import { FgBlock } from "../unit";
 import "./blockDataPopup";
 import { blockDataPopupEl } from "./blockDataPopup";
 import { levelSettingsPopupEl } from "./level-settings";
+import { defaultScale } from "../../../game/dev/zoom";
 
 type EditorKeybinds =
     "multi placement" | "edit" | "rotate right" | "rotate left" | "level editor" | "movement" | "pan";
@@ -499,7 +500,8 @@ export class EditorTools {
 
     levelEditorState = new ToggleState(() => {
         this.mdshell.pw.stopClock();
-        this.mdshell.app.stage.scale = 1;
+        //this.mdshell.app.stage.scale = defaultScale;
+        this.gameScaleF(defaultScale);
         this.controlState.disableIfOn();
         this.dragController.enable();
         this.editorEl.style.display = "flex";
@@ -517,7 +519,7 @@ export class EditorTools {
         }
     }, () => {
         this.mdshell.pw.startClock();
-        this.gameScaleF(0);
+        //this.gameScaleF(0);
         this.dragController.disable();
         this.mdshell.game.groups.world.x = 0;
         this.mdshell.game.groups.world.y = 0;

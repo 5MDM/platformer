@@ -112,15 +112,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"grass_block_1.png":
-{
-	"frame": {"x":0,"y":832,"w":256,"h":256},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":256,"h":256},
-	"sourceSize": {"w":256,"h":256}
-},
-"invis.png":
+"forest-bush-wall.png":
 {
 	"frame": {"x":384,"y":320,"w":128,"h":128},
 	"rotated": false,
@@ -128,7 +120,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
 	"sourceSize": {"w":128,"h":128}
 },
-"kitchen-table.png":
+"forest-grass-2.png":
 {
 	"frame": {"x":0,"y":448,"w":128,"h":128},
 	"rotated": false,
@@ -136,9 +128,33 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
 	"sourceSize": {"w":128,"h":128}
 },
-"kitchen-top.png":
+"grass_block_1.png":
+{
+	"frame": {"x":256,"y":832,"w":256,"h":256},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":256,"h":256},
+	"sourceSize": {"w":256,"h":256}
+},
+"invis.png":
 {
 	"frame": {"x":128,"y":448,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+"kitchen-table.png":
+{
+	"frame": {"x":256,"y":448,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+"kitchen-top.png":
+{
+	"frame": {"x":384,"y":448,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -234,7 +250,7 @@
 },
 "question.png":
 {
-	"frame": {"x":256,"y":448,"w":128,"h":128},
+	"frame": {"x":0,"y":576,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -242,7 +258,7 @@
 },
 "sign.png":
 {
-	"frame": {"x":384,"y":448,"w":128,"h":128},
+	"frame": {"x":128,"y":576,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -250,7 +266,7 @@
 },
 "sink.png":
 {
-	"frame": {"x":0,"y":576,"w":128,"h":128},
+	"frame": {"x":256,"y":576,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -258,7 +274,7 @@
 },
 "tv.png":
 {
-	"frame": {"x":128,"y":576,"w":128,"h":128},
+	"frame": {"x":384,"y":576,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -274,7 +290,7 @@
 },
 "white-wall-corner.png":
 {
-	"frame": {"x":256,"y":576,"w":128,"h":128},
+	"frame": {"x":0,"y":704,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -282,7 +298,7 @@
 },
 "white-wall-end.png":
 {
-	"frame": {"x":384,"y":576,"w":128,"h":128},
+	"frame": {"x":128,"y":704,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -290,7 +306,7 @@
 },
 "white-wall-left.png":
 {
-	"frame": {"x":0,"y":704,"w":128,"h":128},
+	"frame": {"x":256,"y":704,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -298,7 +314,7 @@
 },
 "white-wall-tube.png":
 {
-	"frame": {"x":128,"y":704,"w":128,"h":128},
+	"frame": {"x":384,"y":704,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -306,7 +322,7 @@
 },
 "wood-door-open.png":
 {
-	"frame": {"x":256,"y":704,"w":128,"h":128},
+	"frame": {"x":0,"y":832,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -314,7 +330,7 @@
 },
 "wood-door.png":
 {
-	"frame": {"x":384,"y":704,"w":128,"h":128},
+	"frame": {"x":128,"y":832,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -332,6 +348,6 @@
 	"format": "RGBA8888",
 	"size": {"w":512,"h":1600},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:505e7c1f48140fd1738b6006a7f9c2ec:8c72883a9308a1a7418724ee06454544:9157e326ab292468473525d456d5b553$"
+	"smartupdate": "$TexturePacker:SmartUpdate:c493bb9b55f7684bf6f41a8832e00f46:3248d2ee4021a82ae246f3d6fdee9ac7:9157e326ab292468473525d456d5b553$"
 }
 }

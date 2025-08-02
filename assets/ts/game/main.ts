@@ -6,8 +6,9 @@ import "./dev/menu";
 import "./dev/modes";
 import { MDshell } from "../lib/md-framework/shell";
 import { mdshell } from "../constants";
-import { $ } from "../lib/util";
+import { $, clamp } from "../lib/util";
 import { startStats } from "./dev/stats";
+import { defaultScale, setGameScale } from "./dev/zoom";
 
 async function loadAnimations() {
     const spritesheet = await mdshell.spritesheet;
@@ -38,7 +39,7 @@ export async function startGame(sh: MDshell) {
     
     startControlLoop();
     
-    startStats(); 
+    startStats();
 }
 
 if(isMobile.any) {
