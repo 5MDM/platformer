@@ -6,7 +6,6 @@ export interface _MD2dataManagerOpts {
     atlasData: SpritesheetData;
     atlasImgURL: string;
     mods: Record<string, any>;
-    imageBlobSize: number;
 }
 
 export class _MD2dataManager {

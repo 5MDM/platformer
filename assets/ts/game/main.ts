@@ -3,13 +3,11 @@ import "./audio";
 import "./dev/menu";
 import "./dev/modes";
 import { $ } from "../lib/misc/util";
-import { startStats } from "./dev/stats";
 import { _MD2engine } from "../lib/v2/engine";
-import "./editor";
+import { md2 } from "../constants";
+import { MD2editor } from "../lib/editor/main";
 
-export var engine: _MD2engine;
-
-function loadAnimations(md2: _MD2engine) {    
+function loadAnimations() {    
     const walkR = md2.dataManager.getAnimation("player-side-walk");
     walkR.scale.x = -1;
     walkR.position.x = 30;
@@ -26,13 +24,17 @@ function loadAnimations(md2: _MD2engine) {
 }
 
 export async function startGame(md2: _MD2engine) { 
-    engine = md2;
-    loadAnimations(md2);
+    loadAnimations();
 
     md2.levelManager.loadLevel("1");
     
-    startStats();
+    // startStats();
 }
+
+const editor = new MD2editor({
+    engine: md2,
+    el: $("#ui > #editor-v2-c") as HTMLDivElement,
+})
 
 if(isMobile.any) {
     const popup = $("#ui > #audio-popup");

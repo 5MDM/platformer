@@ -39,10 +39,6 @@ export const md2 = new MD2.Engine({
         atlasImgURL: (await (import.meta.glob<{ default: string; }>
             ("../images/atlas.png"))["../images/atlas.png"]()
         ).default,
-        imageBlobSize: Number(getComputedStyle(
-            $("#ui > #editor .block-row") as HTMLDivElement)
-            .getPropertyValue("--img-size").slice(0, -2)
-        ),
         mods: await convertPathToObj(import.meta.glob<{ default: ModInfo; }>("../mods/*/manifest.json")),
     },
     physics: {
@@ -50,8 +46,6 @@ export const md2 = new MD2.Engine({
         smoothing: .5,
     },
 });
-
-export const blocksEl = $("#ui > #editor .block-row") as HTMLDivElement;
 
 //export const player = new Player(mdshell.game.groups.view, 30, 63);
 

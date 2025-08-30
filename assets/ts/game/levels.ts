@@ -9,13 +9,9 @@ import { _MD2engine } from "../lib/v2/engine";
 
 export function initLevels(md2: _MD2engine) {
     function l(name: string, level: Object) {
-        //sh.addLevel(name, level as LevelData);
         md2.levelManager.setLevel(name, level as LevelData);
     }
     
-    //l("1", level1 as LevelData);
-    //l("2", level2 as LevelData);
-    //l("3", level3 as LevelData);
     l("1", forest1);
     l("abandoned_house_inside", abandoned_house_inside);
 
