@@ -2,7 +2,7 @@
 
 "apt-bg.png":
 {
-	"frame": {"x":0,"y":1088,"w":512,"h":512},
+	"frame": {"x":0,"y":1344,"w":512,"h":512},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":512,"h":512},
@@ -96,6 +96,14 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
 	"sourceSize": {"w":128,"h":128}
 },
+"first_house.png":
+{
+	"frame": {"x":256,"y":832,"w":192,"h":256},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":192,"h":256},
+	"sourceSize": {"w":192,"h":256}
+},
 "floor-tile.png":
 {
 	"frame": {"x":256,"y":320,"w":128,"h":128},
@@ -130,7 +138,7 @@
 },
 "grass_block_1.png":
 {
-	"frame": {"x":256,"y":832,"w":256,"h":256},
+	"frame": {"x":0,"y":1088,"w":256,"h":256},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":256,"h":256},
@@ -346,8 +354,8 @@
 	"version": "1.1",
 	"image": "atlas.png",
 	"format": "RGBA8888",
-	"size": {"w":512,"h":1600},
+	"size": {"w":512,"h":1856},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:c493bb9b55f7684bf6f41a8832e00f46:3248d2ee4021a82ae246f3d6fdee9ac7:9157e326ab292468473525d456d5b553$"
+	"smartupdate": "$TexturePacker:SmartUpdate:9c68dd911eb99037274914c8b63547b2:c8337df82a9009fe77887c265a8691e9:9157e326ab292468473525d456d5b553$"
 }
 }

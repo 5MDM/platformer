@@ -1,9 +1,9 @@
-import { $ } from "../lib/util";
-import { Joystick } from "../lib/joystick";
-import { mdshell, pw } from "../constants";
+import { $ } from "../lib/misc/util";
+import { pw } from "../constants";
 import { isMobile } from "pixi.js";
 import { areControlsEnabled } from "./dev/studio";
 import { playerInteract } from "../lib/md-framework/interact";
+import { Joystick } from "../lib/misc/joystick";
 
 const speed = 0.3;
 var isMovingLeft = false;
@@ -44,46 +44,47 @@ export function startControlLoop() {
         var finalY = 0;
         const calcSpeed = (speed * d);
 
-        if(isMovingLeft) {
-            finalX -= calcSpeed;
-            isMoving = true;
-            mdshell.player.playAnimation("walk-l", mspeed);
-            lastMoveUDwasUp = false;
-        }
+        // if(isMovingLeft) {
+        //     finalX -= calcSpeed;
+        //     isMoving = true;
+        //     mdshell.player.playAnimation("walk-l", mspeed);
+        //     lastMoveUDwasUp = false;
+        // }
 
-        if(isMovingRight) {
-            finalX += calcSpeed;
-            isMoving = true;
-            mdshell.player.playAnimation("walk-r", mspeed);
-            lastMoveUDwasUp = false;
-        }
+        // if(isMovingRight) {
+        //     finalX += calcSpeed;
+        //     isMoving = true;
+        //     mdshell.player.playAnimation("walk-r", mspeed);
+        //     lastMoveUDwasUp = false;
+        // }
 
-        if(isJumping) {
-            finalY -= calcSpeed;
-            isMoving = true;
-            mdshell.player.playAnimation("walk-ud-up", mspeed);
-            lastMoveUDwasUp = true;
-        }
+        // if(isJumping) {
+        //     finalY -= calcSpeed;
+        //     isMoving = true;
+        //     mdshell.player.playAnimation("walk-ud-up", mspeed);
+        //     lastMoveUDwasUp = true;
+        // }
 
-        if(isGoingDown) {
-            finalY += calcSpeed;
-            isMoving = true;
-            mdshell.player.playAnimation("walk-ud-down", mspeed);
-            lastMoveUDwasUp = false;
-        }
+        // if(isGoingDown) {
+        //     finalY += calcSpeed;
+        //     isMoving = true;
+        //     mdshell.player.playAnimation("walk-ud-down", mspeed);
+        //     lastMoveUDwasUp = false;
+        // }
 
-        if(!isMoving) {
-            if(lastMoveUDwasUp) mdshell.player.playSprite("stand-ud-up");
-            else mdshell.player.playSprite("stand-ud-down");
-        }
+        // if(!isMoving) {
+        //     //if(lastMoveUDwasUp) mdshell.player.playSprite("stand-ud-up");
+        //     //else mdshell.player.playSprite("stand-ud-down");
 
-        if(finalX != 0 && finalY != 0) {
-            finalX = Math.sign(finalX) * calcSpeed / Math.SQRT2;
-            finalY = Math.sign(finalY) * calcSpeed / Math.SQRT2;
-        }
+        // }
 
-        mdshell.player.vx += finalX;
-        mdshell.player.vy += finalY;
+        // if(finalX != 0 && finalY != 0) {
+        //     finalX = Math.sign(finalX) * calcSpeed / Math.SQRT2;
+        //     finalY = Math.sign(finalY) * calcSpeed / Math.SQRT2;
+        // }
+
+        // mdshell.player.vx += finalX;
+        // mdshell.player.vy += finalY;
     }
 
     pw.onPhysicsTick = loop;

@@ -69,7 +69,7 @@ export class Joystick {
         var x = 0;
         var y = 0;
 
-        this.controller.onDrag = function(cx, cy) {
+        this.controller.onDrag = function(cx: number, cy: number) {
             if(hasEnded) {
                 return hasEnded = false;
             }

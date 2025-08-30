@@ -1,7 +1,4 @@
-import { $, toggleElement } from "../../lib/util";
-import { copyLevel } from "./studio";
-import { promptLevelInput } from "./level-inserter";
-import { editorTools, studioState } from "./studio";
+import { $, toggleElement } from "../../lib/misc/util";
 
 const menuBtn = $("#ui > #menu > #menu-btn") as HTMLButtonElement;
 const editorBtn = $("#ui > #menu > #editor-btn") as HTMLButtonElement;
@@ -40,12 +37,12 @@ Shift + L - Open level inserter
 
 `], {type: "text/plain"});
 
-diagBtn.onpointerup = () => studioState.toggle();
-editorBtn.onpointerup = () => editorTools.levelEditorState.toggle();
-copyLevelBtn.onpointerup = copyLevel;
-shortcutsBtn.onpointerup = function() {
-    const url = URL.createObjectURL(msgBlob);
-    open(url);
-};
+// diagBtn.onpointerup = () => studioState.toggle();
+// editorBtn.onpointerup = () => editorTools.levelEditorState.toggle();
+// copyLevelBtn.onpointerup = copyLevel;
+// shortcutsBtn.onpointerup = function() {
+//     const url = URL.createObjectURL(msgBlob);
+//     open(url);
+// };
 
-insertLevelBtn.onpointerup = () => promptLevelInput();
+//insertLevelBtn.onpointerup = () => promptLevelInput();

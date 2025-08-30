@@ -1,5 +1,5 @@
-import { tr } from "../../el";
-import { $$, SimpleExpander } from "../../util";
+import { tr } from "../../misc/el";
+import { $$, SimpleExpander } from "../../misc/util";
 
 export const blockDataPopupEl = $$("div", {
     attrs: {

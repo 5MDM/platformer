@@ -1,7 +1,7 @@
 import { Container } from "pixi.js";
-import { $, radToDeg, timeArrAsync, ToggleState } from "../util";
-import { MDmatrix } from "../matrix";
-import { MDshell } from "./shell";
+import { $, radToDeg, timeArrAsync, ToggleState } from "../misc/util";
+import { MDmatrix } from "../misc/matrix";
+import { MDshell } from "../md-framework/shell";
 import { BgBlock, FgBlock } from "./unit";
 
 export interface MDgameOpts {

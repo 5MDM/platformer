@@ -1,7 +1,7 @@
-import { BlockCreationOpts, LevelJSONoutput, MDshell } from "./shell";
+import { BlockCreationOpts, LevelJSONoutput, MDshell } from "../md-framework/shell";
 import { BlockDefinition } from "./unit";
 
-interface BackgroundOpts {
+export interface BackgroundOpts {
     name: string;
 }
 

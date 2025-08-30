@@ -1,43 +1,35 @@
-import { AnimatedSprite, isMobile, Sprite } from "pixi.js";
-import { startControlLoop } from "./controls";
-import { pw } from "../constants";
+import { isMobile } from "pixi.js";
 import "./audio";
 import "./dev/menu";
 import "./dev/modes";
-import { MDshell } from "../lib/md-framework/shell";
-import { mdshell } from "../constants";
-import { $, clamp } from "../lib/util";
+import { $ } from "../lib/misc/util";
 import { startStats } from "./dev/stats";
-import { defaultScale, setGameScale } from "./dev/zoom";
+import { _MD2engine } from "../lib/v2/engine";
+import "./editor";
 
-async function loadAnimations() {
-    const spritesheet = await mdshell.spritesheet;
-    spritesheet.textureSource.scaleMode = "nearest";
+export var engine: _MD2engine;
 
-    const walkR = new AnimatedSprite(spritesheet.animations["player-side-walk"]);
+function loadAnimations(md2: _MD2engine) {    
+    const walkR = md2.dataManager.getAnimation("player-side-walk");
     walkR.scale.x = -1;
     walkR.position.x = 30;
 
-    mdshell.player.setAnimation("walk-ud-down", new AnimatedSprite(spritesheet.animations["player-down-walk"]));
-    mdshell.player.setAnimation("walk-ud-up", new AnimatedSprite(spritesheet.animations["player-up-walk"]));
-    mdshell.player.setAnimation("walk-l", new AnimatedSprite(spritesheet.animations["player-side-walk"]));
-    mdshell.player.setAnimation("walk-r", walkR);
-    mdshell.player.setSprite("stand-ud-down", new Sprite(spritesheet.textures["player-down-stand.png"]));
-    mdshell.player.setSprite("stand-ud-up", new Sprite(spritesheet.textures["player-up-stand.png"]));
+    md2.generator.player.setAnimation("walk-r", walkR);
+    md2.generator.player.setAnimation("walk-ud-down", md2.dataManager.getAnimation("player-down-walk"));
+    md2.generator.player.setAnimation("walk-ud-up", md2.dataManager.getAnimation("player-up-walk"));
+    md2.generator.player.setAnimation("walk-l", md2.dataManager.getAnimation("player-side-walk"));
+
+    md2.generator.player.setSprite("stand-ud-down", md2.dataManager.getSprite("player-down-stand.png"));
+    md2.generator.player.setSprite("stand-ud-up", md2.dataManager.getSprite("player-up-stand.png"));
+
+    md2.generator.player.changeStance("stand-ud-down");
 }
 
-export async function startGame(sh: MDshell) { 
-    await loadAnimations();
-    
-    mdshell.player.displayTo(mdshell.game.groups.world);
+export async function startGame(md2: _MD2engine) { 
+    engine = md2;
+    loadAnimations(md2);
 
-    sh.setCurrentLevel("1");
-
-    sh.player.teleport(sh.game.spawnX, sh.game.spawnY);
-    
-    pw.startClock();
-    
-    startControlLoop();
+    md2.levelManager.loadLevel("1");
     
     startStats();
 }

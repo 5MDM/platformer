@@ -1,0 +1,20 @@
+{
+    "version": [
+        0,
+        0,
+        0
+    ],
+    "blocks": [
+        {
+            "x": 64,
+            "y": 64,
+            "w": 1,
+            "h": 1,
+            "type": "@",
+            "rotation": 0
+        }
+    ],
+    "background": {
+        "name": "apt-bg.png"
+    }
+}

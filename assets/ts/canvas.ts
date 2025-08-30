@@ -1,4 +1,4 @@
-import { $ } from "./lib/util";
+import { $ } from "./lib/misc/util";
 
 export const c = $("#c") as HTMLCanvasElement;
 

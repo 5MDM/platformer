@@ -1,4 +1,4 @@
-import { $$ } from "../../util";
+import { $$ } from "../../misc/util";
 
 export const levelSettingsPopupEl = $$("div", {
     children: [

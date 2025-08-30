@@ -319,8 +319,26 @@ export async function timeArrAsync<T>(arr: T[], f: (val: T) => Promise<void | tr
   }
 }
 
+/**
+ * Expands data in an array using the provided function.
+ * It will then return the expanded data in the parse method
+ * @template Data
+ * @template ExpandedData
+ * 
+ * @example
+ * console.log(
+ * ...new SimpleExpander<number, string>((data: number) => "Here's a number: " + data + "\n")
+ * .parse([1, 2, 3, 4, 5])
+ * );
+ */
 export class SimpleExpander<Data, ExpandedData> {
   generator: (arg: Data) => ExpandedData;
+
+  /**
+   * 
+   * @param {(arg: Data) => ExpandedData} f
+   * 
+   */
 
   constructor(f: (arg: Data) => ExpandedData) {
     this.generator = f;
@@ -332,4 +350,31 @@ export class SimpleExpander<Data, ExpandedData> {
 
     return output;
   }
+}
+
+export function thisAll(src: any, o: Record<string, any>) {
+  for(const name in o) {
+    src[name] = o[name];
+  }
+}
+
+export type Degrees = 0 | 90 | 180 | 270;
+
+export function createDegreesRecord<Key extends string | number, Val>(): Record<Degrees, Record<Key, Val>> {
+  return {0: {}, 90: {}, 180: {}, 270: {}} as Record<Degrees, Record<Key, Val>>;
+}
+
+export class RotationHolder {
+  deg: number = 0;
+
+  add(n: number) {
+    this.deg += n;
+    
+    while(this.deg >= 360) this.deg -= 360;
+    while(this.deg < 0) this.deg += 360;
+
+    this.onRotation();
+  }
+
+  onRotation: () => void = () => undefined;
 }

@@ -13,13 +13,16 @@
             "type": "array",
             "items": {
                 "type": "object",
-                "required": ["name", "texture"],
+                "required": ["name", "texture", "category"],
                 "additionalProperties": false,
                 "properties": {
                     "name": {
                         "type": "string"
                     },
                     "texture": {
+                        "type": "string"
+                    },
+                    "category": {
                         "type": "string"
                     },
                     "components": {
@@ -32,6 +35,10 @@
                         "type": "string",
                         "enum": ["fg", "bg", "overlay"],
                         "default": "fg"
+                    },
+                    "isOversize": {
+                        "type": "boolean",
+                        "default": "false"
                     }
                 }
             }

@@ -1,0 +1,107 @@
+
+#ui > #editor-v2-c > #editor-v2 {
+    width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+
+#ui > #editor-v2-c > #editor-v2 #click-area {
+    flex-grow: 1;
+}
+
+#ui > #editor-v2-c > #editor-v2 > #toolbar {
+    display: flex;
+    width: 70%;
+    max-height: 25px;
+}
+
+
+#ui > #editor-v2-c > #editor-v2 > #toolbar div {
+    flex-grow: 1;
+    border: 5px outset green;
+    position: relative;
+}
+
+#ui > #editor-v2-c > #editor-v2 > #toolbar div > button {
+    background: linear-gradient(silver, gray);
+    width: 100%;
+    min-height: 100%;
+    font-size: .7rem;
+    padding: 4px;
+    border: none;
+}
+
+#ui > #editor-v2-c > #editor-v2 > #toolbar div > button:active {
+    background: linear-gradient(gray, #555);
+}
+
+#ui > #editor-v2-c > #editor-v2 > #creator-tools {
+    position: relative;
+    border-top: 5px solid silver;
+    bottom: 0;
+    height: 25%;
+    width: 100%;
+    background: radial-gradient(silver, gray);
+    display: grid;
+
+    grid-template-columns: .5fr 4fr 1fr;
+}
+
+#ui > #editor-v2-c > #editor-v2 > #creator-tools > div {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: auto;
+}
+
+#ui > #editor-v2-c > #editor-v2 > #creator-tools > div > * {
+    width: 100%;
+    flex-grow: 1;
+    font-size: .5rem;
+    font-weight: bolder;
+}
+
+#ui > #editor-v2-c > #editor-v2 > #creator-tools > div:not(#block-grid) .active {
+    color: darkblue;
+    filter: contrast(5);
+    border: 2px outset white;
+}
+
+#ui > #editor-v2-c > #editor-v2 > #creator-tools > #block-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    grid-template-rows: repeat(auto-fit, 60px);
+}
+
+#ui > #editor-v2-c > #editor-v2 > #creator-tools > #block-grid > * {
+    display: flex;
+    flex-direction: column;
+    height: 60px;
+    width: 60px;
+    justify-content: center;
+    align-items: center;
+}
+
+#ui > #editor-v2-c > #editor-v2 > #creator-tools > #block-grid .active {
+    background: none;
+    border: 4px inset green;
+}
+
+#ui > #editor-v2-c > #editor-v2 > #creator-tools > #util-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+    grid-template-rows: repeat(auto-fit, 40px);
+}
+
+#ui > #editor-v2-c > #editor-v2 > #creator-tools > #util-bar > * {
+    font-size: .8rem;
+    border: 2px solid black;
+    border-radius: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    width: auto;
+    height: 100%;
+}

@@ -4,67 +4,94 @@
     "version": [0, 0, 0],
     "blocks": [
         {
+            "name": "Abandoned House",
+            "texture": "first_house.png",
+            "type": "fg",
+            "components": {
+                "doorpoint": {
+                    "toLevel": "abandoned_house_inside"
+                }
+            },
+            "isOversize": true,
+            "category": "Forest"
+        },
+        {
             "name": "Brick",
-            "texture": "brick.png"
+            "texture": "brick.png",
+            "category": "Town"
         },
         {
             "name": "Grass Block",
-            "texture": "grass_block_1.png"
+            "texture": "grass_block_1.png",
+            "category": "Forest"
         },
         {
             "name": "Floor",
             "texture": "floor.png",
-            "type": "bg"
+            "type": "bg",
+            "category": "Town"
         },
         {
             "name": "Wall",
-            "texture": "wall.png"
+            "texture": "wall.png",
+            "category": "Town"
         },
         {
             "name": "bluestone",
             "texture": "bluestone.png",
-            "type": "bg"
+            "type": "bg",
+            "category": "Town"
         },
         {
             "name": "bluestone left",
-            "texture": "bluestone-left.png"
+            "texture": "bluestone-left.png",
+            "category": "Town"
         },
         {
             "name": "bluestone top left",
-            "texture": "bluestone-top-left.png"
+            "texture": "bluestone-top-left.png",
+            "category": "Town"
         },
         {
             "name": "invis",
-            "texture": "invis.png"
+            "texture": "invis.png",
+            "category": "Forest"
         },
         {
             "name": "bluestone bottom left",
-            "texture": "bluestone-bottom-left.png"
+            "texture": "bluestone-bottom-left.png",
+            "category": "Town"
         },
         {
             "name": "bluestone bottom",
-            "texture": "bluestone-bottom.png"
+            "texture": "bluestone-bottom.png",
+            "category": "Town"
         },
         {
             "name": "floor tile",
             "type": "bg",
-            "texture": "floor-tile.png"
+            "texture": "floor-tile.png",
+            "category": "Town"
         },
         {
             "name": "white wall left",
-            "texture": "white-wall-left.png"
+            "texture": "white-wall-left.png",
+            "category": "Town"
         },
         {
             "name": "white wall tube",
-            "texture": "white-wall-tube.png"
+            "texture": "white-wall-tube.png",
+            "category": "Town"
         },
         {
             "name": "white wall corner",
-            "texture": "white-wall-corner.png"
+            "texture": "white-wall-corner.png",
+            "category": "Town"
         },
         {
             "name": "white wall end",
-            "texture": "white-wall-end.png"
+            "texture": "white-wall-end.png",
+            "category": "Town"
         },
         {
             "name": "bed top",
@@ -73,7 +100,8 @@
                 "interact": {
                     "text": "Hi And bye"
                 }
-            }
+            },
+            "category": "Town"
         },
         {
             "name": "bed bottom",
@@ -82,12 +110,14 @@
                 "interact": {
                     "text": "Hi And bye"
                 }
-            }
+            },
+            "category": "Town"
         },
         {
             "name": "question",
             "texture": "question.png",
-            "type": "overlay"
+            "type": "overlay",
+            "category": "Forest"
         },
         {
             "name": "wood door",
@@ -96,7 +126,8 @@
                 "door": {
                     "onOpen": "wood-door-open.png"
                 }
-            }
+            },
+            "category": "Town"
         },
         {
             "name": "sink",
@@ -105,11 +136,13 @@
                 "interact": {
                     "text": "It's the kitchen sink. There is no hot water"
                 }
-            }
+            },
+            "category": "Town"
         },
         {
             "name": "kitchen top",
-            "texture": "kitchen-top.png"
+            "texture": "kitchen-top.png",
+            "category": "Town"
         },
         {
             "name": "TV",
@@ -118,17 +151,20 @@
                 "interact": {
                     "text": "It's an old TV"
                 }
-            }
+            },
+            "category": "Town"
         },
         {
             "name": "apartment windows",
             "texture": "apt-windows.png",
-            "type": "overlay"
+            "type": "overlay",
+            "category": "Town"
         },
         {
             "name": "apartment windows with flowers",
             "texture": "apt-windows-flowers.png",
-            "type": "overlay"
+            "type": "overlay",
+            "category": "Town"
         },
         {
             "name": "doorpoint",
@@ -138,12 +174,14 @@
                 "doorpoint": {
                     "toLevel": "error"
                 }
-            }
+            },
+            "category": "Forest"
         },
         {
             "name": "kitchen table",
             "texture": "kitchen-table.png",
-            "type": "fg"
+            "type": "fg",
+            "category": "Town"
         },
         {
             "name": "sign",
@@ -153,17 +191,20 @@
                 "interact": {
                     "text": "DEV NOTE: I forgot to add text to this sign. This is default text"
                 }
-            }
+            },
+            "category": "Forest"
         },
         {
             "name": "Forest Grass 2",
             "texture": "forest-grass-2.png",
-            "type": "bg"
+            "type": "bg",
+            "category": "Forest"
         },
         {
             "name": "Forest Bush Wall",
             "texture": "forest-bush-wall.png",
-            "type": "fg"
+            "type": "fg",
+            "category": "Forest"
         }
     ]
 }

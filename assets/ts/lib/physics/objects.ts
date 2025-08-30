@@ -1,5 +1,5 @@
 import { Sprite, TilingSprite, Container, Texture, AnimatedSprite } from "pixi.js";
-import { lerp } from "../util";
+import { lerp } from "../misc/util";
 
 var id = 0;
 

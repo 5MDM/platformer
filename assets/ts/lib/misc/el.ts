@@ -1,5 +1,3 @@
-import { validateRenderables } from "pixi.js";
-import { MDshell } from "./md-framework/shell";
 import { $$ } from "./util";
 
 export class ElList<T> {
@@ -146,7 +144,7 @@ export class MD2Columntable {
 
         for(const prop of arr) {
             current = this.tables[prop];
-            if(!current) return MDshell.Err(
+            if(!current) throw new Error(
                 `el.ts: can't find property "${arr.join(".")}"`
             );
         }
@@ -202,7 +200,7 @@ export class MD2Columntable {
         nowRef.pop();
 
         for(const i of nowRef) {
-            if(!current) return MDshell.Err(
+            if(!current) throw new Error(
                 `el.ts: deep object editing error. Reference "${ref.join(".")}" is invalid with "${i}" or before`
             );
             current = current[i];

@@ -1,4 +1,4 @@
-import { LevelJSONoutput } from "./md-framework/shell";
+import { LevelJSONoutput } from "../v2/types";
 import { MDmatrix } from "./matrix";
 
 export interface GMOutput {

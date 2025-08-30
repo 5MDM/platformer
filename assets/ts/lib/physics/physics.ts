@@ -1,6 +1,6 @@
 import { PWD, NotDynamicObj, PWS } from "./objects";
-import { resizeDebounce } from "../util";
-import { MDmatrix } from "../matrix";
+import { resizeDebounce } from "../misc/util";
+import { MDmatrix } from "../misc/matrix";
 
 interface PWopts {
     gx: number;

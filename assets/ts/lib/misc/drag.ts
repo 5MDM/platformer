@@ -21,40 +21,60 @@ export class DragController {
     defaultGrab: Cursor = "grab";
     defaultGrabbing: Cursor = "grabbing";
 
+    isDisabled = false;
+
     constructor(o: DragControllerOpts) {
         this.downElement = o.customDownElement || o.touchEl;
         this.isMultitouch = o.isMultitouch;
         this.touchEl = o.touchEl;
         if(o.enabled ?? true) this.enable();
+
+        this.setupListeners();
+    }
+
+    private setupListeners() {
+        this.downElement.addEventListener("pointerdown", e => this.touchDown(e));
+        //this.downElement.onpointerdown = e => this.touchDown(e);
+        this.touchEl.addEventListener("pointerup", e => this.touchUp(e));
+        //this.touchEl.onpointerup = e => this.touchUp(e);
+
+        if(this.isMultitouch) {
+            this.touchEl.addEventListener
+            ("touchmove", e => Array.from(e.targetTouches).forEach(t => this.touchMove(t)));
+
+            //this.touchEl.ontouchmove = e => Array.from(e.targetTouches).forEach(t => this.touchMove(t));
+        } else {
+
+            this.touchEl.addEventListener("touchmove", e => this.touchMove(e.targetTouches[e.targetTouches.length-1]));
+            //this.touchEl.ontouchmove = e => this.touchMove(e.targetTouches[e.targetTouches.length-1]);
+        }
+
+        this.touchEl.addEventListener("mouseleave", e => this.mouseUp(e));
+        //this.touchEl.onmouseleave = e => this.mouseUp(e);
+        this.downElement.addEventListener("mousedown", e => this.mouseDown(e));
+        //this.downElement.onmousedown = e => this.mouseDown(e);
+        this.touchEl.addEventListener("mouseup", e => this.mouseUp(e));
+        //this.touchEl.onmouseup = e => this.mouseUp(e);
+        this.touchEl.addEventListener("mousemove", e => this.mouseMove(e));
+        //this.touchEl.onmousemove = e => this.mouseMove(e);
     }
 
     enable() {
-        this.downElement.onpointerdown = e => this.touchDown(e);
-        this.touchEl.onpointerup = e => this.touchUp(e);
-
-        if(this.isMultitouch) {
-            this.touchEl.ontouchmove = e => Array.from(e.targetTouches).forEach(t => this.touchMove(t));
-        } else {
-            this.touchEl.ontouchmove = e => this.touchMove(e.targetTouches[e.targetTouches.length-1]);
-        }
-
-        this.touchEl.onmouseleave = e => this.mouseUp(e);
-        this.downElement.onmousedown = e => this.mouseDown(e);
-        this.touchEl.onmouseup = e => this.mouseUp(e);
-        this.touchEl.onmousemove = e => this.mouseMove(e);
+        this.isDisabled = false;
 
         this.canDrag = true;
         this.downElement.style.cursor = this.grab;
     }
 
     disable() {
-        this.touchEl.onpointerdown = null;
-        this.touchEl.onpointerup = null;
-        this.touchEl.ontouchmove = null;
+        this.isDisabled = true;
+        //this.touchEl.onpointerdown = null;
+        //this.touchEl.onpointerup = null;
+        //this.touchEl.ontouchmove = null;
 
-        this.touchEl.onmousedown = null;
-        this.touchEl.onmouseup = null;
-        this.touchEl.onmousemove = null;
+        //this.touchEl.onmousedown = null;
+        //this.touchEl.onmouseup = null;
+        //this.touchEl.onmousemove = null;
 
         this.canDrag = false;
         this.touchEl.style.cursor = "default";

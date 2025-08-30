@@ -1,19 +1,18 @@
 import { TilingSprite, Sprite, Container, Texture } from "pixi.js";
-import { blockRotation } from "../../../game/dev/studio";
-import { DragController } from "../../drag";
-import { tr, MD2Columntable } from "../../el";
-import { GMOutput, Keymap } from "../../keymap";
-import { MDmatrix } from "../../matrix";
+import { DragController } from "../../misc/drag";
+import { GMOutput, Keymap } from "../../misc/keymap";
+import { MDmatrix } from "../../misc/matrix";
 import { PWS } from "../../physics/objects";
-import { ToggleState, ToggleList, $$, snapToGrid, floorToMultiples, degToRad } from "../../util";
+import { ToggleState, ToggleList, $$, snapToGrid, floorToMultiples, degToRad } from "../../misc/util";
 import { checkIfComponentsAreEqual } from "../block-components/main";
 import { ComponentList } from "../block-components/parser";
-import { MDshell, BlockInfo } from "../shell";
 import { FgBlock } from "../unit";
 import "./blockDataPopup";
 import { blockDataPopupEl } from "./blockDataPopup";
 import { levelSettingsPopupEl } from "./level-settings";
 import { defaultScale } from "../../../game/dev/zoom";
+import { BlockInfo, MDshell } from "../shell";
+import { MD2Columntable } from "../../misc/el";
 
 type EditorKeybinds =
     "multi placement" | "edit" | "rotate right" | "rotate left" | "level editor" | "movement" | "pan";
@@ -254,10 +253,10 @@ export class EditorTools {
     }
 
     private resize(fx: number, fy: number) {
-        if (blockRotation == 0) this.resize0(this.MPix, this.MPiy, fx, fy);
-        else if (blockRotation == 90) this.resize90(this.MPix, this.MPiy, fx, fy);
-        else if (blockRotation == 180) this.resize180(this.MPix, this.MPiy, fx, fy);
-        else if (blockRotation == 270) this.resize270(this.MPix, this.MPiy, fx, fy);
+        // if (blockRotation == 0) this.resize0(this.MPix, this.MPiy, fx, fy);
+        // else if (blockRotation == 90) this.resize90(this.MPix, this.MPiy, fx, fy);
+        // else if (blockRotation == 180) this.resize180(this.MPix, this.MPiy, fx, fy);
+        // else if (blockRotation == 270) this.resize270(this.MPix, this.MPiy, fx, fy);
     }
 
     private multiPlacementFinalize() {
@@ -266,35 +265,35 @@ export class EditorTools {
         var w = 0;
         var h = 0;
 
-        if (blockRotation == 0) {
-            w = Math.round(this.devSprite.width / this.mdshell.blockSize);
-            h = Math.round(this.devSprite.height / this.mdshell.blockSize);
-            xx = this.devSprite.x;
-            yy = this.devSprite.y;
-        } else if (blockRotation == 90) {
-            h = Math.round(this.devSprite.width / this.mdshell.blockSize);
-            w = Math.round(this.devSprite.height / this.mdshell.blockSize);
-            xx = this.devSprite.x - this.devSprite.height + this.mdshell.blockSize;
-            yy = this.devSprite.y;
-        } else if (blockRotation == 180) {
-            w = Math.round(this.devSprite.width / this.mdshell.blockSize);
-            h = Math.round(this.devSprite.height / this.mdshell.blockSize);
-            xx = this.devSprite.x - this.devSprite.width + this.mdshell.blockSize;
-            yy = this.devSprite.y - this.devSprite.height + this.mdshell.blockSize;
-        } else if (blockRotation == 270) {
-            h = Math.round(this.devSprite.width / this.mdshell.blockSize);
-            w = Math.round(this.devSprite.height / this.mdshell.blockSize);
-            xx = this.devSprite.x;
-            yy = this.devSprite.y - this.devSprite.width + this.mdshell.blockSize;
-        }
+        // if (blockRotation == 0) {
+        //     w = Math.round(this.devSprite.width / this.mdshell.blockSize);
+        //     h = Math.round(this.devSprite.height / this.mdshell.blockSize);
+        //     xx = this.devSprite.x;
+        //     yy = this.devSprite.y;
+        // } else if (blockRotation == 90) {
+        //     h = Math.round(this.devSprite.width / this.mdshell.blockSize);
+        //     w = Math.round(this.devSprite.height / this.mdshell.blockSize);
+        //     xx = this.devSprite.x - this.devSprite.height + this.mdshell.blockSize;
+        //     yy = this.devSprite.y;
+        // } else if (blockRotation == 180) {
+        //     w = Math.round(this.devSprite.width / this.mdshell.blockSize);
+        //     h = Math.round(this.devSprite.height / this.mdshell.blockSize);
+        //     xx = this.devSprite.x - this.devSprite.width + this.mdshell.blockSize;
+        //     yy = this.devSprite.y - this.devSprite.height + this.mdshell.blockSize;
+        // } else if (blockRotation == 270) {
+        //     h = Math.round(this.devSprite.width / this.mdshell.blockSize);
+        //     w = Math.round(this.devSprite.height / this.mdshell.blockSize);
+        //     xx = this.devSprite.x;
+        //     yy = this.devSprite.y - this.devSprite.width + this.mdshell.blockSize;
+        // }
 
-        const x = floorToMultiples(xx - this.mdshell.game.container.x + this.gameScale.nx + this.mdshell.player.halfW, this.mdshell.blockSize) / this.mdshell.blockSize;
-        const y = floorToMultiples(yy - this.mdshell.game.container.y + this.gameScale.ny + this.mdshell.player.halfH, this.mdshell.blockSize) / this.mdshell.blockSize;
+        // const x = floorToMultiples(xx - this.mdshell.game.container.x + this.gameScale.nx + this.mdshell.player.halfW, this.mdshell.blockSize) / this.mdshell.blockSize;
+        // const y = floorToMultiples(yy - this.mdshell.game.container.y + this.gameScale.ny + this.mdshell.player.halfH, this.mdshell.blockSize) / this.mdshell.blockSize;
 
-        const s = this.mdshell.createBlock({
-            x, y, w, h, name: this.selectedBlockName,
-            rotation: degToRad(blockRotation),
-        });
+        // const s = this.mdshell.createBlock({
+        //     x, y, w, h, name: this.selectedBlockName,
+        //     rotation: degToRad(blockRotation),
+        // });
 
         this.devSprite.width = this.mdshell.blockSize;
         this.devSprite.height = this.mdshell.blockSize;
@@ -445,27 +444,27 @@ export class EditorTools {
         }
 
         this.hasInitialPlacement = true;
-        const blockId = this.selectedBlockName + "," + blockRotation;
-        const rotationRad = degToRad(blockRotation);
+        // const blockId = this.selectedBlockName + "," + blockRotation;
+        // const rotationRad = degToRad(blockRotation);
 
-        if (!this.blockRecord[blockId])
-            this.blockRecord[blockId] = new MDmatrix<true>(this.maxLevelSize, this.maxLevelSize);
+        // if (!this.blockRecord[blockId])
+        //     this.blockRecord[blockId] = new MDmatrix<true>(this.maxLevelSize, this.maxLevelSize);
 
-        const map = this.blockRecord[blockId];
-        map.set(fx, fy, true);
+        // const map = this.blockRecord[blockId];
+        // map.set(fx, fy, true);
 
-        const s = new Sprite({
-            x: fx * this.mdshell.blockSize + this.mdshell.blockSizeHalf,
-            y: fy * this.mdshell.blockSize + this.mdshell.blockSizeHalf,
-            width: this.mdshell.blockSize,
-            height: this.mdshell.blockSize,
-            texture: this.devSprite.texture,
-            pivot: this.devSprite.texture.width / 2,
-            rotation: rotationRad,
-        });
+        // const s = new Sprite({
+        //     x: fx * this.mdshell.blockSize + this.mdshell.blockSizeHalf,
+        //     y: fy * this.mdshell.blockSize + this.mdshell.blockSizeHalf,
+        //     width: this.mdshell.blockSize,
+        //     height: this.mdshell.blockSize,
+        //     texture: this.devSprite.texture,
+        //     pivot: this.devSprite.texture.width / 2,
+        //     rotation: rotationRad,
+        // });
 
-        this.spriteArr.push(s);
-        this.editorC.addChild(s);
+        // this.spriteArr.push(s);
+        // this.editorC.addChild(s);
     }
 
     private resetDevSprite() {

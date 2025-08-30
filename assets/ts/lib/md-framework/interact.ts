@@ -1,4 +1,3 @@
-import { mdshell } from "../../constants";
 import { InteractComponent } from "./block-components/interact";
 
 export const touchingBlocks: Record<number, InteractComponent> = {}
@@ -10,9 +9,9 @@ addEventListener("keydown", e => {
 });
 
 export function playerInteract() {
-    if(mdshell.game.endDialogue()) return;
+    // if(mdshell.game.endDialogue()) return;
 
-    for(const id in touchingBlocks) {
-        return mdshell.game.toggleDialogue(touchingBlocks[id].text);
-    }
+    // for(const id in touchingBlocks) {
+    //     return mdshell.game.toggleDialogue(touchingBlocks[id].text);
+    // }
 }

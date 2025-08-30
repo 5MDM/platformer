@@ -1,12 +1,12 @@
 import { Application, Assets, BindableTexture, Spritesheet, SpritesheetData, Texture, TilingSprite } from "pixi.js";
-import { GMOutput, Keymap } from "../keymap";
+import { GMOutput, Keymap } from "../misc/keymap";
 import { PWS } from "../physics/objects";
 import { PW } from "../physics/physics";
-import { degToRad, getRandom } from "../util";
+import { degToRad, getRandom } from "../misc/util";
 import { MDgame, MDgameGridType, MDgameType } from "./game";
 import { Player } from "../player";
 import { BgBlock, FgBlock } from "./unit";
-import { MDaudio } from "../audio";
+import { MDaudio } from "../misc/audio";
 import { LevelData, MDlevelGenerator } from "./level-gen";
 import { MDcomponentParser } from "./block-components/main";
 import { ComponentList } from "./block-components/parser";

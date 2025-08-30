@@ -1,4 +1,4 @@
-import { MDshell } from "./md-framework/shell";
+import { MDshell } from "../md-framework/shell";
 
 export class MDaudio {
     audioContext = new AudioContext();

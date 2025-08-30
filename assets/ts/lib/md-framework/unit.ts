@@ -1,10 +1,10 @@
-import { GMOutput, Keymap } from "../keymap";
+import { GMOutput, Keymap } from "../misc/keymap";
 import { PWS } from "../physics/objects";
-import { MDmatrix } from "../matrix";
-import { LevelJSONoutput, MDshell } from "./shell";
+import { MDmatrix } from "../misc/matrix";
+import { LevelJSONoutput, MDshell } from "../md-framework/shell";
 import { Sprite, TilingSprite } from "pixi.js";
 import { MDgameGridType } from "./game";
-import { radToDeg } from "../util";
+import { radToDeg } from "../misc/util";
 import { ComponentList, ComponentName, ComponentValue } from "./block-components/parser";
 
 interface BgUnitObj {
