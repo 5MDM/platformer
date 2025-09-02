@@ -1,8 +1,7 @@
-import { MDgameGridType } from "../../md-framework/game";
 import { AnyBlock } from "../block";
 import { _MD2engine } from "../engine";
 import { Success } from "../level";
-import { LevelJSONoutput } from "../types";
+import { LevelJSONoutput, MDgameGridType } from "../types";
 import { greedyMeshGridFromBlockDeletion } from "./greedy-mesh";
 
 interface DeletionObj {

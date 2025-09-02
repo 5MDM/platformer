@@ -5,12 +5,12 @@ import { _toolbarEvents, editorClickArea } from "./el";
 import { RotationHolder, snapToGrid, ToggleState } from "../misc/util";
 import { _MD2editorClick } from "./modes/click";
 import { Player } from "../v2/entities/player";
-import { MDgameGridType } from "../md-framework/game";
 import { MDmatrix } from "../misc/matrix";
 import { AnyBlock } from "../v2/block";
 import { _utilBar, _utilBarEvents } from "./util-bar";
 import { _MD2deleteClick } from "./modes/delete";
 import { _MD2editorBase } from "./modes/main";
+import { MDgameGridType } from "../v2/types";
 
 export interface MD2editorOpts {
     engine: _MD2engine;

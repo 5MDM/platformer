@@ -1,7 +1,7 @@
-import { MDgameGridType } from "../../md-framework/game";
 import { DragController } from "../../misc/drag";
 import { ToggleState } from "../../misc/util";
 import { AnyBlock } from "../../v2/block";
+import { MDgameGridType } from "../../v2/types";
 import { MD2editor } from "../main";
 
 export abstract class _MD2editorBase {

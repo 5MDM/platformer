@@ -1,7 +1,4 @@
 import { TilingSprite } from "pixi.js";
-import { ComponentList } from "../../md-framework/block-components/parser";
-import { MDgameGridType } from "../../md-framework/game";
-import { BlockCreationOpts } from "../../md-framework/shell";
 import { MDmatrix } from "../../misc/matrix";
 import { degToRad } from "../../misc/util";
 import { FgBlock, BgBlock, AnyBlock, BasicBox } from "../block";
@@ -9,7 +6,7 @@ import { _MD2engine } from "../engine";
 import { EntityOpts, Entity } from "../entities/entity";
 import { Player } from "../entities/player";
 import { Success } from "../level";
-import { BlockInfo, EntityInfo, LevelJSONoutput } from "../types";
+import { BlockCreationOpts, BlockInfo, EntityInfo, LevelJSONoutput, MDgameGridType } from "../types";
 import { greedyMesh, greedyMeshGridFromBlockDeletion } from "./greedy-mesh";
 
 
@@ -20,7 +17,7 @@ export interface BlockOpts {
     y: number;
     w: number;
     h: number;
-    components?: ComponentList;
+    //components?: ComponentList;
 }
 
 export abstract class _MD2Blockgenerator {
@@ -104,7 +101,7 @@ export abstract class _MD2Blockgenerator {
     }
 
     private createFgBlock(o: BlockOpts, def: BlockInfo, sprite: TilingSprite, record: boolean = true) {
-        const components = o.components || def.components;
+        //const components = o.components || def.components;
 
         const fgBlock = new FgBlock({
             x: o.x,
@@ -114,7 +111,7 @@ export abstract class _MD2Blockgenerator {
             name: def.texture,
             rotation: o.rotation,
             sprite,
-            CL: components,
+            //CL: components,
             id: this.engine.dataManager.getNewId(),
             blockSize: this.engine.blockSize,
         });
@@ -122,9 +119,9 @@ export abstract class _MD2Blockgenerator {
         //fgBlock.sprite.x -= this.engine.blockSize / 2;
         if(record) this.engine.levelManager.recordBlock("fg", fgBlock);
 
-        if (!components || Object.keys(components).length != 0) {
-            //this.componentParser.parseComponents(fgBlock);
-        }
+        // if (!components || Object.keys(components).length != 0) {
+        //     //this.componentParser.parseComponents(fgBlock);
+        // }
 
         return fgBlock;
     }

@@ -1,4 +1,3 @@
-import { MDshell } from "../md-framework/shell";
 
 export class MDaudio {
     audioContext = new AudioContext();
@@ -65,10 +64,10 @@ export class MDaudio {
 
     playAudio(name: string) {
         if(!this.isReady) 
-            return MDshell.Err(`Can't play "${name}" because context isn't ready`);
+            return console.error(new Error(`Can't play "${name}" because context isn't ready`));
 
         const val = this.audios[name];
-        if(!val) return MDshell.Err(`Can't find audio "${name}"`);
+        if(!val) return console.error(new Error(`Can't find audio "${name}"`));
 
         
         val.start();

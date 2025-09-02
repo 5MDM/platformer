@@ -1,9 +1,8 @@
 import { Application, Container, SpritesheetData } from "pixi.js";
-import { PW } from "./lib/physics/physics";
 import { $, convertPathToObj } from "./lib/misc/util";
 import { MDmatrix } from "./lib/misc/matrix";
-import { MDshell, ModInfo } from "./lib/md-framework/shell";
 import { MD2 } from "./lib/v2/main";
+import { ModInfo } from "./lib/v2/types";
 
 export const chunkSize = 16;
 export const blockSize = 2**6;

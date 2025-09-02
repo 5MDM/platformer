@@ -1,15 +1,11 @@
 import { Container } from "pixi.js";
 import { GMOutput, Keymap } from "../misc/keymap";
 import { MDmatrix } from "../misc/matrix";
-import { MDgameGridType, MDgameType } from "../md-framework/game";
-import { BackgroundOpts } from "../md-framework/level-gen";
 import { AnyBlock, BgBlock, FgBlock } from "./block";
 import { _MD2engine } from "./engine";
 import { Entity } from "./entities/entity";
 import { Player } from "./entities/player";
-import { BlockOpts } from "./generation/generator";
-import { ComponentList } from "../md-framework/block-components/parser";
-import { LevelDataV0_0_0, LevelJSONoutput } from "./types";
+import { LevelDataV0_0_0, LevelJSONoutput, MDgameGridType } from "./types";
 
 export type Success = boolean; 
 
@@ -33,11 +29,11 @@ Record<number, Record<number, Record<number, (engine: _MD2engine, data: LevelDat
                         y: block.y,
                         w: block.w,
                         h: block.h,
-                        components: block.components,
+                        //components: block.components,
                     });
                 }
 
-                if(data.background) engine.generator.setBackground(data.background.name);
+                //if(data.background) engine.generator.setBackground(data.background.name);
 
                 return true;
             }

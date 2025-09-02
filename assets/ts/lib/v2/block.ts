@@ -1,9 +1,7 @@
 import { Container, ContainerChild, Sprite } from "pixi.js";
 import { radToDeg } from "../misc/util";
-import { ComponentList } from "../md-framework/block-components/parser";
 import { Entity } from "./entities/entity";
-import { LevelJSONoutput } from "./types";
-import { MDgameGridType } from "../md-framework/game";
+import { LevelJSONoutput, MDgameGridType } from "./types";
 
 export type AnyBlock = FgBlock | BgBlock;
 
@@ -18,7 +16,7 @@ export interface BasicBoxOpts {
 interface BlockConstructorOpts extends BasicBoxOpts {
     name: string;
     rotation: number;
-    CL?: ComponentList;
+    //CL?: ComponentList;
     sprite: Container;
     blockSize: number;
 }
@@ -103,7 +101,7 @@ export abstract class Block extends BasicBox {
     readonly container = new Container();
     readonly sprite: Container;
 
-    CL?: ComponentList;
+    //CL?: ComponentList;
 
     readonly blockSize: number;
 
@@ -118,7 +116,7 @@ export abstract class Block extends BasicBox {
 
         this.container.addChild(this.sprite);
 
-        this.CL = o.CL;
+        //this.CL = o.CL;
     }
 
     destroy() {

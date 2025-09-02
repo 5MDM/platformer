@@ -1,21 +1,19 @@
-import { ComponentList } from "../md-framework/block-components/parser";
-import { MDgameGridType } from "../md-framework/game";
-import { BackgroundOpts } from "../md-framework/level-gen";
 import { GMOutput } from "../misc/keymap";
 import { MDmatrix } from "../misc/matrix";
 import { AnyBlock } from "./block";
 
+export type MDgameGridType = "fg" | "bg" | "overlay";
 
 export interface LevelJSONoutput extends GMOutput {
     rotation: number;
-    components?: ComponentList;
+    //components?: ComponentList;
 }
 
 export interface BlockInfo {
     name: string;
     type?: MDgameGridType;
     texture: string;
-    components?: ComponentList;
+    //components?: ComponentList;
     isOversize: boolean;
     category: string;
 }
@@ -23,7 +21,7 @@ export interface BlockInfo {
 export interface LevelDataV0_0_0 {
     version: [number, number, number];
     blocks: LevelJSONoutput[];
-    background?: BackgroundOpts;
+    //background?: BackgroundOpts;
 }
 
 export interface ModInfo {
@@ -42,4 +40,18 @@ export interface EntityFileInfo {
 export interface EntityInfo {
     name: string;
     textures: Record<string, string>;
+}
+
+export interface XYWH {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+}
+
+export interface BlockCreationOpts extends XYWH {
+    name: string;
+    rotation?: number;
+    overlay?: boolean;
+    //components?: ComponentList;
 }

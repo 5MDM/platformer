@@ -1,9 +1,7 @@
-import { MDgameGridType } from "../../md-framework/game";
-import { Keymap } from "../../misc/keymap";
 import { MDmatrix } from "../../misc/matrix";
 import { createDegreesRecord, Degrees, degToRad, radToDeg } from "../../misc/util";
 import { AnyBlock, BasicBox } from "../block";
-import { LevelJSONoutput, WorldGrids } from "../types";
+import { LevelJSONoutput, MDgameGridType, WorldGrids } from "../types";
 
 interface Bounds {
     xmin: number;

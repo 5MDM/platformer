@@ -1,10 +1,9 @@
-import { GameScaleObj } from "../../lib/md-framework/editor-tools/main";
 import { MDslider } from "../../lib/misc/el";
 import { $, clamp, round, ToggleState } from "../../lib/misc/util";
 
 export const defaultScale = clamp(1, (innerWidth / 20) - 20, 100);
 
-export const gameScale: GameScaleObj = {
+export const gameScale = {
     x: 1,
     y: 1,
     nx: 0,
