@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "id": "./entities.json",
+    "title": "Entities Schema",
+    "description": "Schema for entities",
+    "type": "object",
+    "required": ["entities"],
+    "properties": {
+        "entities": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "minProperties": 1,
+                "required": ["textures"],
+                "properties": {
+                    "textures": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string",
+                            "minimum": 1
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

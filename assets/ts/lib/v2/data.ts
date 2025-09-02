@@ -1,6 +1,7 @@
 import { AnimatedSprite, Assets, BindableTexture, Sprite, Spritesheet, SpritesheetData, Texture } from "pixi.js";
 import { _MD2engine } from "./engine";
-import { ModInfo } from "./types";
+import { EntityFileInfo, EntityInfo, ModInfo } from "./types";
+import { convertPathToObj } from "../misc/util";
 
 export interface _MD2dataManagerOpts {
     atlasData: SpritesheetData;
@@ -9,6 +10,13 @@ export interface _MD2dataManagerOpts {
 }
 
 export class _MD2dataManager {
+    static modGlobPr: Promise<Record<string, string>> = 
+    convertPathToObj(import.meta.glob<{default: string}>("../../../mods/**"));
+
+    static versionString = JSON.stringify([0, 1, 0]);
+
+    modDataRecord: Record<string, Record<string, string>> = {};
+
     private id: number = 0;
     
     engine: _MD2engine;
@@ -30,7 +38,8 @@ export class _MD2dataManager {
 
         for(const path in opts.mods) {
             const mod = opts.mods[path];
-            this.mods[mod.name] = mod;
+            this.mods[path.split("../").at(-1)?.split("/").at(1) 
+            || "unknown-" + Math.round(Math.random() * 10000)] = mod;
         }
 
         var spritesheetRes: () => void;
@@ -44,14 +53,12 @@ export class _MD2dataManager {
             );
 
             this.spritesheet.parse()
-            .then(() => {
+            .then(async () => {
                 spritesheetRes();
 
                 this.spritesheet!.textureSource.scaleMode = "nearest";
 
                 this.getTexture = this.initializedGetTexture;
-
-                this.initMods();
             });
         });
     }
@@ -69,15 +76,30 @@ export class _MD2dataManager {
 
     async init(): Promise<void> {
         await this.spritesheetPr;
+
+        const modGlob = await _MD2dataManager.modGlobPr;
+
+        for(const path in modGlob) {
+            //const val = (_MD2dataManager.modGlob[path]());
+            //_MD2dataManager.modData;
+            //console.log(modGlob[path])
+            const modName: string = path.split("../").at(-1)?.split("/").at(1) 
+            || "unknown-" + Math.round(Math.random() * 10000);
+
+            const filename = path.split("/").at(-1)
+            || "unknown-" + Math.round(Math.random() * 10000);
+
+            if(!this.modDataRecord[modName]) this.modDataRecord[modName] = {};
+
+            this.modDataRecord[modName][filename]  = modGlob[path];
+        }
+
+        this.initMods();
     }
 
     private initMods() {
         for(const modName in this.mods) {
-            const {blocks} = this.mods[modName];
-
-            for(const block of blocks) {
-                this.engine.generator.registerBlock(block.texture, block);
-            }
+            this.parseMod(modName, this.mods[modName]);
         }
     }
 
@@ -109,5 +131,25 @@ export class _MD2dataManager {
 
     getSprite(name: string): Sprite {
         return new Sprite(this.spritesheet!.textures[name]);
+    }
+
+    private parseMod(fileName: string, mod: ModInfo) {
+        const {blocks} = mod;
+
+        for(const block of blocks) {
+            this.engine.generator.registerBlock(block.texture, block);
+        }
+
+        const modData = this.modDataRecord[fileName];
+        const entities = modData["entities.json"] as Object as EntityFileInfo;
+
+        if(JSON.stringify(entities.version) != _MD2dataManager.versionString) {
+            this.engine.errorManager
+            .outdatedVersion(JSON.stringify(entities.version), _MD2dataManager.versionString);
+        } else {
+            for(const entityName in entities.entities) {
+                this.engine.generator.registerEntity(entityName, entities.entities[entityName]);
+            }
+        }
     }
 }

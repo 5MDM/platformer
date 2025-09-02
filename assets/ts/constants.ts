@@ -12,15 +12,6 @@ export const blockSizeQuarter = blockSizeHalf / 2;
 
 export const maxLevelSize = 256;
 
-export const pw = new PW({
-    gx: 0,
-    gy: 0,
-    simSpeed: 1000 / 30,
-    blockSize,
-    maxLevelSize,
-    smoothing: .25
-});
-
 //export const staticContainer = new Container();
 export const staticChunks = new MDmatrix<Container>(64, 64);
 //wc.addChild(staticContainer);
@@ -37,7 +28,7 @@ export const md2 = new MD2.Engine({
             ("../spritesheet-data/data.json"))["../spritesheet-data/data.json"]()
         ).default,
         atlasImgURL: (await (import.meta.glob<{ default: string; }>
-            ("../images/atlas.png"))["../images/atlas.png"]()
+            ("../images/spritesheet.png"))["../images/spritesheet.png"]()
         ).default,
         mods: await convertPathToObj(import.meta.glob<{ default: ModInfo; }>("../mods/*/manifest.json")),
     },

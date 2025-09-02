@@ -1,12 +1,20 @@
 import { md2 } from "../../constants";
 import { $$, SimpleExpander } from "../misc/util";
-import { _creatorTools } from "./creator-tools";
+import { MDcreatorToolsUI } from "./creator-tools";
 import { MD2editor } from "./main";
 
-type ToolbarObject = [string, (ToolbarObject[] | (() => void))?];
+export const _toolbarEvents: Record<string, Record<string, () => void>> = {
+    edit: {
+        saveChanges() {},
+        cancelChanges() {},
+        toggleCreatorTools() {},
+    }
+};
 
 var lastToolbarParent = "";
 const visibleElements: HTMLElement[] = [];
+
+type ToolbarObject = [string, (ToolbarObject[] | (() => void))?];
 
 function toolbarF(arr: ToolbarObject, isFirst = true): HTMLElement {
     const btn = $$("button", {text: arr[0]});
@@ -67,82 +75,52 @@ function toolbarF(arr: ToolbarObject, isFirst = true): HTMLElement {
     return el;
 }
 
-export const _toolbarEvents: Record<string, Record<string, () => void>> = {
-    edit: {
-        saveChanges() {},
-        cancelChanges() {},
-        toggleCreatorTools() {},
-    }
-};
+export function _createToolbar(creatorToolsUI: MDcreatorToolsUI) {
+    const toolbar = $$("div", {
+        attrs: {
+            id: "toolbar"
+        },
+        children: [
+            ...new SimpleExpander<ToolbarObject, HTMLElement>(toolbarF)
+            .parse([
+                ["File",
+                    [
+                        ["export", () => {
+                            const data = md2.levelManager.exportCurrentLevel();
+                            navigator.clipboard.writeText(JSON.stringify(data))
+                            .then(() => alert("Copied level json"))
+                            .catch(err => alert(err));
+                        }],
+                        ["load", () => {
+                            const txt = prompt("Paste level data");
+                            if(!txt) return;
 
-export var isCreatorToolsEnabled = true;
-
-if(!isCreatorToolsEnabled) _creatorTools.style.display = "none";
-
-const toolbar = $$("div", {
-    attrs: {
-        id: "toolbar"
-    },
-    children: [
-        ...new SimpleExpander<ToolbarObject, HTMLElement>(toolbarF)
-        .parse([
-            ["File",
-                [
-                    ["export", () => {
-                        const data = md2.levelManager.exportCurrentLevel();
-                        navigator.clipboard.writeText(JSON.stringify(data))
-                        .then(() => alert("Copied level json"))
-                        .catch(err => alert(err));
+                            md2.levelManager.loadLevelFromJSONstring(txt);
+                        }],
+                        ["new", () => {
+                            md2.levelManager.destroyCurrentLevel();
+                        }],
+                    ]
+                ],
+                ["Edit", [
+                    ["Toggle creator tools", () => {
+                        MD2editor.creatorToolsState.toggle();
                     }],
-                    ["load", () => {
-                        const txt = prompt("Paste level data");
-                        if(!txt) return;
+                    ["Save editor changes", () => _toolbarEvents.edit.saveChanges()],
+                    ["Cancel editor changes", () => _toolbarEvents.edit.cancelChanges()],
+                ]],
+                ["Levels", [
+                    ["Nothing here yet"]
+                ]],
+            ])
+        ]
+    });
 
-                        md2.levelManager.loadLevelFromJSONstring(txt);
-                    }],
-                    ["new", () => {
-                        md2.levelManager.destroyCurrentLevel();
-                    }],
-                ]
-            ],
-            ["Edit", [
-                ["Toggle creator tools", () => {
-                    isCreatorToolsEnabled = !isCreatorToolsEnabled;
-
-                    if(isCreatorToolsEnabled) {
-                        _creatorTools.style.display = "grid";
-                    } else {
-                        _creatorTools.style.display = "none";
-                    }
-
-                    _toolbarEvents.edit.toggleCreatorTools();
-                }],
-                ["Save editor changes", () => _toolbarEvents.edit.saveChanges()],
-                ["Cancel editor changes", () => _toolbarEvents.edit.cancelChanges()],
-            ]],
-            ["Levels", [
-                ["Nothing here yet"]
-            ]],
-        ])
-    ]
-});
+    MDcreatorToolsUI.el.prepend(toolbar);
+}
 
 export const editorClickArea = $$("div", {
     attrs: {
         id: "click-area"
     }
-});
-
-/**
- * @private
- */
-export const _editorEl: HTMLDivElement = $$("div", {
-    attrs: {
-        id: "editor-v2"
-    },
-    children: [
-        toolbar,
-        editorClickArea,
-        _creatorTools,
-    ]
 });

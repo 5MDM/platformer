@@ -33,3 +33,13 @@ export interface ModInfo {
 }
 
 export type WorldGrids = Record<MDgameGridType, MDmatrix<AnyBlock>>;
+
+export interface EntityFileInfo {
+    version: [number, number, number];
+    entities: Record<string, EntityInfo>;
+}
+
+export interface EntityInfo {
+    name: string;
+    textures: Record<string, string>;
+}

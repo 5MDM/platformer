@@ -2,7 +2,7 @@
 
 "apt-bg.png":
 {
-	"frame": {"x":0,"y":1344,"w":512,"h":512},
+	"frame": {"x":314,"y":768,"w":512,"h":512},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":512,"h":512},
@@ -10,7 +10,7 @@
 },
 "apt-windows-flowers.png":
 {
-	"frame": {"x":0,"y":64,"w":128,"h":128},
+	"frame": {"x":452,"y":0,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -18,7 +18,7 @@
 },
 "apt-windows.png":
 {
-	"frame": {"x":128,"y":64,"w":128,"h":128},
+	"frame": {"x":580,"y":0,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -26,7 +26,7 @@
 },
 "bed-bottom.png":
 {
-	"frame": {"x":256,"y":64,"w":128,"h":128},
+	"frame": {"x":708,"y":0,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -34,7 +34,7 @@
 },
 "bed-top.png":
 {
-	"frame": {"x":384,"y":64,"w":128,"h":128},
+	"frame": {"x":0,"y":128,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -42,7 +42,7 @@
 },
 "bluestone-bottom-left.png":
 {
-	"frame": {"x":0,"y":192,"w":128,"h":128},
+	"frame": {"x":128,"y":128,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -50,7 +50,7 @@
 },
 "bluestone-bottom.png":
 {
-	"frame": {"x":128,"y":192,"w":128,"h":128},
+	"frame": {"x":256,"y":128,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -58,7 +58,7 @@
 },
 "bluestone-left.png":
 {
-	"frame": {"x":256,"y":192,"w":128,"h":128},
+	"frame": {"x":384,"y":128,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -66,7 +66,7 @@
 },
 "bluestone-top-left.png":
 {
-	"frame": {"x":384,"y":192,"w":128,"h":128},
+	"frame": {"x":512,"y":128,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -74,7 +74,7 @@
 },
 "bluestone.png":
 {
-	"frame": {"x":0,"y":320,"w":128,"h":128},
+	"frame": {"x":640,"y":128,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -88,17 +88,33 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
+"clockman.png":
+{
+	"frame": {"x":0,"y":768,"w":314,"h":389},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":314,"h":389},
+	"sourceSize": {"w":314,"h":389}
+},
 "doorpoint.png":
 {
-	"frame": {"x":128,"y":320,"w":128,"h":128},
+	"frame": {"x":768,"y":128,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
 	"sourceSize": {"w":128,"h":128}
 },
+"entities/darenger/darenger-ud-stand-down.png":
+{
+	"frame": {"x":344,"y":0,"w":44,"h":78},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":44,"h":78},
+	"sourceSize": {"w":44,"h":78}
+},
 "first_house.png":
 {
-	"frame": {"x":256,"y":832,"w":192,"h":256},
+	"frame": {"x":384,"y":512,"w":192,"h":256},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":192,"h":256},
@@ -106,7 +122,7 @@
 },
 "floor-tile.png":
 {
-	"frame": {"x":256,"y":320,"w":128,"h":128},
+	"frame": {"x":0,"y":256,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -122,7 +138,15 @@
 },
 "forest-bush-wall.png":
 {
-	"frame": {"x":384,"y":320,"w":128,"h":128},
+	"frame": {"x":128,"y":256,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+"forest-grass-1.png":
+{
+	"frame": {"x":256,"y":256,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -130,7 +154,7 @@
 },
 "forest-grass-2.png":
 {
-	"frame": {"x":0,"y":448,"w":128,"h":128},
+	"frame": {"x":384,"y":256,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -138,7 +162,7 @@
 },
 "grass_block_1.png":
 {
-	"frame": {"x":0,"y":1088,"w":256,"h":256},
+	"frame": {"x":576,"y":512,"w":256,"h":256},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":256,"h":256},
@@ -146,7 +170,7 @@
 },
 "invis.png":
 {
-	"frame": {"x":128,"y":448,"w":128,"h":128},
+	"frame": {"x":512,"y":256,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -154,7 +178,7 @@
 },
 "kitchen-table.png":
 {
-	"frame": {"x":256,"y":448,"w":128,"h":128},
+	"frame": {"x":640,"y":256,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -162,7 +186,7 @@
 },
 "kitchen-top.png":
 {
-	"frame": {"x":384,"y":448,"w":128,"h":128},
+	"frame": {"x":768,"y":256,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -258,7 +282,7 @@
 },
 "question.png":
 {
-	"frame": {"x":0,"y":576,"w":128,"h":128},
+	"frame": {"x":0,"y":384,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -266,7 +290,7 @@
 },
 "sign.png":
 {
-	"frame": {"x":128,"y":576,"w":128,"h":128},
+	"frame": {"x":128,"y":384,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -274,7 +298,7 @@
 },
 "sink.png":
 {
-	"frame": {"x":256,"y":576,"w":128,"h":128},
+	"frame": {"x":256,"y":384,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -282,7 +306,7 @@
 },
 "tv.png":
 {
-	"frame": {"x":384,"y":576,"w":128,"h":128},
+	"frame": {"x":384,"y":384,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -290,7 +314,7 @@
 },
 "wall.png":
 {
-	"frame": {"x":344,"y":0,"w":64,"h":64},
+	"frame": {"x":388,"y":0,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":64},
@@ -298,7 +322,7 @@
 },
 "white-wall-corner.png":
 {
-	"frame": {"x":0,"y":704,"w":128,"h":128},
+	"frame": {"x":512,"y":384,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -306,7 +330,7 @@
 },
 "white-wall-end.png":
 {
-	"frame": {"x":128,"y":704,"w":128,"h":128},
+	"frame": {"x":640,"y":384,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -314,7 +338,7 @@
 },
 "white-wall-left.png":
 {
-	"frame": {"x":256,"y":704,"w":128,"h":128},
+	"frame": {"x":768,"y":384,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -322,7 +346,7 @@
 },
 "white-wall-tube.png":
 {
-	"frame": {"x":384,"y":704,"w":128,"h":128},
+	"frame": {"x":0,"y":512,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -330,7 +354,7 @@
 },
 "wood-door-open.png":
 {
-	"frame": {"x":0,"y":832,"w":128,"h":128},
+	"frame": {"x":128,"y":512,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -338,13 +362,14 @@
 },
 "wood-door.png":
 {
-	"frame": {"x":128,"y":832,"w":128,"h":128},
+	"frame": {"x":256,"y":512,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
 	"sourceSize": {"w":128,"h":128}
 }},
 "animations": {
+	"forest-grass": ["forest-grass-1.png","forest-grass-2.png"],
 	"player-down-walk": ["player-down-walk-1.png","player-down-walk-2.png"],
 	"player-side-walk": ["player-side-walk-1.png","player-side-walk-2.png","player-side-walk-3.png","player-side-walk-4.png"],
 	"player-up-walk": ["player-up-walk-1.png","player-up-walk-2.png"]
@@ -352,10 +377,10 @@
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.1",
-	"image": "atlas.png",
+	"image": "spritesheet.png",
 	"format": "RGBA8888",
-	"size": {"w":512,"h":1856},
+	"size": {"w":896,"h":1280},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:9c68dd911eb99037274914c8b63547b2:c8337df82a9009fe77887c265a8691e9:9157e326ab292468473525d456d5b553$"
+	"smartupdate": "$TexturePacker:SmartUpdate:5a4e6999ffb7bfac8f2d8fef7c7f3e09:592a7db02fb336a27e05c474bb62f775:e425fefcff1e15baea1094a56b981d8d$"
 }
 }

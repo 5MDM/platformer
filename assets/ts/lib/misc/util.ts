@@ -287,8 +287,8 @@ export class ToggleState {
     if(!this.isToggled) this.toggle();
   }
 
-  private onEnable: () => void = () => undefined;
-  private onDisable: () => void = () => undefined;
+  onEnable: () => void = () => undefined;
+  onDisable: () => void = () => undefined;
 }
 
 export function rotatePoints90(x: number, y: number, deg: number): [number, number] {

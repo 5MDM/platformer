@@ -1,7 +1,7 @@
 import { Container, Sprite, Texture, TilingSprite } from "pixi.js";
 import { _MD2engine } from "../v2/engine";
-import { _setGridBlocks, _setGridF } from "./creator-tools";
-import { _editorEl, _toolbarEvents, editorClickArea, isCreatorToolsEnabled } from "./el";
+import { MDcreatorToolsUI } from "./creator-tools";
+import { _toolbarEvents, editorClickArea } from "./el";
 import { RotationHolder, snapToGrid, ToggleState } from "../misc/util";
 import { _MD2editorClick } from "./modes/click";
 import { Player } from "../v2/entities/player";
@@ -11,28 +11,30 @@ import { AnyBlock } from "../v2/block";
 import { _utilBar, _utilBarEvents } from "./util-bar";
 import { _MD2deleteClick } from "./modes/delete";
 import { _MD2editorBase } from "./modes/main";
-import { _setEngine } from "./left-tabs";
 
 export interface MD2editorOpts {
     engine: _MD2engine;
     el: HTMLDivElement;
 }
 
-export var _editorGridBlocks: HTMLElement[];
+export const _editorGridBlocks: HTMLElement[] = [];
 
 export function _setEditorGridBlocks(e: HTMLElement[]) {
-    _editorGridBlocks = e;
+    _editorGridBlocks.push(...e);
 }
 
 export class MD2editor {
     engine: _MD2engine;
-    static editorEl = _editorEl;
     player: Player;
 
     selectedBlock = "";
     selectedBlockType: MDgameGridType = "fg";
+    selectedEntity = "";
+    isEntitySelected = false;
 
-    testSprite: TilingSprite;
+    ui: MDcreatorToolsUI;
+
+    testSprite: TilingSprite | Sprite;
 
     private editorClick: _MD2editorClick;
     private deleteClick: _MD2deleteClick;
@@ -53,18 +55,29 @@ export class MD2editor {
 
     rotation = new RotationHolder();
 
-    static creatorToolsState = new ToggleState(() => {}, () => {}, isCreatorToolsEnabled);
+    static creatorToolsState = new ToggleState(() => {}, () => {}, true);
 
     constructor(o: MD2editorOpts) {
         this.engine = o.engine;
         this.player = this.engine.generator.player;
 
-        o.el.appendChild(MD2editor.editorEl);
+        this.ui = new MDcreatorToolsUI(this);
+        this.ui.bindTo(o.el);
 
         this.engine.initPromise.then(() => this.init());
 
-        _setEngine(this.engine);
-        _setGridF((name: string) => this.onBlockSelect(name));
+        this.ui.onGridButtonSelect = ((type: string, name: string) => {
+            if(type == "block") this.onBlockSelect(name);
+            else if(type == "entity") this.onEntitySelect(name);
+        });
+
+        MD2editor.creatorToolsState.onEnable = function() {
+            MDcreatorToolsUI.creatorToolsEl.style.display = "grid";
+        };
+
+        MD2editor.creatorToolsState.onDisable = function() {
+            MDcreatorToolsUI.creatorToolsEl.style.display = "none";
+        };
 
         this.testSprite = new TilingSprite({
             width: this.engine.blockSize,
@@ -107,6 +120,16 @@ export class MD2editor {
 
         this.rotation.onRotation = () => this.onRotation();
         
+    }
+
+    private onEntitySelect(name: string) {
+        this.isEntitySelected = true;
+        this.selectedEntity = name;
+        const s = this.engine.generator.createEntitySprite(name);
+
+        this.testSprite.destroy();
+
+        this.testSprite = s || new TilingSprite({texture: Texture.WHITE, width: 100, height: 100});
     }
 
     private cancelChanges() {
@@ -181,6 +204,7 @@ export class MD2editor {
     }
 
     private onBlockSelect(name: string) {
+        this.isEntitySelected = false;
         this.selectedBlock = name;
         const info = this.engine.generator.getBlockDef(name);
         if(info) this.selectedBlockType = info.type || "fg";
@@ -193,7 +217,9 @@ export class MD2editor {
     }
 
     private init() {
-        _setGridBlocks(this.engine.generator.getBlockDefArr());
+        this.ui.setGridBlocks(this.engine.generator.getBlockDefArr());
+        this.ui.setGridEntities(this.engine.generator.getEntityDefArr());
+
         this.engine.levelManager.groups.world.addChild(this.testSprite);
 
         this.setupListeners();

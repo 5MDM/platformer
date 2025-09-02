@@ -1,6 +1,6 @@
 import { startGame } from "./game/main";
 import { c } from "./canvas";
-import { app, md2, pw } from "./constants";
+import { app, md2 } from "./constants";
 import { initLevels } from "./game/levels";
 
 // using await breaks production build

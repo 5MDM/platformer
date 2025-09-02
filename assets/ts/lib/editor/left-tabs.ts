@@ -1,9 +1,7 @@
-import { MDtab } from "../misc/el/tabs";
 import { $$, SimpleExpander, ToggleList } from "../misc/util";
 import { _MD2engine } from "../v2/engine";
-import { BlockInfo } from "../v2/types";
-import { blockCatRecord } from "./creator-tools";
-type CatObj = [string];
+import { BlockInfo, EntityInfo } from "../v2/types";
+import { MDcreatorToolsUI } from "./creator-tools";
 
 const categories: HTMLButtonElement[] = new SimpleExpander<[string, string], HTMLButtonElement>((o) => {
     const el = $$("button", {
@@ -18,55 +16,77 @@ const categories: HTMLButtonElement[] = new SimpleExpander<[string, string], HTM
 
     return el;
 }).parse([
+    ["Entities", "#a911c7ff"],
     ["Forest", "#14cc3a"],
     ["Town", "#66b7b7ff"],
     ["Ice", "#0f8ae3ff"],
-    ["Facility", "#a911c7ff"],
     ["Desert", "#e5be0eff"],
     ["City", "#628c8eff"],
-    ["Marble", "#bed0d1ff"],
     ["End Zone", "#fc0942ff"],
 ]);
 
-var engine: _MD2engine;
+export function _createLeftTabs(creatorToolsUI: MDcreatorToolsUI) {
+    const engine = creatorToolsUI.editor.engine;
 
-export function _setEngine(e: _MD2engine) {
-    engine = e;
-}
+    new ToggleList(categories, el => {
+        el.classList.add("active");
+        
+        const type = el.getAttribute("data-type") || "Forest";
 
-export const blockGridExpander = new SimpleExpander<BlockInfo, HTMLElement>((o: BlockInfo) => {
-    const el = $$("button", {
-        text: o.name,
-        attrs: {
-            "data-name": o.texture,
+        for(const el of MDcreatorToolsUI.blockCatRecord[type] || []) {
+            el.style.display = "block";
+        }
+    }, el => {
+        el.classList.remove("active");
+
+        const type = el.getAttribute("data-type") || "Forest";
+
+        for(const el of MDcreatorToolsUI.blockCatRecord[type] || []) {
+            el.style.display = "none";
+        }
+    }, catDiv);
+
+    creatorToolsUI.blockExpander = new SimpleExpander<BlockInfo | EntityInfo, HTMLElement>((o: BlockInfo | EntityInfo) => {
+        if((o as BlockInfo).texture == undefined) {
+            const entityInfo = o as EntityInfo;
+
+            const sampleName: string = entityInfo.textures[Object.keys(entityInfo.textures)[0]];
+
+            const el = $$("button", {
+                text: o.name,
+                attrs: {
+                    "data-name": sampleName,
+                    "data-type": "entity",
+                }
+            });
+
+            engine.dataManager.getTextureAsHTMLimage(sampleName, false)
+            .then(img => el.appendChild(img));
+
+            return el;
+        } else {
+            const blockInfo = o as BlockInfo;
+
+            const el = $$("button", {
+                text: o.name,
+                attrs: {
+                    "data-name": blockInfo.texture,
+                    "data-type": "block"
+                }
+            });
+
+            engine.dataManager.getTextureAsHTMLimage(blockInfo.texture, true)
+            .then(img => el.appendChild(img));
+
+            return el;
         }
     });
-
-    engine.dataManager.getTextureAsHTMLimage(o.texture, true)
-    .then(img => el.appendChild(img));
-
-    return el;
-});
+}
 
 export const catDiv = $$("div", {
+    attrs: {
+        id: "categories",
+    },
     children: categories,
 });
 
-
-new ToggleList(categories, el => {
-    el.classList.add("active");
-    
-    const type = el.getAttribute("data-type") || "Forest";
-
-    for(const el of blockCatRecord[type] || []) {
-        el.style.display = "block";
-    }
-}, el => {
-    el.classList.remove("active");
-
-    const type = el.getAttribute("data-type") || "Forest";
-
-    for(const el of blockCatRecord[type] || []) {
-        el.style.display = "none";
-    }
-}, catDiv);

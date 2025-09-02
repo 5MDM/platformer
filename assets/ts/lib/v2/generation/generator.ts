@@ -9,7 +9,7 @@ import { _MD2engine } from "../engine";
 import { EntityOpts, Entity } from "../entities/entity";
 import { Player } from "../entities/player";
 import { Success } from "../level";
-import { BlockInfo, LevelJSONoutput } from "../types";
+import { BlockInfo, EntityInfo, LevelJSONoutput } from "../types";
 import { greedyMesh, greedyMeshGridFromBlockDeletion } from "./greedy-mesh";
 
 
@@ -23,11 +23,13 @@ export interface BlockOpts {
     components?: ComponentList;
 }
 
-export class _MD2generator {
+export abstract class _MD2Blockgenerator {
     player: Player;
 
     private blockDefs: Record<string, BlockInfo> = {};
     engine: _MD2engine;
+
+    private entityDefs: Record<string, EntityInfo> = {};
 
     constructor(engine: _MD2engine) {
         this.engine = engine;
@@ -224,5 +226,13 @@ export class _MD2generator {
         const data: LevelJSONoutput[] = greedyMesh(grid);
         
         this.replaceBlocks(data);
+    }
+
+    getEntityDefArr(): EntityInfo[] {
+        return Object.values(this.entityDefs);
+    }
+
+    registerEntity(name: string, info: EntityInfo) {
+        this.entityDefs[name] = info;
     }
 }

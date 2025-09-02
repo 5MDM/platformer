@@ -3,11 +3,11 @@ import { _MD2dataManager, _MD2dataManagerOpts } from "./data";
 import { _MD2 } from "./obj";
 import { _MD2levelManager } from "./level";
 import { _MD2errorManager } from "./errors";
-import { _MD2generator } from "./generation/generator";
 import { _MD2physics, _MD2physicsOpts } from "./physics";
 import { MDmatrix } from "../misc/matrix";
 import { FgBlock } from "./block";
 import { _MD2deletor } from "./generation/deletor";
+import { _MD2fullGen } from "./generation/full-gen";
 
 interface EngineOpts {
     engine: {
@@ -24,7 +24,7 @@ export class _MD2engine {
     dataManager: _MD2dataManager;
     levelManager: _MD2levelManager;
     errorManager: _MD2errorManager;
-    generator: _MD2generator;
+    generator: _MD2fullGen;
     physics: _MD2physics;
     deletor: _MD2deletor;
     app: Application;
@@ -42,7 +42,7 @@ export class _MD2engine {
         this.dataManager = new _MD2dataManager(this, opts.dataManager);
         this.levelManager = new _MD2levelManager(this);
         this.errorManager = new _MD2errorManager();
-        this.generator = new _MD2generator(this);
+        this.generator = new _MD2fullGen(this);
 
         this.physics.setMatrix(this.levelManager.levelGrids.fg as MDmatrix<FgBlock>);
 

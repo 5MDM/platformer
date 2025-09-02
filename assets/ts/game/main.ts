@@ -1,7 +1,5 @@
 import { isMobile } from "pixi.js";
 import "./audio";
-import "./dev/menu";
-import "./dev/modes";
 import { $ } from "../lib/misc/util";
 import { _MD2engine } from "../lib/v2/engine";
 import { md2 } from "../constants";
@@ -44,3 +42,23 @@ if(isMobile.any) {
         popup.style.display = "none";
     }, {once: true});
 }
+
+addEventListener("keyup", e => {
+    if(e.key != "C") return;
+
+    const level = md2.levelManager.exportCurrentLevel();
+
+    level.blocks.push({
+        x: 64,
+        y: 64,
+        w: 1,
+        h: 1,
+        type: "@",
+        rotation: 0,
+    });
+
+    navigator.clipboard.writeText(JSON.stringify(level))
+        .then(() => alert("Copied level json"))
+        .catch(err => alert(err));
+    
+}, {passive: true});

@@ -29,4 +29,8 @@ export class _MD2errorManager {
     static entityStanceNotFound(name: string) {
         _MD2errorManager.notFound("Stance", name);
     }
+
+    outdatedVersion(old: string, ne: string) {
+        _MD2errorManager.err(`Outdated version. Supported version is ${ne}. Got version ${old} instead`);
+    }
 }
