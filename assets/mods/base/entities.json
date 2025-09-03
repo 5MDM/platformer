@@ -6,6 +6,11 @@
             "textures": {
                 "stand-ud-down": "entities/darenger/darenger-ud-stand-down.png"
             }
+        },
+        "daylin": {
+            "textures": {
+                "stand-ud-down": "entities/daylin/daylin-ud-stand-down.png"
+            }
         }
     }
 }

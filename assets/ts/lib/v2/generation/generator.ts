@@ -56,8 +56,8 @@ export abstract class _MD2Blockgenerator {
         const t = this.engine.dataManager.getTexture(o.name);
 
         if (def.isOversize) {
-            const x = o.x - t.width / 4;
-            const y = o.y - t.height / 4;
+            const x = o.x;
+            const y = o.y;
 
             const s = new TilingSprite({
                 texture: t,
@@ -102,6 +102,18 @@ export abstract class _MD2Blockgenerator {
 
     private createFgBlock(o: BlockOpts, def: BlockInfo, sprite: TilingSprite, record: boolean = true) {
         //const components = o.components || def.components;
+
+        if(def.isOversize) {
+            const hw = this.engine.divideByBlockSize(sprite.width / 2) * this.engine.blockSize;
+            const hh = this.engine.divideByBlockSize(sprite.height / 2) * this.engine.blockSize;
+            const w = this.engine.divideByBlockSize(sprite.width) * this.engine.blockSize;
+            const h = this.engine.divideByBlockSize(sprite.height) * this.engine.blockSize;
+
+            o.x -= hw;
+            o.y -= hh;
+            o.w = w;
+            o.h = h;
+        }
 
         const fgBlock = new FgBlock({
             x: o.x,

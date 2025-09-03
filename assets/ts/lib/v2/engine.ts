@@ -32,6 +32,10 @@ export class _MD2engine {
     initPromise: Promise<void>;
     private initPromiseRes?: () => void;
 
+    divideByBlockSize(n: number): number {
+        return Math.floor(n / this.blockSize);
+    }
+
     constructor(opts: EngineOpts) {
         this.blockSize = opts.engine.blockSize;
         this.blockSizeHalf = this.blockSize / 2;

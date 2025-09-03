@@ -24,9 +24,7 @@ function loadAnimations() {
 export async function startGame(md2: _MD2engine) { 
     loadAnimations();
 
-    md2.levelManager.loadLevel("1");
-    
-    // startStats();
+    md2.levelManager.loadLevel("1");    
 }
 
 const editor = new MD2editor({

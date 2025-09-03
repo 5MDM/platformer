@@ -205,6 +205,13 @@
             "texture": "forest-bush-wall.png",
             "type": "fg",
             "category": "Forest"
+        },
+        {
+            "name": "Closed Forest Gates",
+            "texture": "forest/forest-gates-closed.png",
+            "type": "fg",
+            "category": "Forest",
+            "isOversize": true
         }
     ]
 }

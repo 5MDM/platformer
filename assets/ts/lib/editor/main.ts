@@ -2,7 +2,7 @@ import { Container, Sprite, Texture, TilingSprite } from "pixi.js";
 import { _MD2engine } from "../v2/engine";
 import { MDcreatorToolsUI } from "./creator-tools";
 import { _toolbarEvents, editorClickArea } from "./el";
-import { RotationHolder, snapToGrid, ToggleState } from "../misc/util";
+import { degToRad, RotationHolder, snapToGrid, ToggleState } from "../misc/util";
 import { _MD2editorClick } from "./modes/click";
 import { Player } from "../v2/entities/player";
 import { MDmatrix } from "../misc/matrix";
@@ -119,7 +119,6 @@ export class MD2editor {
         };
 
         this.rotation.onRotation = () => this.onRotation();
-        
     }
 
     private onEntitySelect(name: string) {
@@ -147,6 +146,8 @@ export class MD2editor {
             const img = el.children[0] as HTMLImageElement;
             img.style.transform = `rotate(${this.rotation.deg}deg)`;
         }
+
+        this.testSprite.rotation = degToRad(this.rotation.deg);
     }
 
     private rotateLeft() {
@@ -159,6 +160,8 @@ export class MD2editor {
 
     private saveChanges() {
         this.engine.generator.injectBlocks(this.grids);
+
+        this.cancelChanges();
     }
 
     snapToGridFromScreen(x: number, y: number, pos: {x: number, y: number} = this.engine.levelManager.groups.view): [number, number] {
@@ -179,7 +182,7 @@ export class MD2editor {
     private setupListeners() {
         addEventListener("pointermove", e => {
             const [x, y] = this.snapToGridFromScreen(e.x, e.y, this.engine.levelManager.groups.view);
-            this.testSprite.position.set(x, y);
+            this.testSprite.position.set(x + this.engine.blockSizeHalf, y + this.engine.blockSizeHalf);
         });
     }
 
@@ -198,7 +201,8 @@ export class MD2editor {
         }, info);
 
         s.alpha = .5;
-        s.pivot.set(.5);
+
+        s.pivot.set(this.engine.blockSizeHalf);
 
         return s;
     }
