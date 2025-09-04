@@ -378,3 +378,5 @@ export class RotationHolder {
 
   onRotation: () => void = () => undefined;
 }
+
+export function NOOP<T extends unknown[], R = void>(..._args: T): R | undefined {return;}

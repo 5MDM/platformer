@@ -16,8 +16,8 @@ const categories: HTMLButtonElement[] = new SimpleExpander<[string, string], HTM
 
     return el;
 }).parse([
-    ["Entities", "#a911c7ff"],
     ["Forest", "#14cc3a"],
+    ["Entities", "#a911c7ff"],
     ["Town", "#66b7b7ff"],
     ["Ice", "#0f8ae3ff"],
     ["Desert", "#e5be0eff"],

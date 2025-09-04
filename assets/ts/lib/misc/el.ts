@@ -1,4 +1,4 @@
-import { $$ } from "./util";
+import { $$, NOOP } from "./util";
 
 export class ElList<T> {
     selectClassName: string;
@@ -337,4 +337,76 @@ export function jsonToEl(style: Record<string, string>, json: Record<string, Rec
         style,
         children,
     });
+}
+
+export class MixedList {
+    lastSelectedEl?: HTMLElement;
+
+    onSelect = NOOP<[HTMLElement, PointerEvent]>;
+    onUnselect = NOOP<[HTMLElement, PointerEvent]>;
+
+    readonly isRecording: boolean;
+    private map?: Map<HTMLElement, (e: PointerEvent) => void>;
+
+    wasBinded = false;
+
+    constructor(record = false) {
+        this.isRecording = record;
+        if(this.isRecording) this.map = new Map();
+    }
+
+    private selectEvent(el: HTMLElement, e: PointerEvent) {
+        if(this.lastSelectedEl) this.onUnselect(this.lastSelectedEl, e);
+        this.onSelect(el, e);
+        this.lastSelectedEl = el;
+    }
+
+    static attributeName = "md-util-el-no-bind";
+
+    static needsBind(el: HTMLElement): boolean {
+        return el.getAttribute(MixedList.attributeName) != "true";
+    }
+
+    static markAsNotNeedingBind(el: HTMLElement) {
+        el.setAttribute(MixedList.attributeName, "true");
+    }
+
+    bind(arr: HTMLElement[]) {
+        if(this.wasBinded) this.clearBinds();
+
+        this.wasBinded = true;
+        if(this.isRecording) for(const el of arr) {
+            if(!MixedList.needsBind(el)) continue;
+            const f = (e: PointerEvent) => this.selectEvent(el, e);
+            el.addEventListener("pointerup", f);
+
+            this.map!.set(el, f);
+        } else for(const el of arr) {
+            if(!MixedList.needsBind(el)) continue;
+            el.addEventListener("pointerup", e => this.selectEvent(el, e));
+        }
+
+        return this;
+    }
+
+    setFunctions(
+        select?: (el: HTMLElement, e: PointerEvent) => void,
+        unselect?: (el: HTMLElement, e: PointerEvent) => void
+    ) {
+        if(select) this.onSelect = select;
+        if(unselect) this.onUnselect = unselect;
+        return this;
+    }
+
+    clearBinds() {
+        if(!this.isRecording) throw new Error(
+            "el.ts: can't clear binds"
+        );
+
+        this.map!.forEach((listener, el) => {
+            el.removeEventListener("pointerup", listener);
+        });
+
+        this.map!.clear();
+    }
 }

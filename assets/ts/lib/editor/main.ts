@@ -112,10 +112,22 @@ export class MD2editor {
 
         _utilBarEvents.rotateLeft = () => this.rotateLeft();
         _utilBarEvents.rotateRight = () => this.rotateRight();
-        _utilBarEvents.activateDelete = () => {
-            this.deleteClick.state.enableIfOff();
+        _utilBarEvents.activateDelete = (el: HTMLElement) => {
             this.activateEditorMode.state.disableIfOn();
+
+            this.deleteClick.setButtonEl(el);
+            this.deleteClick.state.toggle();
+
             this.activateEditorMode = this.deleteClick;
+        };
+
+        _utilBarEvents.activatePlacement = (el: HTMLElement) => {
+            this.activateEditorMode.state.disableIfOn();
+
+            this.editorClick.setButtonEl(el);
+            this.editorClick.state.toggle();
+
+            this.activateEditorMode = this.editorClick;
         };
 
         this.rotation.onRotation = () => this.onRotation();

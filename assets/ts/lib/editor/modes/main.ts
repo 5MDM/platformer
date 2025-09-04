@@ -11,8 +11,14 @@ export abstract class _MD2editorBase {
 
     state = new ToggleState(() => this.onEnable(), () => this.onDisable());
 
-    protected onEnable() {}
-    protected onDisable() {}
+    buttonElement?: HTMLElement;
+
+    protected onEnable() {
+        if(this.buttonElement) this.buttonElement.style.setProperty("border-color", "red");
+    }
+    protected onDisable() {
+        if(this.buttonElement) this.buttonElement.style.removeProperty("border-color");
+    }
 
     constructor(editor: MD2editor, el: HTMLElement) {
         this.editor = editor;
@@ -25,6 +31,10 @@ export abstract class _MD2editorBase {
 
         this.drag.changeDefaultandNormalGrab("default");
         this.drag.changeDefaultAndNormalGrabbing("pointer");
+    }
+
+    setButtonEl(el: HTMLElement) {
+        this.buttonElement = el;
     }
 
     init() {

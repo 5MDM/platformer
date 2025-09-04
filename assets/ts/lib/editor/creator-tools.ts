@@ -66,6 +66,12 @@ export class MDcreatorToolsUI {
         
         MDcreatorToolsUI.entities.push(...arr);
 
+        MDcreatorToolsUI.blockCatRecord["Entities"] = arr;
+
+        for(const i of arr) {
+            i.style.display = "none";
+        }
+
         new ToggleList(arr, el => {
             el.classList.add("active");
             this.onGridButtonSelect(el.getAttribute("data-type")!, el.getAttribute("data-name")!);
