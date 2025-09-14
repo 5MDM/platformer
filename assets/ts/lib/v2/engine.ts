@@ -1,4 +1,4 @@
-import { Application, SpritesheetData } from "pixi.js";
+import { Application, EventEmitter, SpritesheetData } from "pixi.js";
 import { _MD2dataManager, _MD2dataManagerOpts } from "./data";
 import { _MD2 } from "./obj";
 import { _MD2levelManager } from "./level";
@@ -29,11 +29,17 @@ export class _MD2engine {
     deletor: _MD2deletor;
     app: Application;
 
+    events = new EventEmitter();
+
     initPromise: Promise<void>;
     private initPromiseRes?: () => void;
 
     divideByBlockSize(n: number): number {
         return Math.floor(n / this.blockSize);
+    }
+
+    mulByBlockSize(n: number): number {
+        return n * this.blockSize;
     }
 
     constructor(opts: EngineOpts) {

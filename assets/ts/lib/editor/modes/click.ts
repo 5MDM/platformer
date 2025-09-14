@@ -25,6 +25,7 @@ export class _MD2editorClick extends _MD2editorBase {
 
     private genBlock(x: number, y: number) {
         if(this.editor.selectedBlock == "") return false;
+
         const generatedBlock: AnyBlock | false = this.editor.engine.generator.createAndReturnBlock({
             name: this.editor.selectedBlock,
             x,
@@ -39,5 +40,11 @@ export class _MD2editorClick extends _MD2editorBase {
         this.editor.container.addChild(generatedBlock.sprite);
 
         this.editor.grids[this.editor.selectedBlockType].set(x, y, generatedBlock);
+    }
+
+    protected onEnable(): void {
+        super.onEnable();
+
+        this.editor.testSprite.visible = true;
     }
 }

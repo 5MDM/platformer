@@ -1,4 +1,4 @@
-import {Sprite, Texture } from "pixi.js";
+import {Container, Sprite, Texture } from "pixi.js";
 
 export const UTIL_VERSION: number = 1.6;
 
@@ -380,3 +380,11 @@ export class RotationHolder {
 }
 
 export function NOOP<T extends unknown[], R = void>(..._args: T): R | undefined {return;}
+
+export function getContainerCoords(e: Container): [number, number] {
+  return [e.x, e.y];
+}
+
+export function LCC(e: Container) {
+  console.log(...getContainerCoords(e));
+}

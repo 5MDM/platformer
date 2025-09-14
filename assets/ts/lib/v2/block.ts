@@ -19,6 +19,7 @@ interface BlockConstructorOpts extends BasicBoxOpts {
     //CL?: ComponentList;
     sprite: Container;
     blockSize: number;
+    isOversize: boolean;
 }
 
 export class BasicBox {
@@ -103,7 +104,11 @@ export abstract class Block extends BasicBox {
 
     //CL?: ComponentList;
 
+    isOversize = false;
+
     readonly blockSize: number;
+
+    isDestroyed = false;
 
     constructor(o: BlockConstructorOpts) {
         super(o);
@@ -117,9 +122,12 @@ export abstract class Block extends BasicBox {
         this.container.addChild(this.sprite);
 
         //this.CL = o.CL;
+        this.isOversize = o.isOversize;
     }
 
     destroy() {
+        if(this.isDestroyed) return;
+        this.isDestroyed = true;
         this.sprite.destroy();
     }
 

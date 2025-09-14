@@ -35,6 +35,17 @@ export class MDmatrix<T> {
         this.matrix[y][x] = s;
     }
 
+    count(): number {
+        var c = 0;
+        this.forEach(t => ++c);
+
+        return c;
+    }
+
+    logCount() {
+        console.log(this.count());
+    }
+
     place(x: number, y: number, val: T): boolean {
         if (this.get(x, y)) return false;
 

@@ -1,3 +1,4 @@
+import { MDgameGridType } from "../../v2/types";
 import { _MD2editorBase } from "./main";
 
 export class _MD2deleteClick extends _MD2editorBase {
@@ -11,9 +12,23 @@ export class _MD2deleteClick extends _MD2editorBase {
             if(!block) continue;
 
             //console.log(0, block);
+            
             this.editor.engine.deletor.deleteBlockByBlockAndWorldPos(block, x, y);
 
             break;
         }
+
+        for(const type in this.editor.grids) {
+            const editorBlock = this.editor.grids[type as MDgameGridType].get(x, y);
+            if(!editorBlock) break;
+
+            editorBlock.destroy();
+            this.editor.grids[type as MDgameGridType].delete(x, y);
+        }
+    }
+
+    protected onEnable(): void {
+        super.onEnable();
+        this.editor.testSprite.visible = false;
     }
 }

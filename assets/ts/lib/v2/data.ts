@@ -1,4 +1,4 @@
-import { AnimatedSprite, Assets, BindableTexture, Sprite, Spritesheet, SpritesheetData, Texture } from "pixi.js";
+import { AnimatedSprite, Assets, BindableTexture, Sprite, Spritesheet, SpritesheetData, Texture, TilingSprite } from "pixi.js";
 import { _MD2engine } from "./engine";
 import { EntityFileInfo, EntityInfo, ModInfo } from "./types";
 import { convertPathToObj } from "../misc/util";
@@ -113,6 +113,12 @@ export class _MD2dataManager {
             this.engine.errorManager.textureNotFound(t);
             return Texture.WHITE;
         } else return t;
+    }
+
+    changeTileSpriteTextureByName(s: TilingSprite, name: string, pivot: boolean = true) {
+        s.texture = this.getTexture(name);
+        s.tileScale.set(this.engine.blockSize / s.texture.width, this.engine.blockSize / s.texture.height);
+        if(pivot) s.pivot.set(s.texture.width / 2, s.texture.height / 2);
     }
 
     getTexture: ((name: string) => Texture) = (name: string) => {

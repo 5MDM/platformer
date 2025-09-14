@@ -1,6 +1,7 @@
+import { Keymap } from "../../misc/keymap";
 import { MDmatrix } from "../../misc/matrix";
 import { createDegreesRecord, Degrees, degToRad, radToDeg } from "../../misc/util";
-import { AnyBlock, BasicBox } from "../block";
+import { AnyBlock, BasicBox, FgBlock } from "../block";
 import { LevelJSONoutput, MDgameGridType, WorldGrids } from "../types";
 
 interface Bounds {
@@ -39,8 +40,18 @@ export function greedyMesh(grids: WorldGrids): LevelJSONoutput[] {
                     blockNames[block.rotation as Degrees][block.name] = 
                     new MDmatrix<AnyBlock>(grids.bg.w, grids.bg.h);
 
-                blockNames[block.rotation as Degrees][block.name]
-                .set(block.x / block.blockSize, block.y / block.blockSize, block);
+                // blockNames[block.rotation as Degrees][block.name]
+                // .set(block.x / block.blockSize, block.y / block.blockSize, block);
+
+                const matrix = blockNames[block.rotation as Degrees][block.name];
+
+                Keymap.IterateGMrect(
+                    block.x / block.blockSize,
+                    block.y / block.blockSize,
+                    block.w / block.blockSize,
+                    block.h / block.blockSize,
+                    (x, y) => matrix.set(x, y, block),
+                );
             }
 
             const grid = grids[type as MDgameGridType];
@@ -135,7 +146,6 @@ export function gMparseIndividual(matrix: MDmatrix<AnyBlock>, name: string, rota
         for(const rx in ySlice) {
             const x = Number(rx);
             if(!ySlice[x]) continue;
-
             
             const {ymin, xmin} = bounds;
             const realY = y - ymin;
@@ -155,12 +165,12 @@ export function gMparseIndividual(matrix: MDmatrix<AnyBlock>, name: string, rota
     
     const output: LevelJSONoutput[] = [];
 
-    output.push(...gmIndividual(bounds, mm, rotation));
+    output.push(...gmIndividual<AnyBlock>(bounds, mm, rotation));
 
     return output;
 }
 
-function gmIndividual(bounds: Bounds, matrix: MDmatrix<AnyBlock>, rotation: Degrees): LevelJSONoutput[] {
+function gmIndividual<T>(bounds: Bounds, matrix: MDmatrix<T>, rotation: Degrees): LevelJSONoutput[] {
     const output: LevelJSONoutput[] = [];
 
     for(let y = bounds.ymin; y < bounds.ymax; y++) {
@@ -176,11 +186,11 @@ function gmIndividual(bounds: Bounds, matrix: MDmatrix<AnyBlock>, rotation: Degr
         const x = rx - bounds.xmin;
         const y = ry - bounds.ymin;
 
-        const res: AnyBlock | undefined = matrix.get(x, y);
+        const res: T | undefined = matrix.get(x, y);
         if(!res) return;
 
         for(let fx = x; fx < bounds.xmax - bounds.xmin; fx++) {
-            const res: AnyBlock | undefined = matrix.get(fx, y);
+            const res: T | undefined = matrix.get(fx, y);
             
             if(!res) break;
             w++;
@@ -190,7 +200,7 @@ function gmIndividual(bounds: Bounds, matrix: MDmatrix<AnyBlock>, rotation: Degr
             var hasEnded = false;
             
             for(let fx = x; fx < x+w; fx++) {
-                const res: AnyBlock | undefined = matrix.get(fx, fy);
+                const res: T | undefined = matrix.get(fx, fy);
                 
                 if(!res) {
                     hasEnded = true;

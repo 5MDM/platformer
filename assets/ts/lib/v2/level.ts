@@ -5,7 +5,7 @@ import { AnyBlock, BgBlock, FgBlock } from "./block";
 import { _MD2engine } from "./engine";
 import { Entity } from "./entities/entity";
 import { Player } from "./entities/player";
-import { LevelDataV0_0_0, LevelJSONoutput, MDgameGridType } from "./types";
+import { _md2events, LevelDataV0_0_0, LevelJSONoutput, MDgameGridType } from "./types";
 
 export type Success = boolean; 
 
@@ -205,11 +205,15 @@ export class _MD2levelManager {
     }
 
     async destroyCurrentLevel() {
+        this.engine.events.emit(_md2events.levelDeleteB);
+
         await this.destroyBlockType("fg");
         await this.destroyBlockType("bg");
         await this.destroyBlockType("overlay");
 
         this.destroyEntities();
+
+        this.engine.events.emit(_md2events.levelDeleteA);
     }
 
     loadLevelFromJSONstring(str: string) {

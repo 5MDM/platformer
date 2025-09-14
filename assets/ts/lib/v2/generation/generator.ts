@@ -109,11 +109,12 @@ export abstract class _MD2Blockgenerator {
             const w = this.engine.divideByBlockSize(sprite.width) * this.engine.blockSize;
             const h = this.engine.divideByBlockSize(sprite.height) * this.engine.blockSize;
 
-            o.x -= hw;
-            o.y -= hh;
+            sprite.x += hw;
+            sprite.y += hh;
             o.w = w;
             o.h = h;
         }
+
 
         const fgBlock = new FgBlock({
             x: o.x,
@@ -126,8 +127,9 @@ export abstract class _MD2Blockgenerator {
             //CL: components,
             id: this.engine.dataManager.getNewId(),
             blockSize: this.engine.blockSize,
+            isOversize: def.isOversize,
         });
-        
+
         //fgBlock.sprite.x -= this.engine.blockSize / 2;
         if(record) this.engine.levelManager.recordBlock("fg", fgBlock);
 
@@ -150,6 +152,7 @@ export abstract class _MD2Blockgenerator {
             id: this.engine.dataManager.getNewId(),
             isOverlay,
             blockSize: this.engine.blockSize,
+            isOversize: def.isOversize,
         });
 
         if(record) this.engine.levelManager.recordBlock(def.type || "bg", bgBlock);

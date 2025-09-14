@@ -55,3 +55,8 @@ export interface BlockCreationOpts extends XYWH {
     overlay?: boolean;
     //components?: ComponentList;
 }
+
+export enum _md2events {
+    levelDeleteB = "level delete before",
+    levelDeleteA = "level delete after",
+};

@@ -7,9 +7,10 @@ export const _utilBarEvents = {
     rotateRight() {},
     activateDelete(el: HTMLElement) {},
     activatePlacement(el: HTMLElement) {},
+    activateMulti(el: HTMLElement) {},
 };
 
-const imgGlob = import.meta.glob<{ default: string; }>("../../../images/*.png");
+const imgGlob = import.meta.glob<{ default: string; }>("../../../images/ui/*.png");
 
 const utilBarButtons = new SimpleExpander<[
     string,
@@ -27,7 +28,7 @@ const utilBarButtons = new SimpleExpander<[
     if(isMode) el.addEventListener("pointerup", () => up(el));
     else el.addEventListener("pointerup", () => (up as () => void)());
 
-    imgGlob["../../../images/" + url]()
+    imgGlob["../../../images/ui/" + url]()
     .then(src => el.src = src.default);
 
     //if(!isMode) MixedList.markAsNotNeedingBind(el);
@@ -39,7 +40,8 @@ const utilBarButtons = new SimpleExpander<[
     ["rotate-right", "rotate-right.png", () => _utilBarEvents.rotateRight()],
     ["rotate-left", "rotate-left.png", () => _utilBarEvents.rotateLeft()],
     ["delete", "trash.png", el => _utilBarEvents.activateDelete(el), true],
-    ["placement", "row-edit.png", el => _utilBarEvents.activatePlacement(el), true, true],
+    ["placement", "place-block.png", el => _utilBarEvents.activatePlacement(el), true, true],
+    ["multi", "row-edit.png", el => _utilBarEvents.activateMulti(el), true],
 ]);
 
 new MixedList().bind(utilBarButtons);

@@ -122,7 +122,7 @@
 },
 "first_house.png":
 {
-	"frame": {"x":128,"y":640,"w":192,"h":256},
+	"frame": {"x":256,"y":640,"w":192,"h":256},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":192,"h":256},
@@ -178,7 +178,7 @@
 },
 "grass_block_1.png":
 {
-	"frame": {"x":320,"y":640,"w":256,"h":256},
+	"frame": {"x":448,"y":640,"w":256,"h":256},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":256,"h":256},
@@ -328,6 +328,14 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
 	"sourceSize": {"w":128,"h":128}
 },
+"ui/apt-bg.png":
+{
+	"frame": {"x":128,"y":512,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
 "wall.png":
 {
 	"frame": {"x":500,"y":0,"w":64,"h":64},
@@ -338,7 +346,7 @@
 },
 "white-wall-corner.png":
 {
-	"frame": {"x":128,"y":512,"w":128,"h":128},
+	"frame": {"x":256,"y":512,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -346,7 +354,7 @@
 },
 "white-wall-end.png":
 {
-	"frame": {"x":256,"y":512,"w":128,"h":128},
+	"frame": {"x":384,"y":512,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -354,7 +362,7 @@
 },
 "white-wall-left.png":
 {
-	"frame": {"x":384,"y":512,"w":128,"h":128},
+	"frame": {"x":512,"y":512,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -362,7 +370,7 @@
 },
 "white-wall-tube.png":
 {
-	"frame": {"x":512,"y":512,"w":128,"h":128},
+	"frame": {"x":640,"y":512,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -370,7 +378,7 @@
 },
 "wood-door-open.png":
 {
-	"frame": {"x":640,"y":512,"w":128,"h":128},
+	"frame": {"x":0,"y":640,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -378,7 +386,7 @@
 },
 "wood-door.png":
 {
-	"frame": {"x":0,"y":640,"w":128,"h":128},
+	"frame": {"x":128,"y":640,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -397,6 +405,6 @@
 	"format": "RGBA8888",
 	"size": {"w":826,"h":1408},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:717c2342c3d16d44632ea0cfecf7435f:06430399fb49c1d5ec8ea6c0de67cdc7:e425fefcff1e15baea1094a56b981d8d$"
+	"smartupdate": "$TexturePacker:SmartUpdate:ade6f32cd3ffe0180a88562318b1a261:c0fe7a7c8de50d944aa035b50fcfb603:e425fefcff1e15baea1094a56b981d8d$"
 }
 }

@@ -10,7 +10,8 @@ import { AnyBlock } from "../v2/block";
 import { _utilBar, _utilBarEvents } from "./util-bar";
 import { _MD2deleteClick } from "./modes/delete";
 import { _MD2editorBase } from "./modes/main";
-import { MDgameGridType } from "../v2/types";
+import { _md2events, MDgameGridType } from "../v2/types";
+import { _MD2editorMulti } from "./modes/multi";
 
 export interface MD2editorOpts {
     engine: _MD2engine;
@@ -38,6 +39,7 @@ export class MD2editor {
 
     private editorClick: _MD2editorClick;
     private deleteClick: _MD2deleteClick;
+    private multiEdit: _MD2editorMulti;
 
     container = new Container();
 
@@ -94,6 +96,9 @@ export class MD2editor {
         this.deleteClick = new _MD2deleteClick(this, editorClickArea);
         this.deleteClick.init();
 
+        this.multiEdit = new _MD2editorMulti(this, editorClickArea);
+        this.multiEdit.init();
+
         this.engine.levelManager.groups.static.addChild(this.container);
 
         _toolbarEvents.edit.saveChanges = () => this.saveChanges();
@@ -112,25 +117,25 @@ export class MD2editor {
 
         _utilBarEvents.rotateLeft = () => this.rotateLeft();
         _utilBarEvents.rotateRight = () => this.rotateRight();
-        _utilBarEvents.activateDelete = (el: HTMLElement) => {
-            this.activateEditorMode.state.disableIfOn();
-
-            this.deleteClick.setButtonEl(el);
-            this.deleteClick.state.toggle();
-
-            this.activateEditorMode = this.deleteClick;
-        };
-
-        _utilBarEvents.activatePlacement = (el: HTMLElement) => {
-            this.activateEditorMode.state.disableIfOn();
-
-            this.editorClick.setButtonEl(el);
-            this.editorClick.state.toggle();
-
-            this.activateEditorMode = this.editorClick;
-        };
+        
+        _utilBarEvents.activatePlacement = this.setupEditorModeEventListener(this.editorClick);
+        _utilBarEvents.activateMulti = this.setupEditorModeEventListener(this.multiEdit);
+        _utilBarEvents.activateDelete = this.setupEditorModeEventListener(this.deleteClick);
 
         this.rotation.onRotation = () => this.onRotation();
+
+        this.engine.events.on(_md2events.levelDeleteB, () => this.cancelChanges());
+    }
+
+    private setupEditorModeEventListener(mode: _MD2editorBase): (el: HTMLElement) => void {
+        return (el: HTMLElement) => {
+            this.activateEditorMode.state.disableIfOn();
+
+            mode.setButtonEl(el);
+            mode.state.toggle();
+
+            this.activateEditorMode = mode;
+        };
     }
 
     private onEntitySelect(name: string) {
@@ -151,6 +156,8 @@ export class MD2editor {
         this.grids.fg.clear();
         this.grids.bg.clear();
         this.grids.overlay.clear();
+
+        this.multiEdit.scp.sprite.visible = false;
     }
 
     private onRotation() {
@@ -194,7 +201,7 @@ export class MD2editor {
     private setupListeners() {
         addEventListener("pointermove", e => {
             const [x, y] = this.snapToGridFromScreen(e.x, e.y, this.engine.levelManager.groups.view);
-            this.testSprite.position.set(x + this.engine.blockSizeHalf, y + this.engine.blockSizeHalf);
+            this.testSprite.position.set(x + this.testSprite.width / 2, y + this.testSprite.height / 2);
         });
     }
 
@@ -214,7 +221,7 @@ export class MD2editor {
 
         s.alpha = .5;
 
-        s.pivot.set(this.engine.blockSizeHalf);
+        s.pivot.set(s.width / 2, s.height / 2);
 
         return s;
     }
