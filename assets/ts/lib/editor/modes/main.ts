@@ -57,6 +57,10 @@ export abstract class _MD2editorBase {
     private onDrag(rx: number, ry: number) {
         //console.log(this.state.isToggled)
         if(!this.state.isToggled) return;
+
+        //rx += rx * this.editor.engine.zoomLevel;
+        //ry *= this.editor.engine.zoomLevel;
+
         this.dragHandler(...this.editor.snapToGridFromScreen(...this.fixPos(rx, ry),
             this.editor.engine.levelManager.groups.static
         ));
@@ -67,6 +71,7 @@ export abstract class _MD2editorBase {
     protected fixPos(rx: number, ry: number): [number, number] {
         rx += this.editor.engine.generator.player.x - innerWidth / 2;
         ry += this.editor.engine.generator.player.y - innerHeight / 2;
+
         return [rx, ry];
     }
 

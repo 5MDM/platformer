@@ -8,6 +8,7 @@ import { MDmatrix } from "../misc/matrix";
 import { FgBlock } from "./block";
 import { _MD2deletor } from "./generation/deletor";
 import { _MD2fullGen } from "./generation/full-gen";
+import { c } from "../../canvas";
 
 interface EngineOpts {
     engine: {
@@ -30,6 +31,45 @@ export class _MD2engine {
     app: Application;
 
     events = new EventEmitter();
+
+    lastZoomLevel: number = 1;
+    zoomLevel: number = 1;
+
+    setZoom(n: number = this.zoomLevel) {
+        const co = this.levelManager.groups.world;
+        const diff = this.lastZoomLevel - this.zoomLevel;
+
+        const nx = (innerWidth / 2) * diff;
+        const ny = (innerHeight / 2) * diff;
+
+        co.x += nx + diff * this.generator.player.halfW;
+        co.scale.x = n;
+
+        co.y += ny + diff * this.generator.player.halfH;
+        co.scale.y = n;
+
+        this.lastZoomLevel = n;
+    }
+
+    zoomOut(p: number) {
+        if(p <= 0) return;
+        this.zoomLevel *= p / 100;
+        this.setZoom();
+    }
+
+    zoomIn(p: number) {
+        if(p <= 0) return;
+        this.zoomLevel /= p / 100;
+        this.setZoom();
+    }
+
+    _editorEmit(name: string, ...args: any[]): void {
+        this.events.emit("editor:" + name, ...args);
+    }
+
+    _editorOn(name: string, f: (...args: any[]) => void): void {
+        this.events.on("editor:" + name, f);
+    }
 
     initPromise: Promise<void>;
     private initPromiseRes?: () => void;
@@ -59,6 +99,8 @@ export class _MD2engine {
         this.initPromise = new Promise(res => {
             this.initPromiseRes = res;
         });
+
+        //this.levelManager.container.pivot.set(this.levelManager.container.width / 2, this.levelManager.container.height / 2);
     }
 
     async init() {

@@ -1,13 +1,13 @@
 import { Container, Sprite, Texture, TilingSprite } from "pixi.js";
 import { _MD2engine } from "../v2/engine";
 import { MDcreatorToolsUI } from "./creator-tools";
-import { _toolbarEvents, editorClickArea } from "./el";
+import { editorClickArea } from "./el";
 import { degToRad, RotationHolder, snapToGrid, ToggleState } from "../misc/util";
 import { _MD2editorClick } from "./modes/click";
 import { Player } from "../v2/entities/player";
 import { MDmatrix } from "../misc/matrix";
 import { AnyBlock } from "../v2/block";
-import { _utilBar, _utilBarEvents } from "./util-bar";
+import { _utilBar } from "./util-bar";
 import { _MD2deleteClick } from "./modes/delete";
 import { _MD2editorBase } from "./modes/main";
 import { _md2events, MDgameGridType } from "../v2/types";
@@ -101,9 +101,9 @@ export class MD2editor {
 
         this.engine.levelManager.groups.static.addChild(this.container);
 
-        _toolbarEvents.edit.saveChanges = () => this.saveChanges();
-        _toolbarEvents.edit.cancelChanges = () => this.cancelChanges();
-        _toolbarEvents.edit.toggleCreatorTools = () => {
+        this.engine._editorOn("save-changes", () => this.saveChanges());
+        this.engine._editorOn("cancel-changes", () => this.cancelChanges());
+        this.engine._editorOn("toggle-creator-tools", () => {
             MD2editor.creatorToolsState.toggle();
 
             if(MD2editor.creatorToolsState.isToggled) {
@@ -113,14 +113,17 @@ export class MD2editor {
                 this.activateEditorMode.state.disableIfOn();
                 this.testSprite.visible = false;
             }
-        };
+        });
 
-        _utilBarEvents.rotateLeft = () => this.rotateLeft();
-        _utilBarEvents.rotateRight = () => this.rotateRight();
-        
-        _utilBarEvents.activatePlacement = this.setupEditorModeEventListener(this.editorClick);
-        _utilBarEvents.activateMulti = this.setupEditorModeEventListener(this.multiEdit);
-        _utilBarEvents.activateDelete = this.setupEditorModeEventListener(this.deleteClick);
+        this.engine._editorOn("rotate-left", () => this.rotateLeft());
+        this.engine._editorOn("rotate-right", () => this.rotateRight());
+
+        this.engine._editorOn("placement", this.setupEditorModeEventListener(this.editorClick));
+        this.engine._editorOn("multi", this.setupEditorModeEventListener(this.multiEdit));
+        this.engine._editorOn("delete", this.setupEditorModeEventListener(this.deleteClick));
+
+        this.engine._editorOn("zoom-out", () => this.engine.zoomOut(50));
+        this.engine._editorOn("zoom-in", () => this.engine.zoomIn(50));
 
         this.rotation.onRotation = () => this.onRotation();
 
@@ -200,7 +203,11 @@ export class MD2editor {
 
     private setupListeners() {
         addEventListener("pointermove", e => {
-            const [x, y] = this.snapToGridFromScreen(e.x, e.y, this.engine.levelManager.groups.view);
+            const [x, y] = this.snapToGridFromScreen(
+                e.x,
+                e.y,
+                this.engine.levelManager.groups.view,
+            );
             this.testSprite.position.set(x + this.testSprite.width / 2, y + this.testSprite.height / 2);
         });
     }

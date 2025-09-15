@@ -3,14 +3,6 @@ import { $$, SimpleExpander } from "../misc/util";
 import { MDcreatorToolsUI } from "./creator-tools";
 import { MD2editor } from "./main";
 
-export const _toolbarEvents: Record<string, Record<string, () => void>> = {
-    edit: {
-        saveChanges() {},
-        cancelChanges() {},
-        toggleCreatorTools() {},
-    }
-};
-
 var lastToolbarParent = "";
 const visibleElements: HTMLElement[] = [];
 
@@ -106,8 +98,8 @@ export function _createToolbar(creatorToolsUI: MDcreatorToolsUI) {
                     ["Toggle creator tools", () => {
                         MD2editor.creatorToolsState.toggle();
                     }],
-                    ["Save editor changes", () => _toolbarEvents.edit.saveChanges()],
-                    ["Cancel editor changes", () => _toolbarEvents.edit.cancelChanges()],
+                    ["Save editor changes", () => md2._editorEmit("save-changes")],
+                    ["Cancel editor changes", () => md2._editorEmit("cancel-changes")],
                 ]],
                 ["Levels", [
                     ["Nothing here yet"]

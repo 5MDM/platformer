@@ -1,5 +1,4 @@
 import { blockDataMap } from "pixi.js";
-import { _toolbarEvents } from "../el";
 import { MD2editor } from "../main";
 import { _MD2editorBase } from "./main";
 import { AnyBlock, Block } from "../../v2/block";

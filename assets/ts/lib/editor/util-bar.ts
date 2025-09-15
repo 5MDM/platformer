@@ -1,47 +1,39 @@
+import { md2 } from "../../constants";
 import { MixedList } from "../misc/el";
 import { $$, SimpleExpander, ToggleList } from "../misc/util";
-
-
-export const _utilBarEvents = {
-    rotateLeft() {},
-    rotateRight() {},
-    activateDelete(el: HTMLElement) {},
-    activatePlacement(el: HTMLElement) {},
-    activateMulti(el: HTMLElement) {},
-};
 
 const imgGlob = import.meta.glob<{ default: string; }>("../../../images/ui/*.png");
 
 const utilBarButtons = new SimpleExpander<[
     string,
     string,
-    ((el: HTMLElement) => void) | (() => void),
+    string,
     isMode?: boolean,
     isActive?: boolean,
-], HTMLElement>(([name, url, up, isMode, isActive]) => {
+], HTMLElement>(([name, url, eventName, isMode, isActive]) => {
     const el = $$("img", {
         attrs: {
             alt: name,
         },
     });
 
-    if(isMode) el.addEventListener("pointerup", () => up(el));
-    else el.addEventListener("pointerup", () => (up as () => void)());
+    if(isMode) el.addEventListener("pointerup", () => md2._editorEmit(eventName, el));
+    else el.addEventListener("pointerup", () => md2._editorEmit(eventName, el));
 
     imgGlob["../../../images/ui/" + url]()
     .then(src => el.src = src.default);
 
-    //if(!isMode) MixedList.markAsNotNeedingBind(el);
-    //if(!isMode) el.setAttribute("md-editor-is-button", "true");
-    if(isActive && isMode) setTimeout(() => up(el), 100);
+    if(isActive && isMode) setTimeout(() => md2._editorEmit(eventName), 200);
 
     return el;
 }).parse([
-    ["rotate-right", "rotate-right.png", () => _utilBarEvents.rotateRight()],
-    ["rotate-left", "rotate-left.png", () => _utilBarEvents.rotateLeft()],
-    ["delete", "trash.png", el => _utilBarEvents.activateDelete(el), true],
-    ["placement", "place-block.png", el => _utilBarEvents.activatePlacement(el), true, true],
-    ["multi", "row-edit.png", el => _utilBarEvents.activateMulti(el), true],
+    ["rotate-right", "rotate-right.png", "rotate-right"],
+    ["rotate-left", "rotate-left.png", "rotate-left"],
+    ["delete", "trash.png", "delete", true],
+    ["placement", "place-block.png", "placement", true, true],
+    ["multi", "row-edit.png", "multi", true],
+    ["zoom in", "zoom-in.png", "zoom-in"],
+    ["zoom out", "zoom-out.png", "zoom-out"],
 ]);
 
 new MixedList().bind(utilBarButtons);
