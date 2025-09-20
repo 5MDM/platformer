@@ -49,6 +49,8 @@ export interface XYWH {
     h: number;
 }
 
+export type XYtuple = [number, number];
+
 export interface BlockCreationOpts extends XYWH {
     name: string;
     rotation?: number;

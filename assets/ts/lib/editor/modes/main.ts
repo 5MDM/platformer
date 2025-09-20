@@ -43,7 +43,7 @@ export abstract class _MD2editorBase {
 
     setupListeners() {
         this.drag.enable();
-        this.drag.onDrag = (aa, aaa, x, y) => this.onDrag(x, y);
+        this.drag.onDrag = (dx, dy, x, y) => this.onDrag(x, y, dx, dy);
     }
 
     protected getEditorBlock(type: MDgameGridType, x: number, y: number): AnyBlock | false {
@@ -54,23 +54,27 @@ export abstract class _MD2editorBase {
         return this.editor.engine.levelManager.levelGrids[type].get(x, y) ?? false;
     }
 
-    private onDrag(rx: number, ry: number) {
-        //console.log(this.state.isToggled)
+    private onDrag(rx: number, ry: number, dx: number, dy: number) {
         if(!this.state.isToggled) return;
 
-        //rx += rx * this.editor.engine.zoomLevel;
-        //ry *= this.editor.engine.zoomLevel;
-
-        this.dragHandler(...this.editor.snapToGridFromScreen(...this.fixPos(rx, ry),
+        this.dragHandler(...this.editor.snapToGridFromScreen(this.fixPos(rx, ry),
             this.editor.engine.levelManager.groups.static
-        ));
+        ), dx, dy);
     }
 
-    protected dragHandler(x: number, y: number) {}
+    protected dragHandler(x: number, y: number, dx?: number, dy?: number) {}
 
     protected fixPos(rx: number, ry: number): [number, number] {
-        rx += this.editor.engine.generator.player.x - innerWidth / 2;
-        ry += this.editor.engine.generator.player.y - innerHeight / 2;
+        rx /= this.editor.engine.zoomLevel;
+        rx += this.editor.engine.generator.player.x - innerWidth / 2 / this.editor.engine.zoomLevel;
+        rx -= this.editor.engine.generator.player.halfW 
+        / this.editor.engine.zoomLevel - this.editor.engine.generator.player.halfW;
+        rx -= this.editor.levelGroups.world.x;
+
+        ry /= this.editor.engine.zoomLevel;
+        ry += this.editor.engine.generator.player.y - innerHeight / 2 / this.editor.engine.zoomLevel;
+        ry -= this.editor.engine.generator.player.halfH / this.editor.engine.zoomLevel - this.editor.engine.generator.player.halfH;
+        ry -= this.editor.levelGroups.world.y;
 
         return [rx, ry];
     }

@@ -10,8 +10,9 @@ import { AnyBlock } from "../v2/block";
 import { _utilBar } from "./util-bar";
 import { _MD2deleteClick } from "./modes/delete";
 import { _MD2editorBase } from "./modes/main";
-import { _md2events, MDgameGridType } from "../v2/types";
+import { _md2events, MDgameGridType, XYtuple } from "../v2/types";
 import { _MD2editorMulti } from "./modes/multi";
+import { _MD2editorPan } from "./modes/pan";
 
 export interface MD2editorOpts {
     engine: _MD2engine;
@@ -40,8 +41,12 @@ export class MD2editor {
     private editorClick: _MD2editorClick;
     private deleteClick: _MD2deleteClick;
     private multiEdit: _MD2editorMulti;
+    private pan: _MD2editorPan;
 
     container = new Container();
+
+    levelContainer: Container;
+    levelGroups: Record<string, Container>;
 
     static maxLevelSize = 1024;
 
@@ -61,6 +66,8 @@ export class MD2editor {
 
     constructor(o: MD2editorOpts) {
         this.engine = o.engine;
+        this.levelContainer = this.engine.levelManager.container;
+        this.levelGroups = this.engine.levelManager.groups;
         this.player = this.engine.generator.player;
 
         this.ui = new MDcreatorToolsUI(this);
@@ -99,6 +106,9 @@ export class MD2editor {
         this.multiEdit = new _MD2editorMulti(this, editorClickArea);
         this.multiEdit.init();
 
+        this.pan = new _MD2editorPan(this, editorClickArea);
+        this.pan.init();
+
         this.engine.levelManager.groups.static.addChild(this.container);
 
         this.engine._editorOn("save-changes", () => this.saveChanges());
@@ -124,6 +134,12 @@ export class MD2editor {
 
         this.engine._editorOn("zoom-out", () => this.engine.zoomOut(50));
         this.engine._editorOn("zoom-in", () => this.engine.zoomIn(50));
+
+        this.engine._editorOn("recenter", () => {
+            this.levelGroups.world.position.set(0);
+        });
+
+        this.engine._editorOn("pan", this.setupEditorModeEventListener(this.pan));
 
         this.rotation.onRotation = () => this.onRotation();
 
@@ -181,12 +197,17 @@ export class MD2editor {
     }
 
     private saveChanges() {
-        this.engine.generator.injectBlocks(this.grids);
-
-        this.cancelChanges();
+        try {
+            this.engine.generator.injectBlocks(this.grids);
+        } catch(err) {
+            console.error(err);
+            alert("There was an error. Check the console");
+        } finally {
+            this.cancelChanges();
+        }
     }
 
-    snapToGridFromScreen(x: number, y: number, pos: {x: number, y: number} = this.engine.levelManager.groups.view): [number, number] {
+    snapToGridFromScreen([x, y]: XYtuple, pos: {x: number, y: number} = this.engine.levelManager.groups.view): XYtuple {
         return [
             snapToGrid(
                 x,
@@ -201,13 +222,18 @@ export class MD2editor {
         ];
     }
 
+    fixPanOffset([x, y]: XYtuple): XYtuple {
+        return [x - this.levelGroups.world.x, y - this.levelGroups.world.y];
+    }
+
+    fixOffset([x, y]: XYtuple): XYtuple {
+        return this.fixPanOffset(this.engine.fixToZoom(x, y));
+    }
+
     private setupListeners() {
         addEventListener("pointermove", e => {
-            const [x, y] = this.snapToGridFromScreen(
-                e.x,
-                e.y,
-                this.engine.levelManager.groups.view,
-            );
+            const [x, y] = this.snapToGridFromScreen(this.fixOffset([e.x, e.y]));
+
             this.testSprite.position.set(x + this.testSprite.width / 2, y + this.testSprite.height / 2);
         });
     }

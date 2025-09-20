@@ -8,12 +8,13 @@ import { MDmatrix } from "../misc/matrix";
 import { FgBlock } from "./block";
 import { _MD2deletor } from "./generation/deletor";
 import { _MD2fullGen } from "./generation/full-gen";
-import { c } from "../../canvas";
+import { Joystick } from "../misc/joystick";
 
 interface EngineOpts {
     engine: {
         blockSize: number;
         app: Application;
+        joystick: Joystick;
     };
     dataManager: _MD2dataManagerOpts;
     physics: _MD2physicsOpts;
@@ -34,9 +35,22 @@ export class _MD2engine {
 
     lastZoomLevel: number = 1;
     zoomLevel: number = 1;
+    zoomOffsetX: number = 0;
+    zoomOffsetY: number = 0;
+
+    isTyping = false;
+
+    joystick: Joystick;
+
+    fixToZoom(x: number, y: number): [number, number] {
+        return [
+            (x + this.zoomOffsetX) / this.zoomLevel,
+            (y + this.zoomOffsetY) / this.zoomLevel,
+        ];
+    }
 
     setZoom(n: number = this.zoomLevel) {
-        const co = this.levelManager.groups.world;
+        const co = this.levelManager.container;
         const diff = this.lastZoomLevel - this.zoomLevel;
 
         const nx = (innerWidth / 2) * diff;
@@ -45,8 +59,12 @@ export class _MD2engine {
         co.x += nx + diff * this.generator.player.halfW;
         co.scale.x = n;
 
+        this.zoomOffsetX = -co.x;
+
         co.y += ny + diff * this.generator.player.halfH;
         co.scale.y = n;
+
+        this.zoomOffsetY = -co.y;
 
         this.lastZoomLevel = n;
     }
@@ -83,6 +101,7 @@ export class _MD2engine {
     }
 
     constructor(opts: EngineOpts) {
+        this.joystick = opts.engine.joystick;
         this.blockSize = opts.engine.blockSize;
         this.blockSizeHalf = this.blockSize / 2;
         this.app = opts.engine.app;

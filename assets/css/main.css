@@ -74,14 +74,6 @@ button {
     display: none;
 }
 
-#ui > #joystick {
-    position: fixed;
-    bottom: 0;
-    display: flex;
-    align-items: end;
-    padding: 35px;
-}
-
 #ui > #menu {
     height: auto;
 }
@@ -91,6 +83,12 @@ button {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     touch-action: manipulation;
+    position: fixed;
+    bottom: 130px;
+    left: 0;
+    display: flex;
+    align-items: end;
+    padding: 35px;
 }
 
 #ui > #audio-popup {

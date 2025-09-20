@@ -40,6 +40,30 @@ export class _MD2physics {
     setupMovementLoop() {
         _MD2physics.isMovementLoopSetup = true;
 
+        const j = this.engine.joystick;
+        j.onDrag = () => {
+            if(j.xdir == "left") _MD2physics.isMovingLeft = true;
+            else if(j.xdir == "right") _MD2physics.isMovingRight = true;
+            else {
+                _MD2physics.isMovingLeft = false;
+                _MD2physics.isMovingRight = false;
+            }
+
+            if(j.ydir == "down") _MD2physics.isMovingDown = true;
+            else if(j.ydir == "up") _MD2physics.isMovingUp = true;
+            else {
+                _MD2physics.isMovingUp = false;
+                _MD2physics.isMovingDown = false;
+            }
+        };
+
+        j.onReset = () => {
+            _MD2physics.isMovingDown = false;
+            _MD2physics.isMovingUp = false;
+            _MD2physics.isMovingLeft = false;
+            _MD2physics.isMovingRight = false;
+        };
+
         addEventListener("keydown", ({key}) => {
             switch(key) {
                 case "w":

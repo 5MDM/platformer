@@ -3,6 +3,7 @@ import { $, convertPathToObj } from "./lib/misc/util";
 import { MDmatrix } from "./lib/misc/matrix";
 import { MD2 } from "./lib/v2/main";
 import { ModInfo } from "./lib/v2/types";
+import { Joystick } from "./lib/misc/joystick";
 
 export const chunkSize = 16;
 export const blockSize = 2**6;
@@ -11,9 +12,7 @@ export const blockSizeQuarter = blockSizeHalf / 2;
 
 export const maxLevelSize = 256;
 
-//export const staticContainer = new Container();
 export const staticChunks = new MDmatrix<Container>(64, 64);
-//wc.addChild(staticContainer);
 
 export const app: Application = new Application();
 
@@ -21,6 +20,14 @@ export const md2 = new MD2.Engine({
     engine: {
         blockSize: 32,
         app,
+        joystick: new Joystick({
+            target: $("#ui > #joystick") as HTMLDivElement,
+            size: 40,
+            innerColor: "cyan",
+            outerColor: "rgba(100, 100, 255, .5)",
+            max: 80,
+
+        }),
     },
     dataManager: {
         atlasData: (await (import.meta.glob<{default: SpritesheetData}>
@@ -36,35 +43,3 @@ export const md2 = new MD2.Engine({
         smoothing: .5,
     },
 });
-
-//export const player = new Player(mdshell.game.groups.view, 30, 63);
-
-// export const mdshell = new MDshell({
-//     blockSize,
-//     gameType: "td",
-
-//     atlasData: (await (import.meta.glob<{ default: SpritesheetData; }>("../spritesheet-data/data.json"))["../spritesheet-data/data.json"]()
-//     ).default,
-
-//     atlasImgURL: (await (import.meta.glob<{ default: string; }>("../images/atlas.png"))["../images/atlas.png"]()
-//     ).default,
-
-//     mods: await convertPathToObj(import.meta.glob<{ default: ModInfo; }>("../mods/*/manifest.json")),
-
-//     pw,
-//     app,
-
-//     imageBlobSize: Number(getComputedStyle(blocksEl).getPropertyValue("--img-size").slice(0, -2)),
-
-//     playerWidth: 30,
-//     playerHeight: 63,
-// });
-
-
-// PW.OnResizeChange((x, y) => {
-//     mdshell.game.groups.view.x += x;
-//     mdshell.game.groups.view.y += y;
-// });
-
-// pw.addDynamic(mdshell.player);
-// 

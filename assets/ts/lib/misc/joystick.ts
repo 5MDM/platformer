@@ -63,29 +63,34 @@ export class Joystick {
         var hasEnded = false;
         const self = this;
         const og = this.orb.getBoundingClientRect();
-        const maxR = (self.max / 2)**2;
+        const maxR = (self.max / 2);
         const hw = og.width / 3;
         const hh = og.height / 3;
         var x = 0;
         var y = 0;
 
         this.controller.onDrag = function(cx: number, cy: number) {
-            if(hasEnded) {
+            if(hasEnded)
                 return hasEnded = false;
-            }
+
             x -= cx;
             y -= cy;
 
             const xsq = x**2;
             const ysq = y**2;
 
-            if(xsq > maxR) {
+            if(Math.sqrt(xsq + ysq) > maxR) {
                 x += cx;
-            }
-
-            if(ysq > maxR) {
                 y += cy;
             }
+
+            // if(xsq > maxR) {
+            //     x += cx;
+            // }
+
+            // if(ysq > maxR) {
+            //     y += cy;
+            // }
 
             self.orb.style.left = x + "px";
             self.orb.style.top = y + "px";
@@ -95,7 +100,8 @@ export class Joystick {
             self.onDrag();
         };
 
-        this.controller.downElement.addEventListener("pointerup", reset);
+        //this.controller.downElement.addEventListener("pointerup", reset);
+        addEventListener("pointerup", reset);
         //this.controller.touchEl.addEventListener("pointerout", reset);
 
         function reset() {
