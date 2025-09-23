@@ -120,15 +120,26 @@ export class _MD2physics {
 
             if(!self.isLoopRunning) return;
 
-            if(_MD2physics.isMovingUp) PlayerControlledEntity.moveUp();
-            if(_MD2physics.isMovingDown) PlayerControlledEntity.moveDown();
-            if(_MD2physics.isMovingLeft) PlayerControlledEntity.moveLeft();
-            if(_MD2physics.isMovingRight) PlayerControlledEntity.moveRight();
-            if(!(_MD2physics.isMovingUp
-            || _MD2physics.isMovingDown
-            || _MD2physics.isMovingLeft
-            || _MD2physics.isMovingRight
-            )) PlayerControlledEntity.notMoving();
+            const j = self.engine.joystick;
+            const dirX = 1;
+            const dirY = 1;
+
+            if(j.directionX != 0 && j.directionY != 0) {
+                const dirX = j.directionX;
+                const dirY = j.directionY;
+
+               PlayerControlledEntity.move(dirX, dirY);
+            } else {
+                if(_MD2physics.isMovingUp) PlayerControlledEntity.moveUp(dirY);
+                if(_MD2physics.isMovingDown) PlayerControlledEntity.moveDown(dirY);
+                if(_MD2physics.isMovingLeft) PlayerControlledEntity.moveLeft(dirX);
+                if(_MD2physics.isMovingRight) PlayerControlledEntity.moveRight(dirX);
+                if(!(_MD2physics.isMovingUp
+                || _MD2physics.isMovingDown
+                || _MD2physics.isMovingLeft
+                || _MD2physics.isMovingRight
+                )) PlayerControlledEntity.notMoving();
+            } 
 
             self.findCollisions();
         }

@@ -37,23 +37,23 @@ export class Player extends PlayerControlledEntity {
         this.view.y = Player.HIH-y;
     }
 
-    protected override onUp() {
-        super.onUp();
+    protected override onUp(n: number) {
+        super.onUp(n);
         this.changeStance("walk-ud-up");
     }
 
-    protected override onLeft() {
-        super.onLeft();
+    protected override onLeft(n: number) {
+        super.onLeft(n);
         this.changeStance("walk-l");
     }
 
-    protected override onRight() {
-        super.onRight();
+    protected override onRight(n: number) {
+        super.onRight(n);
         this.changeStance("walk-r");
     }
 
-    protected override onDown() {
-        super.onDown();
+    protected override onDown(n: number) {
+        super.onDown(n);
         this.changeStance("walk-ud-down");
     }
 

@@ -1,5 +1,5 @@
 import { DragController } from "./drag";
-import { $$ } from "./util";
+import { $$, clamp, normalize } from "./util";
 
 interface JoystickOpts {
     target: HTMLDivElement;
@@ -59,6 +59,10 @@ export class Joystick {
     onDrag: () => void = () => undefined;
     onReset: () => void = () => undefined;
 
+    private isOOB(xsq: number, ysq: number, maxR: number): boolean {
+        return Math.sqrt(xsq + ysq) > maxR;
+    }
+
     private init() {
         var hasEnded = false;
         const self = this;
@@ -66,31 +70,28 @@ export class Joystick {
         const maxR = (self.max / 2);
         const hw = og.width / 3;
         const hh = og.height / 3;
+        const centerX = og.x + og.width / 2;
+        const centerY = og.y + og.height / 2;
+
         var x = 0;
         var y = 0;
 
-        this.controller.onDrag = function(cx: number, cy: number) {
+        this.controller.onDrag = function(ddx: number, ddy: number, px, py) {
             if(hasEnded)
                 return hasEnded = false;
 
-            x -= cx;
-            y -= cy;
+            var x = clamp(-maxR, px - centerX, maxR);
+            var y = clamp(-maxR, py - centerY, maxR);
 
             const xsq = x**2;
             const ysq = y**2;
 
-            if(Math.sqrt(xsq + ysq) > maxR) {
-                x += cx;
-                y += cy;
+            const diff = Math.sqrt(xsq + ysq) - maxR;
+
+            if(diff > 0) {
+                x -= diff * Math.sign(x) / Math.SQRT2;
+                y -= diff * Math.sign(y) / Math.SQRT2;
             }
-
-            // if(xsq > maxR) {
-            //     x += cx;
-            // }
-
-            // if(ysq > maxR) {
-            //     y += cy;
-            // }
 
             self.orb.style.left = x + "px";
             self.orb.style.top = y + "px";
@@ -110,6 +111,8 @@ export class Joystick {
             self.ydir = "none";
             x = 0;
             y = 0;
+            self.directionX = 0;
+            self.directionY = 0;
             self.orb.style.left = x + "px";
             self.orb.style.top = y + "px";
             self.onReset();
@@ -133,9 +136,15 @@ export class Joystick {
                 self.ydir = "none";
             }
 
-            //console.log(x, og.width)
+            const nx = normalize(-maxR, x, maxR) * 2 - 1;
+            const ny = -(normalize(-maxR, y, maxR) * 2 - 1);
+            self.directionX = nx;
+            self.directionY = ny;
         }
     }
+
+    directionX = 0;
+    directionY = 0;
 
     onMove: () => void = () => undefined;
 }

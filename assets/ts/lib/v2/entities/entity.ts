@@ -99,7 +99,7 @@ export class Entity extends BasicBox {
     }
 }
 
-type MoveF = () => void;
+type MoveF = (n: number) => void;
 
 interface MovementObj {
     up: MoveF;
@@ -116,9 +116,9 @@ const globalMovementEvents: Record<number, MovementObj> = {};
 export class PlayerControlledEntity extends Entity {
     static dt: number = 1;
 
-    private static triggerMovement(type: keyof MovementObj) {
+    private static triggerMovement(type: keyof MovementObj, n: number = 1) {
         for(const id in globalMovementEvents) {
-            globalMovementEvents[id][type]();
+            globalMovementEvents[id][type](Math.abs(n));
         }
     }
 
@@ -134,20 +134,38 @@ export class PlayerControlledEntity extends Entity {
         PlayerControlledEntity.triggerMovement("notMoving");
     }
 
-    static moveUp() {
-        PlayerControlledEntity.triggerMovement("up");
+    static moveUp(n: number) {
+        PlayerControlledEntity.triggerMovement("up", n);
     }
 
-    static moveLeft() {
-        PlayerControlledEntity.triggerMovement("left");
+    static moveLeft(n: number) {
+        PlayerControlledEntity.triggerMovement("left", n);
     }
 
-    static moveRight() {
-        PlayerControlledEntity.triggerMovement("right");
+    static moveRight(n: number) {
+        PlayerControlledEntity.triggerMovement("right", n);
     }
 
-    static moveDown() {
-        PlayerControlledEntity.triggerMovement("down");
+    static moveDown(n: number) {
+        PlayerControlledEntity.triggerMovement("down", n);
+    }
+
+    static move(x: number, y: number) {
+        if(x == 0 && y == 0) return PlayerControlledEntity.notMoving();
+
+        if(Math.abs(x) > Math.abs(y)) {
+            if(y > 0) PlayerControlledEntity.triggerMovement("up", y);
+            else PlayerControlledEntity.triggerMovement("down", y);
+
+            if(x < 0) PlayerControlledEntity.triggerMovement("left", x);
+            else PlayerControlledEntity.triggerMovement("right", x);
+        } else {
+            if(x < 0) PlayerControlledEntity.triggerMovement("left", x);
+            else PlayerControlledEntity.triggerMovement("right", x);
+
+            if(y > 0) PlayerControlledEntity.triggerMovement("up", y);
+            else PlayerControlledEntity.triggerMovement("down", y);
+        }
     }
 
     constructor(o: EntityOpts) {
@@ -158,11 +176,11 @@ export class PlayerControlledEntity extends Entity {
 
     protected setupMovement() {
         globalMovementEvents[this.id] = {
-            up: () => this.onUp(),
-            left: () => this.onLeft(),
-            right: () => this.onRight(),
-            down: () => this.onDown(),
-            notMoving: () => this.onNotMoving(),
+            up: n => this.onUp(n),
+            left: n => this.onLeft(n),
+            right: n => this.onRight(n),
+            down: n => this.onDown(n),
+            notMoving: n => this.onNotMoving(),
         };
     }
 
@@ -172,32 +190,32 @@ export class PlayerControlledEntity extends Entity {
         this.animations[this.lastAnimation]?.stop();
     }
 
-    protected onUp() {
+    protected onUp(n: number) {
         this.wasMovingVert = true;
         this.wasMovingSide = false;
         this.lastMove = "up";
-        this.vy -= this.defaultSpeed * PlayerControlledEntity.dt;
+        this.vy -= this.defaultSpeed * PlayerControlledEntity.dt * n;
     }
 
-    protected onLeft() {
+    protected onLeft(n: number) {
         this.wasMovingVert = false;
         this.wasMovingSide = true;
         this.lastMove = "left";
-        this.vx -= this.defaultSpeed * PlayerControlledEntity.dt;
+        this.vx -= this.defaultSpeed * PlayerControlledEntity.dt * n;
     }
 
-    protected onRight() {
+    protected onRight(n: number) {
         this.wasMovingVert = false;
         this.wasMovingSide = true;
         this.lastMove = "right";
-        this.vx += this.defaultSpeed * PlayerControlledEntity.dt;
+        this.vx += this.defaultSpeed * PlayerControlledEntity.dt * n;
     }
 
-    protected onDown() {
+    protected onDown(n: number) {
         this.wasMovingVert = true;
         this.wasMovingSide = false;
         this.lastMove = "down";
-        this.vy += this.defaultSpeed * PlayerControlledEntity.dt;
+        this.vy += this.defaultSpeed * PlayerControlledEntity.dt * n;
     }
 
     destroy(): void {
