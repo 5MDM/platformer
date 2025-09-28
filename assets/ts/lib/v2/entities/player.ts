@@ -17,10 +17,29 @@ export class Player extends PlayerControlledEntity {
         super(o);
         this.view = o.view;
 
-        Player.HIW = innerWidth / 2;
-        Player.HIH = innerHeight / 2;
-        this.view.position.set(Player.HIW, Player.HIH);
-        this.container.position.set(Player.HIW, Player.HIH);
+        this.respondToResize();
+    }
+
+    respondToResize() {
+        const chw = innerWidth / 2;
+        const chh = innerHeight / 2;
+
+        if(chw == Player.HIW
+        && chh == Player.HIH
+        ) {
+            this.view.position.set(Player.HIW, Player.HIH);
+            this.container.position.set(Player.HIW, Player.HIH);
+            return;
+        }
+
+        this.view.x -= (Player.HIW - chw);
+        this.view.y -= (Player.HIH - chh);
+
+        this.container.x -= (Player.HIW - chw);
+        this.container.y -= (Player.HIH - chh);
+        
+        Player.HIW = chw;
+        Player.HIH = chh;
     }
 
     override setX(x: number) {

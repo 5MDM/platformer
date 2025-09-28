@@ -121,8 +121,8 @@ export class _MD2physics {
             if(!self.isLoopRunning) return;
 
             const j = self.engine.joystick;
-            const dirX = 1;
-            const dirY = 1;
+            var dirX = 1;
+            var dirY = 1;
 
             if(j.directionX != 0 && j.directionY != 0) {
                 const dirX = j.directionX;
@@ -130,10 +130,18 @@ export class _MD2physics {
 
                PlayerControlledEntity.move(dirX, dirY);
             } else {
+                if((_MD2physics.isMovingUp || _MD2physics.isMovingDown)
+                && (_MD2physics.isMovingLeft || _MD2physics.isMovingRight)) {
+                    dirX /= Math.SQRT2;
+                    dirY /= Math.SQRT2;
+                }
+
                 if(_MD2physics.isMovingUp) PlayerControlledEntity.moveUp(dirY);
                 if(_MD2physics.isMovingDown) PlayerControlledEntity.moveDown(dirY);
+
                 if(_MD2physics.isMovingLeft) PlayerControlledEntity.moveLeft(dirX);
                 if(_MD2physics.isMovingRight) PlayerControlledEntity.moveRight(dirX);
+                
                 if(!(_MD2physics.isMovingUp
                 || _MD2physics.isMovingDown
                 || _MD2physics.isMovingLeft

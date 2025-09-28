@@ -9,6 +9,9 @@ import { FgBlock } from "./block";
 import { _MD2deletor } from "./generation/deletor";
 import { _MD2fullGen } from "./generation/full-gen";
 import { Joystick } from "../misc/joystick";
+import { MD2zoomModule } from "./modules/zoom";
+import { MD2module } from "./modules/main";
+import { MD2envModule } from "./modules/env/main";
 
 interface EngineOpts {
     engine: {
@@ -33,53 +36,18 @@ export class _MD2engine {
 
     events = new EventEmitter();
 
-    lastZoomLevel: number = 1;
-    zoomLevel: number = 1;
-    zoomOffsetX: number = 0;
-    zoomOffsetY: number = 0;
-
     isTyping = false;
 
     joystick: Joystick;
 
-    fixToZoom(x: number, y: number): [number, number] {
-        return [
-            (x + this.zoomOffsetX) / this.zoomLevel,
-            (y + this.zoomOffsetY) / this.zoomLevel,
-        ];
-    }
-
-    setZoom(n: number = this.zoomLevel) {
-        const co = this.levelManager.container;
-        const diff = this.lastZoomLevel - this.zoomLevel;
-
-        const nx = (innerWidth / 2) * diff;
-        const ny = (innerHeight / 2) * diff;
-
-        co.x += nx + diff * this.generator.player.halfW;
-        co.scale.x = n;
-
-        this.zoomOffsetX = -co.x;
-
-        co.y += ny + diff * this.generator.player.halfH;
-        co.scale.y = n;
-
-        this.zoomOffsetY = -co.y;
-
-        this.lastZoomLevel = n;
-    }
-
-    zoomOut(p: number) {
-        if(p <= 0) return;
-        this.zoomLevel *= p / 100;
-        this.setZoom();
-    }
-
-    zoomIn(p: number) {
-        if(p <= 0) return;
-        this.zoomLevel /= p / 100;
-        this.setZoom();
-    }
+    modules: {
+        [index: string]: MD2module;
+        zoom: MD2zoomModule;
+        env: MD2envModule;
+    } = {
+        zoom: new MD2zoomModule(this),
+        env: new MD2envModule(this),
+    };
 
     _editorEmit(name: string, ...args: any[]): void {
         this.events.emit("editor:" + name, ...args);
@@ -118,8 +86,6 @@ export class _MD2engine {
         this.initPromise = new Promise(res => {
             this.initPromiseRes = res;
         });
-
-        //this.levelManager.container.pivot.set(this.levelManager.container.width / 2, this.levelManager.container.height / 2);
     }
 
     async init() {
@@ -129,5 +95,8 @@ export class _MD2engine {
         this.physics.isLoopRunning = true;
 
         if(this.initPromiseRes) this.initPromiseRes();
+
+        for(const i in this.modules)
+            await this.modules[i].init();
     }
 }

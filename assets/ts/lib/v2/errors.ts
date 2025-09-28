@@ -26,6 +26,10 @@ export class _MD2errorManager {
         _MD2errorManager.notFound("Texture", textureName);
     }
 
+    particleNotFound(name: string) {
+        _MD2errorManager.notFound("Particle", name);
+    }
+
     static entityStanceNotFound(name: string) {
         _MD2errorManager.notFound("Stance", name);
     }

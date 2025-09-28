@@ -1,0 +1,21 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "./particles.json",
+    "title": "Particles Schema",
+    "description": "Schema for defining particles",
+    "type": "object",
+    "required": ["version", "particles"],
+    "properties": {
+        "version": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3
+        },
+        "particles": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            }
+        }
+    }
+}

@@ -132,8 +132,8 @@ export class MD2editor {
         this.engine._editorOn("multi", this.setupEditorModeEventListener(this.multiEdit));
         this.engine._editorOn("delete", this.setupEditorModeEventListener(this.deleteClick));
 
-        this.engine._editorOn("zoom-out", () => this.engine.zoomOut(50));
-        this.engine._editorOn("zoom-in", () => this.engine.zoomIn(50));
+        this.engine._editorOn("zoom-out", () => this.engine.modules.zoom.zoomOut(50));
+        this.engine._editorOn("zoom-in", () => this.engine.modules.zoom.zoomIn(50));
 
         this.engine._editorOn("recenter", () => {
             this.levelGroups.world.position.set(0);
@@ -227,7 +227,7 @@ export class MD2editor {
     }
 
     fixOffset([x, y]: XYtuple): XYtuple {
-        return this.fixPanOffset(this.engine.fixToZoom(x, y));
+        return this.fixPanOffset(this.engine.modules.zoom.fixToZoom(x, y));
     }
 
     private setupListeners() {

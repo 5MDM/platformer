@@ -212,6 +212,12 @@
             "type": "fg",
             "category": "Forest",
             "isOversize": true
+        },
+        {
+            "name": "Moss Rocks",
+            "texture": "forest/moss-rocks-1.png",
+            "type": "bg",
+            "category": "Forest"
         }
     ]
 }

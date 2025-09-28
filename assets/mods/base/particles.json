@@ -1,0 +1,7 @@
+{
+    "$schema": "../../schemas/particles.json",
+    "version": [0, 1, 0],
+    "particles": {
+        "glow": "particles/glow.png"
+    }
+}

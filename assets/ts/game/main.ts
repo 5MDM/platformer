@@ -1,9 +1,10 @@
-import { isMobile } from "pixi.js";
+import { isMobile, Particle } from "pixi.js";
 import "./audio";
-import { $ } from "../lib/misc/util";
+import { $, clamp, round } from "../lib/misc/util";
 import { _MD2engine } from "../lib/v2/engine";
 import { md2 } from "../constants";
 import { MD2editor } from "../lib/editor/main";
+import { MD2envModule } from "../lib/v2/modules/env/main";
 
 function loadAnimations() {    
     const walkR = md2.dataManager.getAnimation("player-side-walk");
@@ -24,7 +25,31 @@ function loadAnimations() {
 export async function startGame(md2: _MD2engine) { 
     loadAnimations();
 
-    md2.levelManager.loadLevel("1");    
+    md2.levelManager.loadLevel("1");
+
+    const hh = innerHeight / 2;
+
+    md2.modules.env.addParticles({
+        name: "glow",
+        number: 50,
+        tickerF: (o) => {
+            MD2envModule.tickerPresets.float(o);
+            MD2envModule.tickerPresets.stayInside(o);
+        },
+        genF(p: Particle, n: number, md2) {
+            p.tint = Math.random() * 0xffffff;
+
+            const scale = round(.8 - .5 * Math.abs(Math.sin(n * 5)), 100);
+            p.scaleX = scale;
+            p.scaleY = scale;
+
+            const [x, y] = MD2envModule.randPresets.disperseScreen(n, md2);
+            p.x = x;
+            p.y = y;
+
+            p.alpha = .9;
+        },
+    })
 }
 
 const editor = new MD2editor({

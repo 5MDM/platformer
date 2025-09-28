@@ -1,6 +1,7 @@
 import { DragController } from "../../misc/drag";
 import { ToggleState } from "../../misc/util";
 import { AnyBlock } from "../../v2/block";
+import { MD2zoomModule } from "../../v2/modules/zoom";
 import { MDgameGridType } from "../../v2/types";
 import { MD2editor } from "../main";
 
@@ -8,6 +9,7 @@ export abstract class _MD2editorBase {
     editor: MD2editor;
     el: HTMLElement;
     drag: DragController;
+    zoom: MD2zoomModule;
 
     state = new ToggleState(() => this.onEnable(), () => this.onDisable());
 
@@ -31,6 +33,8 @@ export abstract class _MD2editorBase {
 
         this.drag.changeDefaultandNormalGrab("default");
         this.drag.changeDefaultAndNormalGrabbing("pointer");
+
+        this.zoom = this.editor.engine.modules.zoom;
     }
 
     setButtonEl(el: HTMLElement) {
@@ -65,15 +69,15 @@ export abstract class _MD2editorBase {
     protected dragHandler(x: number, y: number, dx?: number, dy?: number) {}
 
     protected fixPos(rx: number, ry: number): [number, number] {
-        rx /= this.editor.engine.zoomLevel;
-        rx += this.editor.engine.generator.player.x - innerWidth / 2 / this.editor.engine.zoomLevel;
+        rx /= this.zoom.zoomLevel;
+        rx += this.editor.engine.generator.player.x - innerWidth / 2 / this.zoom.zoomLevel;
         rx -= this.editor.engine.generator.player.halfW 
-        / this.editor.engine.zoomLevel - this.editor.engine.generator.player.halfW;
+        / this.zoom.zoomLevel - this.editor.engine.generator.player.halfW;
         rx -= this.editor.levelGroups.world.x;
 
-        ry /= this.editor.engine.zoomLevel;
-        ry += this.editor.engine.generator.player.y - innerHeight / 2 / this.editor.engine.zoomLevel;
-        ry -= this.editor.engine.generator.player.halfH / this.editor.engine.zoomLevel - this.editor.engine.generator.player.halfH;
+        ry /= this.zoom.zoomLevel;
+        ry += this.editor.engine.generator.player.y - innerHeight / 2 / this.zoom.zoomLevel;
+        ry -= this.editor.engine.generator.player.halfH / this.zoom.zoomLevel - this.editor.engine.generator.player.halfH;
         ry -= this.editor.levelGroups.world.y;
 
         return [rx, ry];
