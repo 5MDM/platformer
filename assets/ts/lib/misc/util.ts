@@ -388,3 +388,15 @@ export function getContainerCoords(e: Container): [number, number] {
 export function LCC(e: Container) {
   console.log(...getContainerCoords(e));
 }
+
+export function roundToPower2(n: number): number {
+  if(n <= 0) return 1; 
+
+  const low = 2 ** Math.floor(Math.log2(n));
+  const up = 2 ** Math.ceil(Math.log2(n));
+
+  if(Math.abs(n - low) <= Math.abs(n - up))
+    return low;
+  else
+    return up;
+}

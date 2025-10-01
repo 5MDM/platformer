@@ -2,11 +2,6 @@
     "$schema":  "../../schemas/entities.json",
     "version": [0, 1, 0],
     "entities": {
-        "darenger": {
-            "textures": {
-                "stand-ud-down": "entities/darenger/darenger-ud-stand-down.png"
-            }
-        },
         "daylin": {
             "textures": {
                 "stand-ud-down": "entities/daylin/daylin-ud-stand-down.png"

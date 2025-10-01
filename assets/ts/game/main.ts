@@ -1,4 +1,4 @@
-import { isMobile, Particle } from "pixi.js";
+import { BlurFilter, Graphics, isMobile, Particle, Sprite } from "pixi.js";
 import "./audio";
 import { $, clamp, round } from "../lib/misc/util";
 import { _MD2engine } from "../lib/v2/engine";
@@ -27,11 +27,9 @@ export async function startGame(md2: _MD2engine) {
 
     md2.levelManager.loadLevel("1");
 
-    const hh = innerHeight / 2;
-
     md2.modules.env.addParticles({
         name: "glow",
-        number: 50,
+        number: 16,
         tickerF: (o) => {
             MD2envModule.tickerPresets.float(o);
             MD2envModule.tickerPresets.stayInside(o);
@@ -43,13 +41,27 @@ export async function startGame(md2: _MD2engine) {
             p.scaleX = scale;
             p.scaleY = scale;
 
-            const [x, y] = MD2envModule.randPresets.disperseScreen(n, md2);
+            const [x, y] = MD2envModule.randPresets.disperseScreenS1(n, md2, 16);
             p.x = x;
             p.y = y;
 
+            p.anchorX = .5;
+            p.anchorY = .5;
+
             p.alpha = .9;
         },
-    })
+    });
+
+    const glow = new Sprite({
+        texture: md2.modules.env.getParticle("glow"),
+        anchor: .5,
+        scale: {x: 7, y: 7},
+        position: {x: md2.generator.player.halfW, y: md2.generator.player.halfH},
+    });
+    
+    //md2.levelManager.groups.static.addChild(glow);
+    md2.generator.player.container.addChild(glow);
+    md2.levelManager.groups.static.mask = glow;
 }
 
 const editor = new MD2editor({

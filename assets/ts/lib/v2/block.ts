@@ -99,9 +99,15 @@ export abstract class Block extends BasicBox {
     readonly rotation: number; // degrees
     isOverlay: boolean = false;
 
+    light: number = 0;
+
     readonly container = new Container();
     readonly sprite: Container;
 
+    private static hexRatio = 0x111111;
+    static defaultLight = 4;
+
+    // 
     //CL?: ComponentList;
 
     isOversize = false;
@@ -109,6 +115,13 @@ export abstract class Block extends BasicBox {
     readonly blockSize: number;
 
     isDestroyed = false;
+
+    updateLight(n: number) {
+        if(n < 0 || 16 < n) return;
+
+        this.light = n;
+        //this.sprite.tint = (n * Block.hexRatio);
+    }
 
     constructor(o: BlockConstructorOpts) {
         super(o);
@@ -123,6 +136,8 @@ export abstract class Block extends BasicBox {
 
         //this.CL = o.CL;
         this.isOversize = o.isOversize;
+
+        this.updateLight(Block.defaultLight);
     }
 
     destroy() {

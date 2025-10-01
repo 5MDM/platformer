@@ -4,8 +4,6 @@ import { _MD2engine } from "../../engine";
 import { XYtuple } from "../../types";
 import { MD2module } from "../main";
 
-type ParticleGenF<T> = (n: number, md2: _MD2engine) => T;
-
 interface AddParticleOpts {
     name: string;
     number: number;
@@ -34,7 +32,7 @@ export class _MD2envModule extends MD2module {
 
     private pl: Record<string, Texture> = {};
 
-    static randPresets: Record<string, (n: number, md2: _MD2engine) => XYtuple> = {};
+    static randPresets: Record<string, (n: number, md2: _MD2engine, max: number) => XYtuple> = {};
     static tickerPresets: Record<string, (o: TickerFopts) => void> = {};
 
     constructor(md2: _MD2engine) {

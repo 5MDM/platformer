@@ -17,6 +17,7 @@ app.init({
     resolution: devicePixelRatio,
     canvas: c,
     roundPixels: true,
+    useBackBuffer: true,
 }).then(async () => {
 
     initLevels(md2);
