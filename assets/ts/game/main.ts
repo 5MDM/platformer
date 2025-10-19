@@ -1,4 +1,4 @@
-import { BlurFilter, Graphics, isMobile, Particle, Sprite } from "pixi.js";
+import { isMobile, Particle, Sprite } from "pixi.js";
 import "./audio";
 import { $, clamp, round } from "../lib/misc/util";
 import { _MD2engine } from "../lib/v2/engine";
@@ -6,20 +6,25 @@ import { md2 } from "../constants";
 import { MD2editor } from "../lib/editor/main";
 import { MD2envModule } from "../lib/v2/modules/env/main";
 
-function loadAnimations() {    
+MD2editor.creatorToolsState.disableIfOn();
+
+const player = md2.generator.player;
+
+function loadAnimations() {   
     const walkR = md2.dataManager.getAnimation("player-side-walk");
     walkR.scale.x = -1;
     walkR.position.x = 30;
 
-    md2.generator.player.setAnimation("walk-r", walkR);
-    md2.generator.player.setAnimation("walk-ud-down", md2.dataManager.getAnimation("player-down-walk"));
-    md2.generator.player.setAnimation("walk-ud-up", md2.dataManager.getAnimation("player-up-walk"));
-    md2.generator.player.setAnimation("walk-l", md2.dataManager.getAnimation("player-side-walk"));
+    player.animController.registerAnimationsWithSameSpeed(md2.dataManager, 0.18, [
+        ["td-walk-r", walkR],
+        ["td-walk-d", "player-down-walk"],
+        ["td-walk-u", "player-up-walk"],
+        ["td-walk-l", "player-side-walk"],
+    ]);
 
-    md2.generator.player.setSprite("stand-ud-down", md2.dataManager.getSprite("player-down-stand.png"));
-    md2.generator.player.setSprite("stand-ud-up", md2.dataManager.getSprite("player-up-stand.png"));
-
-    md2.generator.player.changeStance("stand-ud-down");
+    player.animController.registerStance("td-stand-d", md2.dataManager.getSprite("player-down-stand.png"));
+    player.animController.registerStance("td-stand-u", md2.dataManager.getSprite("player-up-stand.png"));
+    player.animController.setAction("td-stand-d");
 }
 
 export async function startGame(md2: _MD2engine) { 
@@ -67,7 +72,7 @@ export async function startGame(md2: _MD2engine) {
 const editor = new MD2editor({
     engine: md2,
     el: $("#ui > #editor-v2-c") as HTMLDivElement,
-})
+});
 
 if(isMobile.any) {
     const popup = $("#ui > #audio-popup");
@@ -79,8 +84,25 @@ if(isMobile.any) {
 }
 
 addEventListener("keyup", e => {
-    if(e.key != "C") return;
+    if(e.key == "C") copy();
+    else if(e.key == "V") paste();
+}, {passive: true});
 
+function paste() {
+    navigator.clipboard.readText()
+    .then(val => {
+        if(!val) return;
+        try {
+            JSON.parse(val);
+        } catch(err) {
+            return;
+        }
+
+        md2.levelManager.loadLevelFromJSONstring(val);
+    })
+}
+
+function copy() {
     const level = md2.levelManager.exportCurrentLevel();
 
     level.blocks.push({
@@ -95,5 +117,4 @@ addEventListener("keyup", e => {
     navigator.clipboard.writeText(JSON.stringify(level))
         .then(() => alert("Copied level json"))
         .catch(err => alert(err));
-    
-}, {passive: true});
+}

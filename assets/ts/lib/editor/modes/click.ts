@@ -1,7 +1,7 @@
 import { blockDataMap } from "pixi.js";
 import { MD2editor } from "../main";
 import { _MD2editorBase } from "./main";
-import { AnyBlock, Block } from "../../v2/block";
+import { AnyBlock, Block } from "../../v2/blocks/blocks";
 
 export class _MD2editorClick extends _MD2editorBase {
     protected override dragHandler(rx: number, ry: number) {

@@ -1,7 +1,7 @@
 import { Keymap } from "../../misc/keymap";
 import { MDmatrix } from "../../misc/matrix";
 import { createDegreesRecord, Degrees, degToRad, radToDeg } from "../../misc/util";
-import { AnyBlock, BasicBox, FgBlock } from "../block";
+import { AnyBlock, BasicBox, FgBlock } from "../blocks/blocks";
 import { LevelJSONoutput, MDgameGridType, WorldGrids } from "../types";
 
 interface Bounds {

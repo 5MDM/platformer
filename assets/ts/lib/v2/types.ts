@@ -1,19 +1,23 @@
+import { AnimatedSprite, Sprite, TilingSprite } from "pixi.js";
 import { GMOutput } from "../misc/keymap";
 import { MDmatrix } from "../misc/matrix";
-import { AnyBlock } from "./block";
+import { AnyBlock } from "./blocks/blocks";
+import { MD2componentObjType } from "./blocks/components/main";
 
 export type MDgameGridType = "fg" | "bg" | "overlay";
 
 export interface LevelJSONoutput extends GMOutput {
     rotation: number;
-    //components?: ComponentList;
+    components?: Record<string, Record<string, any>>;
 }
+
+export type AnySprite = Sprite | TilingSprite | AnimatedSprite;
 
 export interface BlockInfo {
     name: string;
     type?: MDgameGridType;
     texture: string;
-    //components?: ComponentList;
+    components?: MD2componentObjType;
     isOversize: boolean;
     category: string;
 }

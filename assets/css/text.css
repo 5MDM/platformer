@@ -1,0 +1,13 @@
+#ui > #md2-text {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+}
+
+#ui > #md2-text > #title {
+    position: fixed;
+    text-align: center;
+    top: 10%;
+    width: 100vw;
+    font-size: 3rem;
+}

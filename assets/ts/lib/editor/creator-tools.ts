@@ -12,6 +12,12 @@ const gridDiv = $$("div", {
     }
 });
 
+const centerBlock = $$("div", {
+    attrs: {
+        id: "center-block",
+    }
+});
+
 gridDiv.addEventListener("wheel", e => {
     gridDiv.scrollTop += e.deltaY;
     gridDiv.scrollLeft += e.deltaX;
@@ -23,11 +29,25 @@ export class MDcreatorToolsUI {
 
     editor: MD2editor;
 
+    static setCenterBlockEl(el: HTMLElement) {
+        centerBlock.appendChild(el);
+        centerBlock.style.display = "grid";
+    }
+
+    static removeCenterBlockEl(el: HTMLElement) {
+        if(centerBlock.children.length == 0) return;
+        centerBlock.removeChild(el);
+        centerBlock.style.display = "none";
+    }
+
     static creatorToolsEl = $$("div", {
         attrs: {id: "creator-tools"},
         children: [
             catDiv,
-            gridDiv,
+            $$("div", {
+                children: [centerBlock, gridDiv],
+            }),
+            //gridDiv,
             _utilBar,
         ]
     });

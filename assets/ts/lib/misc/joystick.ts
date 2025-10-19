@@ -1,5 +1,5 @@
 import { DragController } from "./drag";
-import { $$, clamp, normalize } from "./util";
+import { $$, clamp, normalize, radToDeg } from "./util";
 
 interface JoystickOpts {
     target: HTMLDivElement;
@@ -59,8 +59,12 @@ export class Joystick {
     onDrag: () => void = () => undefined;
     onReset: () => void = () => undefined;
 
-    private isOOB(xsq: number, ysq: number, maxR: number): boolean {
-        return Math.sqrt(xsq + ysq) > maxR;
+    private setX(x: number) {
+        this.orb.style.left = x + "px";
+    }
+
+    private setY(y: number) {
+        this.orb.style.top = y + "px";
     }
 
     private init() {
@@ -76,34 +80,39 @@ export class Joystick {
         var x = 0;
         var y = 0;
 
+        function drag(x: number, y: number) {
+            const xsq = x**2;
+            const ysq = y**2;
+
+            const r = Math.sqrt(xsq + ysq);
+            const d = r - maxR;
+
+            if(d > 0) {
+                const θ = Math.asin(y / r) ?? 0;
+
+                const sdx = d * Math.cos(θ);
+                x -= sdx * Math.sign(x);
+
+                const sdy = d * Math.sin(θ);
+                y -= sdy;
+            }
+
+            self.setX(x);
+            self.setY(y);
+
+            checkDir(x, y);
+        }
+
         this.controller.onDrag = function(ddx: number, ddy: number, px, py) {
             if(hasEnded)
                 return hasEnded = false;
 
-            var x = clamp(-maxR, px - centerX, maxR);
-            var y = clamp(-maxR, py - centerY, maxR);
-
-            const xsq = x**2;
-            const ysq = y**2;
-
-            const diff = Math.sqrt(xsq + ysq) - maxR;
-
-            if(diff > 0) {
-                x -= diff * Math.sign(x) / Math.SQRT2;
-                y -= diff * Math.sign(y) / Math.SQRT2;
-            }
-
-            self.orb.style.left = x + "px";
-            self.orb.style.top = y + "px";
-
-            checkDir(x, y);
-
             self.onDrag();
+
+            return drag(px - centerX, py - centerY);
         };
 
-        //this.controller.downElement.addEventListener("pointerup", reset);
         addEventListener("pointerup", reset);
-        //this.controller.touchEl.addEventListener("pointerout", reset);
 
         function reset() {
             hasEnded = true;

@@ -36,6 +36,7 @@ const utilBarButtons = new SimpleExpander<[
     ["zoom out", "zoom-out.png", "zoom-out"],
     ["pan", "move-arrow.png", "pan", true],
     ["recenter", "recenter.png", "recenter"],
+    ["edit", "edit.png", "edit", true],
 ]);
 
 new MixedList().bind(utilBarButtons);

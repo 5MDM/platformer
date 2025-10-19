@@ -1,4 +1,4 @@
-import { AnyBlock } from "../block";
+import { AnyBlock } from "../blocks/blocks";
 import { _MD2engine } from "../engine";
 import { Success } from "../level";
 import { LevelJSONoutput, MDgameGridType } from "../types";

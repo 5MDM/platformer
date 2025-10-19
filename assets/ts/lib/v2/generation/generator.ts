@@ -1,13 +1,14 @@
-import { TilingSprite } from "pixi.js";
+import { Sprite, TilingSprite } from "pixi.js";
 import { MDmatrix } from "../../misc/matrix";
 import { degToRad } from "../../misc/util";
-import { FgBlock, BgBlock, AnyBlock, BasicBox } from "../block";
+import { FgBlock, BgBlock, AnyBlock, BasicBox } from "../blocks/blocks";
 import { _MD2engine } from "../engine";
 import { EntityOpts, Entity } from "../entities/entity";
 import { Player } from "../entities/player";
 import { Success } from "../level";
 import { BlockCreationOpts, BlockInfo, EntityInfo, LevelJSONoutput, MDgameGridType } from "../types";
-import { greedyMesh, greedyMeshGridFromBlockDeletion } from "./greedy-mesh";
+import { greedyMesh } from "./greedy-mesh";
+import { MD2componentObjType } from "../blocks/components/main";
 
 
 export interface BlockOpts {
@@ -17,7 +18,7 @@ export interface BlockOpts {
     y: number;
     w: number;
     h: number;
-    //components?: ComponentList;
+    components?: MD2componentObjType;
 }
 
 export abstract class _MD2Blockgenerator {
@@ -38,6 +39,9 @@ export abstract class _MD2Blockgenerator {
             h: 64,
             id: this.engine.dataManager.getNewId(),
             view: this.engine.levelManager.groups.view,
+            animOpts: {
+            },
+            name: "player",
         });
 
         this.engine.levelManager.recordPlayer(this.player);
@@ -101,7 +105,7 @@ export abstract class _MD2Blockgenerator {
     }
 
     private createFgBlock(o: BlockOpts, def: BlockInfo, sprite: TilingSprite, record: boolean = true) {
-        //const components = o.components || def.components;
+        const components = o.components || def.components;
 
         if(def.isOversize) {
             const hw = this.engine.divideByBlockSize(sprite.width / 2) * this.engine.blockSize;
@@ -115,7 +119,6 @@ export abstract class _MD2Blockgenerator {
             o.h = h;
         }
 
-
         const fgBlock = new FgBlock({
             x: o.x,
             y: o.y,
@@ -128,6 +131,8 @@ export abstract class _MD2Blockgenerator {
             id: this.engine.dataManager.getNewId(),
             blockSize: this.engine.blockSize,
             isOversize: def.isOversize,
+            defaultComponents: def.components,
+            components,
         });
 
         //fgBlock.sprite.x -= this.engine.blockSize / 2;
@@ -219,6 +224,7 @@ export abstract class _MD2Blockgenerator {
                 y: i.y,
                 w: i.w,
                 h: i.h,
+                components: i.components,
             });
         }
     }
@@ -230,8 +236,10 @@ export abstract class _MD2Blockgenerator {
             x: o.x,
             y: o.y,
             w: o.w,
-            h: o.h
+            h: o.h,
+            components: o.components,
         });
+
     }
 
     injectBlocks(grid: Record<MDgameGridType, MDmatrix<AnyBlock>>) {

@@ -46,7 +46,7 @@ export class Player extends PlayerControlledEntity {
         this.x = x;
         this.cx = this.x + this.halfW;
         this.maxX = this.x + this.w;
-        this.view.x = Player.HIW-x;
+        this.view.x = Player.HIW - x;
     }
 
     override setY(y: number) {
@@ -58,31 +58,31 @@ export class Player extends PlayerControlledEntity {
 
     protected override onUp(n: number) {
         super.onUp(n);
-        this.changeStance("walk-ud-up");
+        this.animController.setBasicAction("td-walk-u", true);
     }
 
     protected override onLeft(n: number) {
         super.onLeft(n);
-        this.changeStance("walk-l");
+        this.animController.setBasicAction("td-walk-l", true);
     }
 
     protected override onRight(n: number) {
         super.onRight(n);
-        this.changeStance("walk-r");
+        this.animController.setBasicAction("td-walk-r", true);
     }
 
     protected override onDown(n: number) {
         super.onDown(n);
-        this.changeStance("walk-ud-down");
+        this.animController.setBasicAction("td-walk-d", true);
     }
 
     protected override onNotMoving(): void {
         switch(this.lastMove) {
             case "up":
-                this.changeStance("stand-ud-up");
+                this.animController.setBasicAction("td-stand-u");
                 break;
             default:
-                this.changeStance("stand-ud-down");
+                this.animController.setBasicAction("td-stand-d");
                 break;
         }
     }

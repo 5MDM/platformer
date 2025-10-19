@@ -4,7 +4,7 @@
     "entities": {
         "daylin": {
             "textures": {
-                "stand-ud-down": "entities/daylin/daylin-ud-stand-down.png"
+                "ud-stand-down": "entities/daylin/daylin-ud-stand-down.png"
             }
         }
     }

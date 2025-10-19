@@ -110,7 +110,7 @@ export class _MD2dataManager {
     private initializedGetTexture(name: string): Texture {
         const t = this.spritesheet!.textures[name];
         if(!t) {
-            this.engine.errorManager.textureNotFound(t);
+            this.engine.errorManager.textureNotFound(name);
             return Texture.WHITE;
         } else return t;
     }

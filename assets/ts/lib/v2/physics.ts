@@ -1,5 +1,5 @@
 import { MDmatrix } from "../misc/matrix";
-import { AnyBlock, FgBlock } from "./block";
+import { AnyBlock, FgBlock } from "./blocks/blocks";
 import { _MD2engine } from "./engine";
 import { Entity, PlayerControlledEntity } from "./entities/entity";
 
@@ -156,6 +156,13 @@ export class _MD2physics {
     }
 
     findCollisions() {
+        const recentColClone: Record<number, FgBlock> = {};
+
+        for(const id in _MD2physics.recentCollisions) {
+            recentColClone[id] = _MD2physics.recentCollisions[id];
+            delete _MD2physics.recentCollisions[id];
+        }
+
         for(const moving of this.dynamicObjs) {
             moving.vy = Math.min(this.engine.blockSizeHalf, Math.abs(moving.vy)) * Math.sign(moving.vy);
             moving.vx = Math.min(this.engine.blockSizeHalf, Math.abs(moving.vx)) * Math.sign(moving.vx);
@@ -163,10 +170,19 @@ export class _MD2physics {
             if(moving.vx != 0) moving.setX(moving.x + moving.vx);
             if(moving.vy != 0) moving.setY(moving.y + moving.vy);
 
-            findtaticCollisions(this.matrix, moving, this.engine.blockSize);
+            findstaticCollisions(this.matrix, moving, this.engine.blockSize, this.engine);
 
             moving.vx = 0;
             moving.vy = 0;
+        }
+
+        for(const id in _MD2physics.recentCollisions)
+            delete recentColClone[id];
+
+        for(const id in recentColClone) {
+            recentColClone[id].components.onCollisionLeave();
+            recentColClone[id].hasCollidedRecently = false;
+            delete _MD2physics.recentCollisions[id];
         }
     }
 
@@ -177,9 +193,11 @@ export class _MD2physics {
     setupAnimationLoop() {
 
     }
+
+    static recentCollisions: Record<number, FgBlock> = {};
 }
 
-function findtaticCollisions(matrix: MDmatrix<FgBlock>, moving: Entity, blockSize: number) {
+function findstaticCollisions(matrix: MDmatrix<FgBlock>, moving: Entity, blockSize: number, md2: _MD2engine) {
     const x = Math.floor(moving.x / blockSize);
     const maxX = Math.floor(moving.maxX / blockSize);
     const y = Math.floor(moving.y / blockSize);
@@ -193,22 +211,18 @@ function findtaticCollisions(matrix: MDmatrix<FgBlock>, moving: Entity, blockSiz
     ];
 
     for(const col of corners)
-        if(col) if(resolveStaticCollisions(moving, col)) continue;
+        if(col) if(resolveStaticCollisions(moving, col, md2)) continue;
 }
 
-function resolveStaticCollisions(moving: Entity, col: FgBlock): true | void {
-    
+function resolveStaticCollisions(moving: Entity, col: FgBlock, md2: _MD2engine): true | void {
     if(col.hasCollisionLeaveEvents) {
         col.hasCollidedRecently = true;
-        //this.recentCollisions[col.id] = col;
+        _MD2physics.recentCollisions[col.id] = col;
     }
 
     if(col.testAABB(moving)) {
-        for(const f of col.events.onCollide) {
-            const needsToIgnoreCollision = f(moving);
-            if(needsToIgnoreCollision) return true;
-        }
-        
+        if(!col.components.onCollision(md2)) return true;
+
         separate(moving, col);
     }
 }

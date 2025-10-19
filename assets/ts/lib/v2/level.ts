@@ -1,7 +1,7 @@
 import { Container } from "pixi.js";
 import { GMOutput, Keymap } from "../misc/keymap";
 import { MDmatrix } from "../misc/matrix";
-import { AnyBlock, BgBlock, FgBlock } from "./block";
+import { AnyBlock, BgBlock, FgBlock } from "./blocks/blocks";
 import { _MD2engine } from "./engine";
 import { Entity } from "./entities/entity";
 import { Player } from "./entities/player";
@@ -29,7 +29,7 @@ Record<number, Record<number, Record<number, (engine: _MD2engine, data: LevelDat
                         y: block.y,
                         w: block.w,
                         h: block.h,
-                        //components: block.components,
+                        components: block.components,
                     });
                 }
 

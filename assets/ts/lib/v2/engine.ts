@@ -5,13 +5,16 @@ import { _MD2levelManager } from "./level";
 import { _MD2errorManager } from "./errors";
 import { _MD2physics, _MD2physicsOpts } from "./physics";
 import { MDmatrix } from "../misc/matrix";
-import { FgBlock } from "./block";
+import { FgBlock } from "./blocks/blocks";
 import { _MD2deletor } from "./generation/deletor";
 import { _MD2fullGen } from "./generation/full-gen";
 import { Joystick } from "../misc/joystick";
 import { MD2zoomModule } from "./modules/zoom";
 import { MD2module } from "./modules/main";
 import { MD2envModule } from "./modules/env/main";
+import { MD2textModule } from "./modules/text/text";
+import { MDaudio } from "../misc/audio";
+import { MD2componentManager } from "./blocks/components/main-manager";
 
 interface EngineOpts {
     engine: {
@@ -33,6 +36,7 @@ export class _MD2engine {
     physics: _MD2physics;
     deletor: _MD2deletor;
     app: Application;
+    audio: MDaudio = new MDaudio();
 
     events = new EventEmitter();
 
@@ -44,9 +48,11 @@ export class _MD2engine {
         [index: string]: MD2module;
         zoom: MD2zoomModule;
         env: MD2envModule;
+        text: MD2textModule;
     } = {
         zoom: new MD2zoomModule(this),
         env: new MD2envModule(this),
+        text: new MD2textModule(this),
     };
 
     _editorEmit(name: string, ...args: any[]): void {
@@ -69,6 +75,7 @@ export class _MD2engine {
     }
 
     constructor(opts: EngineOpts) {
+        MD2componentManager.setEngine(this);
         this.joystick = opts.engine.joystick;
         this.blockSize = opts.engine.blockSize;
         this.blockSizeHalf = this.blockSize / 2;

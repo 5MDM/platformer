@@ -1,10 +1,12 @@
 import { AnimatedSprite, Sprite } from "pixi.js";
-import { BasicBox, BasicBoxOpts } from "../block";
+import { BasicBox, BasicBoxOpts } from "../blocks/blocks";
 import { Success } from "../level";
 import { _MD2errorManager } from "../errors";
+import { AnimControl, AnimControlOpts } from "./anim";
 
 export interface EntityOpts extends BasicBoxOpts {
-    
+    name: string;
+    animOpts: AnimControlOpts;
 }
 
 export class Entity extends BasicBox {
@@ -13,89 +15,15 @@ export class Entity extends BasicBox {
     isPlayer = false;
 
     defaultSpeed: number = 2;
-
-    animations: Record<string, AnimatedSprite> = {};
-    sprites: Record<string, Sprite> = {};
-
-    currentStance: string = "default";
-
-    lastAnimation?: string;
-    lastSprite?: string;
+    animController: AnimControl;
 
     constructor(o: EntityOpts) {
         super(o);
-    }
-
-    setAnimation(name: string, s: AnimatedSprite) {
-        s.visible = false;
-        this.animations[name] = s;
-        this.container.addChild(s);
-    }
-
-    setSprite(name: string, s: Sprite) {
-        s.visible = false;
-        this.sprites[name] = s;
-        this.container.addChild(s);
-    }
-
-    changeStance(name: string, speed: number = .08): Success {
-        const animation = this.animations[name];
-        const sprite = this.sprites[name];
-        if(animation) this.playAnimation(name, speed);
-        else if(sprite) this.playSprite(name);
-        else {
-            _MD2errorManager.entityStanceNotFound(name);
-            return false;
-        }
-
-        return true;
-    }
-
-    private beforeImageChange(name: string) {
-        if (this.currentStance == name) return;
-        this.currentStance = name;
-
-        if(this.lastAnimation) {
-            this.animations[this.lastAnimation].visible = false;
-            this.animations[this.lastAnimation].stop();
-            this.lastAnimation = undefined;
-        }
-        if (this.lastSprite) {
-            this.sprites[this.lastSprite].visible = false;
-            this.lastSprite = undefined;
-        }
-    }
-
-    private playAnimation(name: string, speed: number) {
-        const animation = this.animations[name];
-        animation.animationSpeed = speed;
-        this.beforeImageChange(name);
-
-        this.lastAnimation = name;
-        animation.visible = true;
-        animation.play();
-    }
-
-    private playSprite(name: string) {
-        this.beforeImageChange(name);
-
-        this.lastSprite = name;
-        this.sprites[name].visible = true;
+        this.animController = new AnimControl(o.animOpts, this.container);
     }
 
     destroy() {
-        for(const name in this.animations) {
-            this.animations[name].destroy();
-            delete this.animations[name];
-        }
-
-        for(const name in this.sprites) {
-            this.animations[name].destroy();
-            delete this.animations[name];
-        }
-
-        this.lastSprite = undefined;
-        this.lastAnimation = undefined;
+        this.animController.destroy();
     }
 }
 
@@ -185,9 +113,7 @@ export class PlayerControlledEntity extends Entity {
     }
 
     protected onNotMoving() {
-        if(!this.lastAnimation) return;
-
-        this.animations[this.lastAnimation]?.stop();
+        this.animController.setAction("default");
     }
 
     protected onUp(n: number) {

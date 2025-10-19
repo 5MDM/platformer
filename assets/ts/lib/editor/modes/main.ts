@@ -1,6 +1,6 @@
 import { DragController } from "../../misc/drag";
 import { ToggleState } from "../../misc/util";
-import { AnyBlock } from "../../v2/block";
+import { AnyBlock } from "../../v2/blocks/blocks";
 import { MD2zoomModule } from "../../v2/modules/zoom";
 import { MDgameGridType } from "../../v2/types";
 import { MD2editor } from "../main";

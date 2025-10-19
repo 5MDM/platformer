@@ -6,13 +6,14 @@ import { degToRad, RotationHolder, snapToGrid, ToggleState } from "../misc/util"
 import { _MD2editorClick } from "./modes/click";
 import { Player } from "../v2/entities/player";
 import { MDmatrix } from "../misc/matrix";
-import { AnyBlock } from "../v2/block";
+import { AnyBlock } from "../v2/blocks/blocks";
 import { _utilBar } from "./util-bar";
 import { _MD2deleteClick } from "./modes/delete";
 import { _MD2editorBase } from "./modes/main";
 import { _md2events, MDgameGridType, XYtuple } from "../v2/types";
 import { _MD2editorMulti } from "./modes/multi";
 import { _MD2editorPan } from "./modes/pan";
+import { _MD2editMode } from "./modes/edit";
 
 export interface MD2editorOpts {
     engine: _MD2engine;
@@ -42,6 +43,7 @@ export class MD2editor {
     private deleteClick: _MD2deleteClick;
     private multiEdit: _MD2editorMulti;
     private pan: _MD2editorPan;
+    private edit: _MD2editMode;
 
     container = new Container();
 
@@ -62,7 +64,11 @@ export class MD2editor {
 
     rotation = new RotationHolder();
 
-    static creatorToolsState = new ToggleState(() => {}, () => {}, true);
+    static creatorToolsState = new ToggleState(() => {
+        MDcreatorToolsUI.creatorToolsEl.style.display = "grid";
+    }, () => {
+        MDcreatorToolsUI.creatorToolsEl.style.display = "none";
+    }, true);
 
     constructor(o: MD2editorOpts) {
         this.engine = o.engine;
@@ -80,13 +86,13 @@ export class MD2editor {
             else if(type == "entity") this.onEntitySelect(name);
         });
 
-        MD2editor.creatorToolsState.onEnable = function() {
-            MDcreatorToolsUI.creatorToolsEl.style.display = "grid";
-        };
+        // MD2editor.creatorToolsState.onEnable = function() {
+        //     MDcreatorToolsUI.creatorToolsEl.style.display = "grid";
+        // };
 
-        MD2editor.creatorToolsState.onDisable = function() {
-            MDcreatorToolsUI.creatorToolsEl.style.display = "none";
-        };
+        // MD2editor.creatorToolsState.onDisable = function() {
+        //     MDcreatorToolsUI.creatorToolsEl.style.display = "none";
+        // };
 
         this.testSprite = new TilingSprite({
             width: this.engine.blockSize,
@@ -108,6 +114,9 @@ export class MD2editor {
 
         this.pan = new _MD2editorPan(this, editorClickArea);
         this.pan.init();
+
+        this.edit = new _MD2editMode(this, editorClickArea);
+        this.edit.init();
 
         this.engine.levelManager.groups.static.addChild(this.container);
 
@@ -131,6 +140,8 @@ export class MD2editor {
         this.engine._editorOn("placement", this.setupEditorModeEventListener(this.editorClick));
         this.engine._editorOn("multi", this.setupEditorModeEventListener(this.multiEdit));
         this.engine._editorOn("delete", this.setupEditorModeEventListener(this.deleteClick));
+
+        this.engine._editorOn("edit", this.setupEditorModeEventListener(this.edit));
 
         this.engine._editorOn("zoom-out", () => this.engine.modules.zoom.zoomOut(50));
         this.engine._editorOn("zoom-in", () => this.engine.modules.zoom.zoomIn(50));

@@ -1,7 +1,7 @@
-import { Container, ContainerChild, Sprite } from "pixi.js";
-import { radToDeg } from "../misc/util";
-import { Entity } from "./entities/entity";
-import { LevelJSONoutput, MDgameGridType } from "./types";
+import { AnimatedSprite, Container, Sprite } from "pixi.js";
+import { Entity } from "../entities/entity";
+import { MDgameGridType, LevelJSONoutput, AnySprite } from "../types";
+import { MD2componentManager } from "./components/main-manager";
 
 export type AnyBlock = FgBlock | BgBlock;
 
@@ -17,9 +17,14 @@ interface BlockConstructorOpts extends BasicBoxOpts {
     name: string;
     rotation: number;
     //CL?: ComponentList;
-    sprite: Container;
+    sprite: AnySprite;
     blockSize: number;
     isOversize: boolean;
+}
+
+interface FGblockConstructorOpts extends BlockConstructorOpts {
+    components?: Record<string, Record<string, any>>;
+    defaultComponents?: Record<string, Record<string, any>>;
 }
 
 export class BasicBox {
@@ -78,10 +83,9 @@ export class BasicBox {
             && this.maxY > o.y;
     }
 
-    protected iterateBoundsF
-    (x: number, y: number, w: number, h: number, f: (x: number, y: number, lx: number, ly: number) => void) {
-        for(let fy = y; fy < y + h; fy++) {
-            for(let fx = x; fx < x + w; fx++) {
+    protected iterateBoundsF(x: number, y: number, w: number, h: number, f: (x: number, y: number, lx: number, ly: number) => void) {
+        for (let fy = y; fy < y + h; fy++) {
+            for (let fx = x; fx < x + w; fx++) {
                 f(fx, fy, fx - x, fy - y);
             }
         }
@@ -102,14 +106,13 @@ export abstract class Block extends BasicBox {
     light: number = 0;
 
     readonly container = new Container();
-    readonly sprite: Container;
+    readonly sprite: AnySprite;
 
     private static hexRatio = 0x111111;
     static defaultLight = 4;
 
     // 
     //CL?: ComponentList;
-
     isOversize = false;
 
     readonly blockSize: number;
@@ -117,7 +120,7 @@ export abstract class Block extends BasicBox {
     isDestroyed = false;
 
     updateLight(n: number) {
-        if(n < 0 || 16 < n) return;
+        if (n < 0 || 16 < n) return;
 
         this.light = n;
         //this.sprite.tint = (n * Block.hexRatio);
@@ -141,7 +144,7 @@ export abstract class Block extends BasicBox {
     }
 
     destroy() {
-        if(this.isDestroyed) return;
+        if (this.isDestroyed) return;
         this.isDestroyed = true;
         this.sprite.destroy();
     }
@@ -154,12 +157,14 @@ export abstract class Block extends BasicBox {
             h: this.h / this.blockSize,
             rotation: this.rotation,
             type: this.name,
-        }
+        };
     }
 
     static generateFromType(type: MDgameGridType, opts: BlockConstructorOpts): AnyBlock {
-        if(type == "fg") return new FgBlock(opts);
-        else if(type == "bg") return new BgBlock(opts);
+        if(type == "fg") {
+            return new FgBlock(opts);
+        }
+        else if (type == "bg") return new BgBlock(opts);
         else return new BgBlock(opts);
     }
 
@@ -192,6 +197,42 @@ export class FgBlock extends Block {
     } = {
         onCollide: [],
     };
+
+    components: MD2componentManager;
+
+    constructor(o: FGblockConstructorOpts) {
+        super(o);
+        this.components = MD2componentManager.fromObj(this, o.defaultComponents, o.components);
+    }
+
+    toJSON(): LevelJSONoutput {
+        var isDefault = true;
+        for(const name in this.components.components) {
+            const opts = this.components.components[name].opts;
+
+            for(const key in opts)
+                if(opts[key] != this.components.defaultComponents[key]) isDefault = false;
+        }
+
+        if(this.components && !isDefault) {
+            return {
+                x: this.x / this.blockSize,
+                y: this.y / this.blockSize,
+                w: this.w / this.blockSize,
+                h: this.h / this.blockSize,
+                rotation: this.rotation,
+                type: this.name,
+                components: this.components.toJSON(),
+            }
+        } else return {
+            x: this.x / this.blockSize,
+            y: this.y / this.blockSize,
+            w: this.w / this.blockSize,
+            h: this.h / this.blockSize,
+            rotation: this.rotation,
+            type: this.name,
+        };
+    }
 }
 
 interface BgBlockConstructorOpts extends BlockConstructorOpts {
@@ -203,6 +244,6 @@ export class BgBlock extends Block {
 
     constructor(o: BgBlockConstructorOpts) {
         super(o);
-        if(o.isOverlay) this.isOverlay = o.isOverlay;
+        if (o.isOverlay) this.isOverlay = o.isOverlay;
     }
 }

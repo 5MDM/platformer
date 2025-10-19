@@ -26,6 +26,10 @@ export class _MD2errorManager {
         _MD2errorManager.notFound("Texture", textureName);
     }
 
+    static animationNotFound(name: string) {
+        _MD2errorManager.notFound("Animation", name);
+    }
+
     particleNotFound(name: string) {
         _MD2errorManager.notFound("Particle", name);
     }

@@ -64,19 +64,26 @@
     font-weight: bolder;
 }
 
-#ui > #editor-v2-c > #editor-v2 > #creator-tools > div:not(#block-grid) .active {
+#ui > #editor-v2-c > #editor-v2 > #creator-tools #block-grid > * {
+    width: 100%;
+    flex-grow: 1;
+    font-size: .5rem;
+    font-weight: bolder;
+}
+
+#ui > #editor-v2-c > #editor-v2 > #creator-tools div:not(#block-grid) .active {
     color: darkblue;
     filter: contrast(5);
     border: 2px outset white;
 }
 
-#ui > #editor-v2-c > #editor-v2 > #creator-tools > #block-grid {
+#ui > #editor-v2-c > #editor-v2 > #creator-tools #block-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
     grid-template-rows: repeat(auto-fit, 60px);
 }
 
-#ui > #editor-v2-c > #editor-v2 > #creator-tools > #block-grid > * {
+#ui > #editor-v2-c > #editor-v2 > #creator-tools #block-grid > * {
     display: flex;
     flex-direction: column;
     height: 60px;
@@ -85,7 +92,7 @@
     align-items: center;
 }
 
-#ui > #editor-v2-c > #editor-v2 > #creator-tools > #block-grid .active {
+#ui > #editor-v2-c > #editor-v2 > #creator-tools #block-grid .active {
     background: none;
     border: 4px inset green;
 }
@@ -104,4 +111,10 @@
     margin-right: auto;
     width: 40px;
     height: 40px;
+}
+
+#ui > #editor-v2-c > #editor-v2 > #creator-tools #center-block {
+    height: auto;
+    min-height: 100%;
+    display: none;
 }
