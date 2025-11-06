@@ -1,0 +1,37 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "./items.json",
+    "title": "Items Schema",
+    "type": "object",
+    "required": ["version", "data"],
+    "additionalProperties": false,
+    "properties": {
+        "version": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3
+        },
+        "data": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "required": ["texture", "onUse", "desc"],
+                "properties": {
+                    "texture": {
+                        "type": "string"
+                    },
+                    "onUse": {
+                        "type": "string"
+                    },
+                    "desc": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        "$schema": {
+            "type": "string"
+        }
+    }
+}

@@ -400,3 +400,18 @@ export function roundToPower2(n: number): number {
   else
     return up;
 }
+
+export async function getImageFromURL(obj: Record<string, () => unknown>, url: string, 
+onLoad?: (img: HTMLImageElement, ev: Event) => any): Promise<HTMLImageElement> {
+  const o = (await obj[url]()) as unknown as {default: string};
+
+  const img = new Image();
+  img.src = o.default;
+  if(onLoad) img.onload = (evt: Event) => onLoad(img, evt);
+
+  return img;
+}
+
+export function createValIfDNE<T>(o: Record<any, T>, key: any, val: T) {
+  if(!o[key]) o[key] = val;
+}

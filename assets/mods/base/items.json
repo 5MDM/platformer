@@ -1,0 +1,16 @@
+{
+    "$schema": "../../schemas/items.json",
+    "version": [0, 1, 0],
+    "data": {
+        "Abandoned House Gate Key": {
+            "texture": "",
+            "onUse": "abandoned-house-gate-open",
+            "desc": "Opens the gate"
+        },
+        "Gun": {
+            "texture": "items/weapons/gun.png",
+            "onUse": "collect-gun",
+            "desc": "A functional gun. It has patterns on it and doesn't have any movable parts to it. Although you've never used one, this one looks easy enough to use. You'll need to this stay alive"
+        }
+    }
+}

@@ -39,6 +39,10 @@
                     "isOversize": {
                         "type": "boolean",
                         "default": "false"
+                    },
+                    "isAnimated": {
+                        "type": "boolean",
+                        "default": "false"
                     }
                 }
             }

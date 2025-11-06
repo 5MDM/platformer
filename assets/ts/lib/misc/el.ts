@@ -224,8 +224,6 @@ export class MD2Columntable {
             ],
         });
 
-        console.log(ref);
-
         el.addEventListener("input", () => this.editObj(ref, input.value));
 
         return el;
@@ -241,7 +239,7 @@ export class MD2Columntable {
         });
 
         for(const i in obj) {
-            const children = [];
+            const children: HTMLElement[] = [];
             const io = obj[i];
             ref.push(i);
 

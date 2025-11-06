@@ -1,0 +1,18 @@
+
+#md2-gui-target > #topBar {
+    display: flex;
+    flex-direction: row;
+    top: 0;
+
+    position: fixed;
+
+    left: auto;
+    right: auto;
+    width: 100vw;
+    height: 25px;
+    justify-content: center;
+}
+
+#md2-gui-target > #topBar > button {
+    border-radius: 25px;
+}

@@ -3,6 +3,7 @@ import { GMOutput } from "../misc/keymap";
 import { MDmatrix } from "../misc/matrix";
 import { AnyBlock } from "./blocks/blocks";
 import { MD2componentObjType } from "./blocks/components/main";
+import { AnimatedTilingSprite } from "../misc/animated-tiles";
 
 export type MDgameGridType = "fg" | "bg" | "overlay";
 
@@ -13,6 +14,8 @@ export interface LevelJSONoutput extends GMOutput {
 
 export type AnySprite = Sprite | TilingSprite | AnimatedSprite;
 
+export type AnyTileSprites = TilingSprite | AnimatedTilingSprite;
+
 export interface BlockInfo {
     name: string;
     type?: MDgameGridType;
@@ -20,24 +23,27 @@ export interface BlockInfo {
     components?: MD2componentObjType;
     isOversize: boolean;
     category: string;
+    isAnimated?: boolean;
 }
 
-export interface LevelDataV0_0_0 {
+interface ModDataFileBase {
+    $schema?: string;
     version: [number, number, number];
+}
+
+export interface LevelDataV0_0_0 extends ModDataFileBase {
     blocks: LevelJSONoutput[];
     //background?: BackgroundOpts;
 }
 
-export interface ModInfo {
+export interface ModInfo extends ModDataFileBase {
     name: string;
     blocks: BlockInfo[];
-    version: [number, number, number];
 }
 
 export type WorldGrids = Record<MDgameGridType, MDmatrix<AnyBlock>>;
 
-export interface EntityFileInfo {
-    version: [number, number, number];
+export interface EntityFileInfo extends ModDataFileBase {
     entities: Record<string, EntityInfo>;
 }
 
@@ -66,3 +72,13 @@ export enum _md2events {
     levelDeleteB = "level delete before",
     levelDeleteA = "level delete after",
 };
+
+export type WeakIndices<T extends string> = T | (string & {});
+
+export interface ItemFileInfo extends ModDataFileBase {
+    data: Record<string, {
+        texture: string;
+        onUse: string;
+        desc: string;
+    }>;
+}

@@ -1,8 +1,11 @@
 import { _MD2engine } from "../../engine";
 import { FgBlock } from "../blocks";
+import { MD2collectComponent } from "./collect";
 import { MD2doorComponent } from "./door";
 import { MD2doorpointComponent } from "./doorpoint";
+import { MD2glowComponent } from "./glow";
 import { ContinueCollisionResolution, MD2componentModule } from "./main";
+import { MD2rotatingComponent } from "./rotating";
 
 export class MD2componentManager {
     block: FgBlock;
@@ -18,6 +21,9 @@ export class MD2componentManager {
     static componentList: Record<string, typeof MD2componentModule> = {
         door: MD2doorComponent,
         doorpoint: MD2doorpointComponent,
+        rotating: MD2rotatingComponent,
+        glow: MD2glowComponent,
+        collect: MD2collectComponent,
     };
 
     static md2: _MD2engine;
@@ -60,7 +66,7 @@ export class MD2componentManager {
         var CCR = true;
 
         for(const name in this.components) 
-            if(!this.components[name].onCollide()) CCR = false;
+            if(!this.components[name].onCollide(md2)) CCR = false;
 
         return CCR;
     }

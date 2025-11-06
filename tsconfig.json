@@ -8,7 +8,9 @@
   
       "module": "es2022",                                
   
-      "moduleResolution": "bundler",                     
+      "moduleResolution": "bundler",     
+
+      "noImplicitAny": false,
   
       "types": ["vite/client"],                                      
   
@@ -26,11 +28,10 @@
   
       "forceConsistentCasingInFileNames": true,            
   
-      "strict": true,                                      
-  
+      "strict": true,     
+                                       
       "noFallthroughCasesInSwitch": true,               
-  
       "skipLibCheck": true                                 
     },
-    "include": ["assets"]
+    "include": ["assets", "assets/ts/lib/v2/automation.ts"]
   }

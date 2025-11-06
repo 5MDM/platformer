@@ -1,0 +1,113 @@
+#md2-gui-target {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 2;
+}
+
+#md2-gui-target > #md2-inventory {
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: aquamarine;
+
+    width: min(100%, 800px);
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    flex-direction: row;
+    min-height: 100vh;
+    background-color: rgba(100, 100, 100, .9);
+
+    height: 100vh;
+        
+    margin-top: 0;
+    --size: 128px;
+    --calc-w: min(calc(100% - mod(100%, var(--size))), calc(800px - mod(800px, var(--size))));
+}
+
+@media (max-width: 500px) {
+    #md2-gui-target > #md2-inventory {
+        --size: 96px;
+        --calc-w: min(calc(100vw - mod(100vw, var(--size))), calc(800px - mod(800px, var(--size))));
+    }
+}
+
+#md2-gui-target > #md2-inventory > #sidebar {
+    position: static;
+    height: 100vh;
+    width: 40%;
+
+    background: linear-gradient(rgba(50, 50, 80, .9), rgba(50, 50, 100, 1));
+}
+
+#md2-gui-target > #md2-inventory > #sidebar img {
+    width: 100%;
+    height: auto;
+}
+
+#md2-gui-target > #md2-inventory > #item-div {
+    position: static;
+
+    height: calc(100% - mod(100%, var(--size)));
+    width: 60%;
+}
+
+#md2-gui-target > #md2-inventory > #item-div > #item-grid-bg {
+    position: static;
+    background-image: url("../images/ui/inventory-tile.png");
+    background-repeat: repeat;
+    z-index: -1;
+
+    background-size: var(--size);
+
+    height: 100%;
+    filter: brightness(50%);
+
+    width: min(calc(100% - mod(100%, var(--size))), calc(800px - mod(800px, var(--size))));
+}
+
+#md2-gui-target > #md2-inventory > #item-div > #item-grid {
+    position: absolute;
+
+    top: calc(mod(100vh, var(--size)) / 2);
+
+    display: grid;
+    height: 100vh;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    grid-template-columns: repeat(auto-fit, var(--size));
+    grid-template-rows: repeat(auto-fill, var(--size));
+
+    box-sizing: content-box;
+}
+
+#md2-gui-target > #md2-inventory > #item-div > #item-grid #slot p {
+    position: relative;
+    z-index: 2;
+    bottom: 16px;
+    text-align: center;
+}
+
+#md2-gui-target > #md2-inventory > #item-div > #item-grid #slot p span {
+    margin-left: 5px;
+}
+
+#md2-gui-target > #md2-inventory > #item-div > #item-grid #slot p span::after {
+    content: "x";
+}
+
+#md2-gui-target > #md2-inventory > #item-div > #item-grid #slot img {
+    display: block;
+    margin: auto;
+    width: var(--size);
+    height: var(--size);
+    padding: 25%;
+}

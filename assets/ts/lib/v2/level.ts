@@ -1,11 +1,13 @@
-import { Container } from "pixi.js";
+import { Container, Sprite, Texture } from "pixi.js";
 import { GMOutput, Keymap } from "../misc/keymap";
 import { MDmatrix } from "../misc/matrix";
 import { AnyBlock, BgBlock, FgBlock } from "./blocks/blocks";
 import { _MD2engine } from "./engine";
 import { Entity } from "./entities/entity";
 import { Player } from "./entities/player";
-import { _md2events, LevelDataV0_0_0, LevelJSONoutput, MDgameGridType } from "./types";
+import { _md2events, LevelDataV0_0_0, LevelJSONoutput, MDgameGridType, XYtuple } from "./types";
+import { floorToMultiples } from "../misc/util";
+import { MD2doorpointComponent } from "./blocks/components/doorpoint";
 
 export type Success = boolean; 
 
@@ -52,6 +54,8 @@ export class _MD2levelManager {
         overlay: {},
     };
 
+    doorpointMap: Record<string, XYtuple> = {};
+
     private entityRecord: Record<number, Entity> = {};
 
     engine: _MD2engine;
@@ -64,7 +68,18 @@ export class _MD2levelManager {
 
     container: Container = new Container();
 
-    groups: Record<string, Container> = {
+    darkness: Sprite = new Sprite({
+        texture: Texture.WHITE,
+        tint: 0,
+        width: innerWidth,
+        height: innerHeight,
+        x: 0,
+        y: 0,
+    });
+
+    darknessMask = new Container();
+
+    readonly groups = {
         bg: new Container(),
         entity: new Container(),
         fg: new Container(),
@@ -72,6 +87,10 @@ export class _MD2levelManager {
         static: new Container(),
         view: new Container(),
         world: new Container(),
+    };
+
+    readonly masks = {
+        static: new Container(),
     };
 
     constructor(engine: _MD2engine) {
@@ -83,8 +102,11 @@ export class _MD2levelManager {
         this.groups.static.addChild(this.groups.overlay);
         this.groups.view.addChild(this.groups.static);
         this.groups.world.addChild(this.groups.view);
+
+        //this.groups.static.mask = this.masks.static;
         
         this.container.addChild(this.groups.world);
+        //this.groups.world.addChild(this.darkness);
     }
 
     recordBlock(type: MDgameGridType, o: AnyBlock) {
@@ -229,5 +251,30 @@ export class _MD2levelManager {
         this.setLevel("custom_level", json);
         this.destroyCurrentLevel()
         .then(() => this.loadLevel("custom_level"));
+    }
+
+    async activateDoorpoint(dp: MD2doorpointComponent) {
+        await this.destroyCurrentLevel();
+
+        const {player} = this.engine.generator;
+        const {x, y} = player;
+
+        const bx = floorToMultiples(x, this.engine.blockSize);
+        const by = floorToMultiples(y, this.engine.blockSize);
+
+        this.doorpointMap[dp.opts.id] = [bx, by];
+
+        this.loadLevel(dp.opts.toLevel);
+
+        if(dp.opts.linkId) 
+            if(this.doorpointMap[dp.opts.linkId]) {
+                const [x, y] = this.doorpointMap[dp.opts.linkId];
+                player.setX(x);
+                player.setY(y);
+            }
+    }
+
+    registerDoorpoint(dp: MD2doorpointComponent) {
+
     }
 }

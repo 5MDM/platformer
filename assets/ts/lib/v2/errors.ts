@@ -6,8 +6,8 @@ export class _MD2errorManager {
         console.error(error);
     }
 
-    private static notFound(name: string, data: string) {
-        this.err(`${name} "${data}" not found`);
+    private static notFound(type: string, data: string) {
+        this.err(`${type} "${data}" not found`);
     }
 
     levelNotFound(levelName: string) {
@@ -40,5 +40,16 @@ export class _MD2errorManager {
 
     outdatedVersion(old: string, ne: string) {
         _MD2errorManager.err(`Outdated version. Supported version is ${ne}. Got version ${old} instead`);
+    }
+
+    static wrongType(wrongT: string, correctT: string): TypeError {
+        const err = new TypeError(`Type ${wrongT} was assigned to a type ${correctT} variable`);
+        console.error(err);
+
+        return err;
+    }
+
+    static noItemFound(name: string) {
+        _MD2errorManager.notFound("Item", name);
     }
 }

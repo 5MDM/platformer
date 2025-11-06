@@ -1,6 +1,7 @@
 import { EventEmitter } from "pixi.js";
 import { $$ } from "../util";
 import { Vpointer, VpointerHolder } from "../vpointer";
+import { _MD2errorManager } from "../../v2/errors";
 
 type O = Record<string, any>;
 type SupportedTypes = "string" | "number" | "boolean";
@@ -120,5 +121,8 @@ export class JSONtable {
         const valt = typeof val;
 
         if(t == valt) pointer["*"] = val;
+        else if(t == "number") {
+            pointer["*"] = Number(val);
+        } else _MD2errorManager.wrongType(valt, t);
     }
 }

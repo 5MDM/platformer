@@ -79,11 +79,13 @@ export class AnimControl {
         this.setAction(name, isAnim);
     }
 
+
+    defaultSpeed = 0.08;
     getAnim(name: string): [AnimatedSprite, number] {
         const anim: undefined | [AnimatedSprite, number] = this.animations[name];
         if(!anim) {
             _MD2errorManager.animationNotFound(name);
-            return [new AnimatedSprite([Texture.WHITE]), 0.08];
+            return [new AnimatedSprite([Texture.WHITE]), this.defaultSpeed];
         }
         else return anim;
     }
@@ -109,6 +111,7 @@ export class AnimControl {
         if(isAnim) {
             const [anim, speed] = this.getAnim(name);
             anim.visible = true;
+
             anim.animationSpeed = animSpeed || speed;
             anim.play();
 

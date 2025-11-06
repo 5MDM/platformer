@@ -16,6 +16,13 @@
     display: flex;
     width: 70%;
     max-height: 25px;
+    position: absolute;
+    top: 25px;
+}
+
+#ui > #editor-v2-c > #editor-v2.disabled > #toolbar {
+    filter: opacity(.1);
+    border-color: black;
 }
 
 

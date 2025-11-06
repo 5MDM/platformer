@@ -74,7 +74,7 @@ export class _MD2deletor {
         }
     }
 
-    private deleteBlockEntirely(block: AnyBlock) {
+    deleteBlockEntirely(block: AnyBlock) {
         block.iterateWorldBounds((x, y) => {
             this.engine.levelManager.levelGrids[block.type].delete(x, y);
         });

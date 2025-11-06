@@ -82,6 +82,7 @@ export class _MD2editMode extends _MD2editorBase {
         editEl.appendChild(jsonTable.parse(components || {}));
 
         editBtn.onpointerup = () => {
+            console.log(block.components.components.rotation);
             block.components.restartComponents();
         };
     }
@@ -90,29 +91,6 @@ export class _MD2editMode extends _MD2editorBase {
         const block = this.getRealBlock("fg", x, y) as FgBlock;
         if(block) return block;
         else return;
-
-        const checkingArr = [
-            this.getRealBlock("overlay", x, y),
-            this.getRealBlock("fg", x, y),
-            this.getRealBlock("bg", x, y),
-        ];       
-        
-        const found = [];
-        for(const i of checkingArr) if(i) found.push(i);
-
-        if(found.length > 1 && this.lastPos[0] == x && this.lastPos[1] == y) {
-            this.typeCounter++;
-            if(this.typeCounter == 1) return found[1];
-            else {
-                if(this.typeCounter == 2 && found.length > 2) return found[2];
-                else this.typeCounter = 0;
-            }
-        }
-
-        this.lastPos[0] = x;
-        this.lastPos[1] = y;
-
-        return found[0];
     }
 
     protected switchBlockType(): MDgameGridType {

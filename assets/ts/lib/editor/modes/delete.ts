@@ -10,8 +10,6 @@ export class _MD2deleteClick extends _MD2editorBase {
 
         for(const block of blocks) {
             if(!block) continue;
-
-            //console.log(0, block);
             
             this.editor.engine.deletor.deleteBlockByBlockAndWorldPos(block, x, y);
 

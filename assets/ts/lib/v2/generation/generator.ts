@@ -1,4 +1,4 @@
-import { Sprite, TilingSprite } from "pixi.js";
+import { AnimatedSprite, Sprite, TilingSprite } from "pixi.js";
 import { MDmatrix } from "../../misc/matrix";
 import { degToRad } from "../../misc/util";
 import { FgBlock, BgBlock, AnyBlock, BasicBox } from "../blocks/blocks";
@@ -6,9 +6,10 @@ import { _MD2engine } from "../engine";
 import { EntityOpts, Entity } from "../entities/entity";
 import { Player } from "../entities/player";
 import { Success } from "../level";
-import { BlockCreationOpts, BlockInfo, EntityInfo, LevelJSONoutput, MDgameGridType } from "../types";
+import { AnyTileSprites, BlockCreationOpts, BlockInfo, EntityInfo, LevelJSONoutput, MDgameGridType } from "../types";
 import { greedyMesh } from "./greedy-mesh";
 import { MD2componentObjType } from "../blocks/components/main";
+import { AnimatedTilingSprite } from "../../misc/animated-tiles";
 
 
 export interface BlockOpts {
@@ -56,10 +57,10 @@ export abstract class _MD2Blockgenerator {
         }
     }
 
-    createSprite(o: BlockCreationOpts, def: BlockInfo): TilingSprite {
+    private createStaticSprite(o: BlockCreationOpts, def: BlockInfo): TilingSprite {
         const t = this.engine.dataManager.getTexture(o.name);
 
-        if (def.isOversize) {
+        if(def.isOversize) {
             const x = o.x;
             const y = o.y;
 
@@ -102,6 +103,66 @@ export abstract class _MD2Blockgenerator {
 
             return s;
         }
+    }
+
+    private createAnimatedSprite(o: BlockCreationOpts, def: BlockInfo): AnimatedTilingSprite {
+        //const t = this.engine.dataManager.getTexture(o.name);
+        const t = this.engine.dataManager.getAnimationTextures(o.name);
+
+        if(def.isOversize) {
+            const x = o.x;
+            const y = o.y;
+
+            const s = new AnimatedTilingSprite({
+                position: { x, y },
+                roundPixels: true,
+                //tileScale: {x: this.engine.blockSize / t.width, y: this.engine.blockSize / t.height},
+                pivot: {
+                    x: t[0].width / 2,
+                    y: t[0].height / 2,
+                },
+
+                tileRotation: degToRad(o.rotation ?? 0),
+                animationSpeed: 0.5,
+                textureList: t,
+            });
+
+            s.play();
+
+            s.clampMargin = 0;
+
+            return s;
+        } else {
+            const x = o.x + o.w / 2;
+            const y = o.y + o.h / 2;
+
+            const s = new AnimatedTilingSprite({
+                width: o.w + .1,
+                height: o.h + .1,
+                position: { x, y },
+                roundPixels: true,
+                tileScale: { x: this.engine.blockSize / t[0].width, y: this.engine.blockSize / t[0].height },
+                pivot: {
+                    x: o.w / 2,
+                    y: o.h / 2,
+                },
+                animationSpeed: 0.5,
+                textureList: t,
+
+                tileRotation: degToRad(o.rotation ?? 0),
+            });
+
+            s.clampMargin = 0;
+
+            s.play();
+
+            return s;
+        }
+    }
+
+    createSprite(o: BlockCreationOpts, def: BlockInfo): AnyTileSprites {
+        if(def.isAnimated) return this.createAnimatedSprite(o, def);
+        else return this.createStaticSprite(o, def);
     }
 
     private createFgBlock(o: BlockOpts, def: BlockInfo, sprite: TilingSprite, record: boolean = true) {
@@ -176,7 +237,7 @@ export abstract class _MD2Blockgenerator {
         const info = this.getBlockDef(o.name);
         if(!info) return false;
 
-        const s: TilingSprite = this.createSprite(o, info);
+        const s = this.createSprite(o, info);
 
         switch (info.type) {
             default:

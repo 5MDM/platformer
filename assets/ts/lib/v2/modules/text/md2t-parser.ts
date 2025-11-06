@@ -1,3 +1,4 @@
+import { Ticker } from "pixi.js";
 import { $$ } from "../../../misc/util";
 
 const errorText = "<text_error>";
@@ -50,6 +51,10 @@ function parseWithoutTicker
                 "background": i.bgColor || "",
             }
         });
+
+        if(i.tickerF) {
+            
+        }
 
         if(i.spacing)
             for(let z = 0; z < i.spacing; z++) span.textContent += " ";

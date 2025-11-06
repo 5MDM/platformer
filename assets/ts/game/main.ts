@@ -1,10 +1,12 @@
-import { isMobile, Particle, Sprite } from "pixi.js";
+import { AlphaMask, ColorBurnBlend, ColorMatrixFilter, Container, isMobile, Particle, Sprite, Ticker } from "pixi.js";
 import "./audio";
 import { $, clamp, round } from "../lib/misc/util";
 import { _MD2engine } from "../lib/v2/engine";
-import { md2 } from "../constants";
+import { app, md2 } from "../constants";
 import { MD2editor } from "../lib/editor/main";
 import { MD2envModule } from "../lib/v2/modules/env/main";
+import { MD2lightFilter } from "../lib/v2/lighting/lights";
+import { MD2devAutomation } from "../lib/v2/automation";
 
 MD2editor.creatorToolsState.disableIfOn();
 
@@ -15,7 +17,7 @@ function loadAnimations() {
     walkR.scale.x = -1;
     walkR.position.x = 30;
 
-    player.animController.registerAnimationsWithSameSpeed(md2.dataManager, 0.18, [
+    player.animController.registerAnimationsWithSameSpeed(md2.dataManager, 0.12, [
         ["td-walk-r", walkR],
         ["td-walk-d", "player-down-walk"],
         ["td-walk-u", "player-up-walk"],
@@ -62,11 +64,30 @@ export async function startGame(md2: _MD2engine) {
         anchor: .5,
         scale: {x: 7, y: 7},
         position: {x: md2.generator.player.halfW, y: md2.generator.player.halfH},
+        //zIndex: -1,
     });
-    
-    //md2.levelManager.groups.static.addChild(glow);
-    md2.generator.player.container.addChild(glow);
-    md2.levelManager.groups.static.mask = glow;
+
+    const staticC = md2.levelManager.groups.static;
+
+    //staticC.mask = glow;
+    //player.container.addChild(glow);
+
+    const followingLight = new MD2lightFilter({
+        player,
+        radius: 7,//8.5,
+        follow: player,
+    });
+
+    staticC.filters = [followingLight];
+
+    // new MD2devAutomation(md2)
+    // .deleteCurrentLevel(self =>
+    //     console.log(self.loadLevel("abandoned_house_inside")
+    //     .getBlock(64, 56, "fg")
+    //     .returnData().val)
+    // );
+
+    globalThis.MD2devAutomation = new MD2devAutomation(md2);
 }
 
 const editor = new MD2editor({

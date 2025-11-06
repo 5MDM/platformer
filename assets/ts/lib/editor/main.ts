@@ -39,11 +39,11 @@ export class MD2editor {
 
     testSprite: TilingSprite | Sprite;
 
-    private editorClick: _MD2editorClick;
-    private deleteClick: _MD2deleteClick;
-    private multiEdit: _MD2editorMulti;
-    private pan: _MD2editorPan;
-    private edit: _MD2editMode;
+    editorClick: _MD2editorClick;
+    deleteClick: _MD2deleteClick;
+    multiEdit: _MD2editorMulti;
+    pan: _MD2editorPan;
+    edit: _MD2editMode;
 
     container = new Container();
 
@@ -66,8 +66,10 @@ export class MD2editor {
 
     static creatorToolsState = new ToggleState(() => {
         MDcreatorToolsUI.creatorToolsEl.style.display = "grid";
+        MDcreatorToolsUI.creatorToolsEl.parentElement!.classList.remove("disabled");
     }, () => {
         MDcreatorToolsUI.creatorToolsEl.style.display = "none";
+        MDcreatorToolsUI.creatorToolsEl.parentElement!.classList.add("disabled");
     }, true);
 
     constructor(o: MD2editorOpts) {

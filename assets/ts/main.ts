@@ -1,6 +1,6 @@
 import { startGame } from "./game/main";
 import { c } from "./canvas";
-import { app, md2 } from "./constants";
+import { app, md2, webglC } from "./constants";
 import { initLevels } from "./game/levels";
 
 // using await breaks production build
@@ -18,6 +18,8 @@ app.init({
     canvas: c,
     roundPixels: true,
     useBackBuffer: true,
+    backgroundColor: 0,
+    context: webglC,
 }).then(async () => {
 
     initLevels(md2);

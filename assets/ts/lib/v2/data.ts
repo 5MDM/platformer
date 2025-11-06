@@ -1,6 +1,6 @@
 import { AnimatedSprite, Assets, BindableTexture, Sprite, Spritesheet, SpritesheetData, Texture, TilingSprite } from "pixi.js";
 import { _MD2engine } from "./engine";
-import { EntityFileInfo, EntityInfo, ModInfo } from "./types";
+import { EntityFileInfo, EntityInfo, ItemFileInfo, ModInfo } from "./types";
 import { convertPathToObj } from "../misc/util";
 
 export interface _MD2dataManagerOpts {
@@ -59,12 +59,16 @@ export class _MD2dataManager {
                 this.spritesheet!.textureSource.scaleMode = "nearest";
 
                 this.getTexture = this.initializedGetTexture;
+                this.getAnimationTextures = this.initializedGetAnimationTextures;
             });
         });
     }
 
     getTextureAsHTMLimage(textureName: string, isFormatted: boolean = false): Promise<HTMLImageElement> {
-        const pr = this.engine.app.renderer.extract.image(this.getTexture(textureName));
+        const arr = [this.getTexture(textureName, false), this.getAnimationTextures(textureName, false)[0]];
+        const t = (arr[0] == Texture.WHITE) ? arr[1] : arr[0];
+
+        const pr = this.engine.app.renderer.extract.image(t);
 
         if(isFormatted) pr.then(img => {
             img.width = this.engine.blockSize;
@@ -94,12 +98,12 @@ export class _MD2dataManager {
             this.modDataRecord[modName][filename]  = modGlob[path];
         }
 
-        this.initMods();
+        await this.initMods();
     }
 
-    private initMods() {
+    private async initMods() {
         for(const modName in this.mods) {
-            this.parseMod(modName, this.mods[modName]);
+            await this.parseMod(modName, this.mods[modName]);
         }
     }
 
@@ -107,10 +111,18 @@ export class _MD2dataManager {
         return this.spritesheet!;
     }
 
-    private initializedGetTexture(name: string): Texture {
+    private initializedGetAnimationTextures(name: string, err: boolean = true): Texture[] {
+        const t = this.spritesheet!.animations[name];
+        if(!t) {
+            if(err) this.engine.errorManager.textureNotFound(name);
+            return [Texture.WHITE];
+        } else return t;
+    }
+
+    private initializedGetTexture(name: string, err: boolean = true): Texture {
         const t = this.spritesheet!.textures[name];
         if(!t) {
-            this.engine.errorManager.textureNotFound(name);
+            if(err) this.engine.errorManager.textureNotFound(name);
             return Texture.WHITE;
         } else return t;
     }
@@ -121,10 +133,16 @@ export class _MD2dataManager {
         if(pivot) s.pivot.set(s.texture.width / 2, s.texture.height / 2);
     }
 
-    getTexture: ((name: string) => Texture) = (name: string) => {
+    getTexture: ((name: string, err?: boolean) => Texture) = (name: string, err = true) => {
         this.engine.errorManager.textureUnaccess(name);
 
         return Texture.WHITE;
+    }
+
+    getAnimationTextures: ((name: string, err?: boolean) => Texture[]) = (name: string, err = true) => {
+        this.engine.errorManager.textureUnaccess(name);
+
+        return [Texture.WHITE];
     }
 
     getNewId(): number {
@@ -139,7 +157,7 @@ export class _MD2dataManager {
         return new Sprite(this.spritesheet!.textures[name]);
     }
 
-    private parseMod(fileName: string, mod: ModInfo) {
+    private async parseMod(fileName: string, mod: ModInfo): Promise<void> {
         const {blocks} = mod;
 
         for(const block of blocks) {
@@ -147,7 +165,7 @@ export class _MD2dataManager {
         }
 
         const modData = this.modDataRecord[fileName];
-        const entities = modData["entities.json"] as Object as EntityFileInfo;
+        const entities = (modData["entities.json"] || {}) as Object as EntityFileInfo;
 
         if(JSON.stringify(entities.version) != _MD2dataManager.versionString) {
             this.engine.errorManager
@@ -155,6 +173,25 @@ export class _MD2dataManager {
         } else {
             for(const entityName in entities.entities) {
                 this.engine.generator.registerEntity(entityName, entities.entities[entityName]);
+            }
+        }
+
+        const items = modData["items.json"] as Object as ItemFileInfo;
+        if(items) {
+            if(JSON.stringify(items.version) != _MD2dataManager.versionString) {
+                this.engine.errorManager
+                .outdatedVersion(JSON.stringify(entities.version), _MD2dataManager.versionString);
+            } else {
+                for(const name in items.data) {
+                    const o = items.data[name];
+
+                    this.engine.modules.gui.parts.inventory.registerItem(name, {
+                        texture: o.texture,
+                        useEvent: o.onUse,
+                        desc: o.desc,
+                        img: await this.getTextureAsHTMLimage(o.texture)
+                    });
+                }
             }
         }
     }

@@ -16,7 +16,7 @@ export class MD2componentModule {
         this.opts = opts;
     }
 
-    onCollide(): ContinueCollisionResolution {
+    onCollide(engine: _MD2engine): ContinueCollisionResolution {
         return true;
     }
 

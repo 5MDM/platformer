@@ -15,6 +15,7 @@ import { MD2envModule } from "./modules/env/main";
 import { MD2textModule } from "./modules/text/text";
 import { MDaudio } from "../misc/audio";
 import { MD2componentManager } from "./blocks/components/main-manager";
+import { MD2GUI } from "./modules/gui/main";
 
 interface EngineOpts {
     engine: {
@@ -24,6 +25,9 @@ interface EngineOpts {
     };
     dataManager: _MD2dataManagerOpts;
     physics: _MD2physicsOpts;
+    gui: {
+        target: HTMLDivElement;
+    }
 }
 
 export class _MD2engine {
@@ -49,10 +53,12 @@ export class _MD2engine {
         zoom: MD2zoomModule;
         env: MD2envModule;
         text: MD2textModule;
+        gui: MD2GUI;
     } = {
         zoom: new MD2zoomModule(this),
         env: new MD2envModule(this),
         text: new MD2textModule(this),
+        gui: new MD2GUI(this),
     };
 
     _editorEmit(name: string, ...args: any[]): void {
@@ -93,6 +99,8 @@ export class _MD2engine {
         this.initPromise = new Promise(res => {
             this.initPromiseRes = res;
         });
+
+        this.modules.gui.appendToTarget(opts.gui.target);
     }
 
     async init() {

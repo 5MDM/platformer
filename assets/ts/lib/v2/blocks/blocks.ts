@@ -147,6 +147,7 @@ export abstract class Block extends BasicBox {
         if (this.isDestroyed) return;
         this.isDestroyed = true;
         this.sprite.destroy();
+        this.container.destroy({children: true});
     }
 
     toJSON(): LevelJSONoutput {
