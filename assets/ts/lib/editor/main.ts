@@ -287,6 +287,7 @@ export class MD2editor {
 
     private init() {
         this.ui.setGridBlocks(this.engine.generator.getBlockDefArr());
+        
         this.ui.setGridEntities(this.engine.generator.getEntityDefArr());
 
         this.engine.levelManager.groups.world.addChild(this.testSprite);

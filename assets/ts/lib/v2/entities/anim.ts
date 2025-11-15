@@ -1,6 +1,6 @@
 import { AnimatedSprite, Container, Sprite, Texture } from "pixi.js";
 import { _MD2errorManager } from "../errors";
-import { _MD2dataManager } from "../data";
+import { _MD2dataManager } from "../data-loaders/data";
 
 export type EntityUDanims = 
 "td-walk-d" |

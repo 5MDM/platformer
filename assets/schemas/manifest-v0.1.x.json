@@ -1,0 +1,89 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "$schema": {
+            "type": "string"
+        },
+        "version": {
+            "type": "array",
+            "items": {
+                "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+        },
+        "name": {
+            "type": "string"
+        },
+        "data": {
+            "type": "object",
+            "properties": {
+                "spritesheets": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "image": {
+                                "type": "string"
+                            },
+                            "data": {
+                                "type": "string"
+                            }
+                        },
+                        "required": ["image", "data"],
+                        "additionalProperties": false
+                    }
+                },
+                "blocks": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "entities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "levelMap": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "particles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "audio": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "dialgoues": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "required": [
+        "data",
+        "version"
+    ],
+    "additionalProperties": false
+}

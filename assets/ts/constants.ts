@@ -2,7 +2,7 @@ import { Application, Container, SpritesheetData, WebGLRenderer } from "pixi.js"
 import { $, convertPathToObj } from "./lib/misc/util";
 import { MDmatrix } from "./lib/misc/matrix";
 import { MD2 } from "./lib/v2/main";
-import { ModInfo } from "./lib/v2/types";
+import { Mod, ModInfo } from "./lib/v2/types";
 import { Joystick } from "./lib/misc/joystick";
 import { c } from "./canvas";
 
@@ -43,13 +43,14 @@ export const md2 = new MD2.Engine({
         }),
     },
     dataManager: {
-        atlasData: (await (import.meta.glob<{default: SpritesheetData}>
-            ("../spritesheet-data/data.json"))["../spritesheet-data/data.json"]()
-        ).default,
-        atlasImgURL: (await (import.meta.glob<{ default: string; }>
-            ("../images/spritesheet.png"))["../images/spritesheet.png"]()
-        ).default,
+        // atlasData: (await (import.meta.glob<{default: SpritesheetData}>
+        //     ("../spritesheet-data/data.json"))["../spritesheet-data/data.json"]()
+        // ).default,
+        // atlasImgURL: (await (import.meta.glob<{ default: string; }>
+        //     ("../images/spritesheet.png"))["../images/spritesheet.png"]()
+        // ).default,
         mods: await convertPathToObj(import.meta.glob<{ default: ModInfo; }>("../mods/*/manifest.json")),
+        manifestFiles: await convertPathToObj(import.meta.glob<{default: Mod.ManifestV0_1_x}>("../mods/*/manifestv2.json"))
     },
     physics: {
         simSpeed: 1000 / 60,

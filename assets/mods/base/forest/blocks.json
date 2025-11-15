@@ -1,0 +1,132 @@
+{
+    "$schema": "../../../schemas/blocks.json",
+    "version": [0, 1, 0],
+    "data": {
+        "abandoned house": {
+            "texture": "first_house.png",
+            "type": "fg",
+            "components": {
+                "doorpoint": {
+                    "toLevel": "abandoned_house_inside",
+                    "id": "forest-abandoned-house-doorpoint-inside",
+                    "linkId": "forest-abandoned-house-doorpoint-outside"
+                }
+            },
+            "isOversize": true,
+            "category": "Forest"
+        },
+        "grass block": {
+            "texture": "grass_block_1.png",
+            "category": "Forest"
+        },
+        "invisible block": {
+            "texture": "invis.png",
+            "category": "Forest"
+        },
+        "bed top half": {
+            "texture": "bed-top.png",
+            "components": {
+                "interact": {
+                    "text": "Hi And bye"
+                }
+            },
+            "category": "Town"
+        },
+        "bed bottom half": {
+            "texture": "bed-bottom.png",
+            "components": {
+                "interact": {
+                    "text": "Hi And bye"
+                }
+            },
+            "category": "Town"
+        },
+        "wood door": {
+            "texture": "wood-door.png",
+            "components": {
+                "door": {
+                    "onOpen": "wood-door-open.png"
+                }
+            },
+            "category": "Town"
+        },
+        "doorpoint": {
+            "texture": "doorpoint.png",
+            "type": "fg",
+            "components": {
+                "doorpoint": {
+                    "toLevel": "error",
+                    "id": "error"
+                }
+            },
+            "category": "Forest"
+        },
+        "forest grass 2": {
+            "texture": "forest-grass-2.png",
+            "type": "bg",
+            "category": "Forest"
+        },
+        "forest bush wall": {
+            "texture": "forest-bush-wall.png",
+            "type": "fg",
+            "category": "Forest"
+        },
+        "closed forest gates": {
+            "texture": "forest/forest-gates-closed.png",
+            "type": "fg",
+            "category": "Forest",
+            "isOversize": true,
+            "components": {
+                "gate": {
+                    "onOpen": "forest/moss-rocks-1.png",
+                    "needsItems": ["Abandoned House Gate Key"]
+                }
+            }
+        },
+        "moss rocks": {
+            "texture": "forest/moss-rocks-1.png",
+            "type": "bg",
+            "category": "Forest"
+        },
+        "item glow": {
+            "texture": "global-env/item-sparkle.png",
+            "type": "fg",
+            "category": "Forest",
+            "components": {
+                "rotating": {
+                    "speed": 1
+                },
+                "glow": {
+                    "texture": {
+                        "type": "particle",
+                        "name": "glow"
+                    },
+                    "scale": 10
+                },
+                "collect": {
+                    "item": "Gun"
+                }
+            }
+        },
+        "brick": {
+            "texture": "brick.png",
+            "category": "Town"
+        },
+        "floor": {
+            "texture": "floor.png",
+            "category": "Town",
+            "type": "bg"
+        },
+        "gate": {
+            "texture": "forest/gate.png",
+            "category": "Forest",
+            "type": "fg",
+            "isOversize": true,
+            "components": {
+                "gate": {
+                    "needsItems": ["Abandoned House Gate Key"]
+                }
+            }
+        }
+    }
+}

@@ -15,7 +15,8 @@ export class MD2collectComponent extends MD2componentModule {
     }
 
     onCollide(md2: _MD2engine): ContinueCollisionResolution {
-        md2.modules.gui.parts.inventory.addItem(this.opts.item);
+        //md2.modules.gui.parts.inventory.addItem(this.opts.item);
+        md2.dataManager.addItem(this.opts.item);
         
         md2.deletor.deleteBlockEntirely(this.manager.block);
         this.manager.block.destroy();

@@ -1,4 +1,5 @@
 import { $$ } from "../../../misc/util";
+import { _MD2dataManager } from "../../data-loaders/data";
 import { _MD2engine } from "../../engine";
 import { MD2module } from "../main";
 import { MD2GUIinventoryPart } from "./inventory";

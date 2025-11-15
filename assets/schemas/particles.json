@@ -4,14 +4,14 @@
     "title": "Particles Schema",
     "description": "Schema for defining particles",
     "type": "object",
-    "required": ["version", "particles"],
+    "required": ["version", "data"],
     "properties": {
         "version": {
             "type": "array",
             "minItems": 3,
             "maxItems": 3
         },
-        "particles": {
+        "data": {
             "type": "object",
             "additionalProperties": {
                 "type": "string"

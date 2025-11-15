@@ -10,6 +10,11 @@ import { MD2devAutomation } from "../lib/v2/automation";
 
 MD2editor.creatorToolsState.disableIfOn();
 
+const editor = new MD2editor({
+    engine: md2,
+    el: $("#ui > #editor-v2-c") as HTMLDivElement,
+});
+
 const player = md2.generator.player;
 
 function loadAnimations() {   
@@ -80,20 +85,13 @@ export async function startGame(md2: _MD2engine) {
 
     staticC.filters = [followingLight];
 
-    // new MD2devAutomation(md2)
-    // .deleteCurrentLevel(self =>
-    //     console.log(self.loadLevel("abandoned_house_inside")
-    //     .getBlock(64, 56, "fg")
-    //     .returnData().val)
-    // );
+    new MD2devAutomation(md2)
+    .deleteCurrentLevel(self =>
+        self.loadLevel("abandoned_house_inside")
+    );
 
     globalThis.MD2devAutomation = new MD2devAutomation(md2);
 }
-
-const editor = new MD2editor({
-    engine: md2,
-    el: $("#ui > #editor-v2-c") as HTMLDivElement,
-});
 
 if(isMobile.any) {
     const popup = $("#ui > #audio-popup");

@@ -53,3 +53,32 @@ export class _MD2errorManager {
         _MD2errorManager.notFound("Item", name);
     }
 }
+
+export const MD2errors = {
+    err(msg: string): void {
+        const error = new Error(msg);
+        console.error(error);
+    },
+    notFound(type: string, data: string) {
+        this.err(`${type} "${data}" not found`);
+    },
+    unsupportedVersion(type: string, wrongV: string | number[], correctV?: string | number[]) {
+        const wrong: string = typeof wrongV == "string" ? wrongV : JSON.stringify(wrongV);
+
+        const addMsg: string = correctV ? `. The supported type is "${correctV}"` : "";
+
+        this.err(`Type "${type}" has an unsupported version of "${wrong}"` + addMsg);
+    },
+    noItemFound(name: string) {
+        this.notFound("Item", name);
+    },
+    spritesheetImageManifestError(path: string) {
+        this.notFound("Spritesheet image file", path);
+    },
+    spritesheetDataManifestError(path: string) {
+        this.notFound("Spritesheet data file", path);
+    },
+    ctxErr() {
+        this.err("Device refused to draw graphics. (2d context is undefined). Use another browser or device");
+    }
+};

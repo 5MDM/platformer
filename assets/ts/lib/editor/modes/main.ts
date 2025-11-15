@@ -51,10 +51,12 @@ export abstract class _MD2editorBase {
     }
 
     protected getEditorBlock(type: MDgameGridType, x: number, y: number): AnyBlock | false {
+        if(this.editor.grids[type].isOOB(x, y)) return false;
         return this.editor.grids[type].get(x, y) ?? false;
     }
 
     protected getRealBlock(type: MDgameGridType, x: number, y: number): AnyBlock | false {
+        if(this.editor.grids[type].isOOB(x, y)) return false;
         return this.editor.engine.levelManager.levelGrids[type].get(x, y) ?? false;
     }
 

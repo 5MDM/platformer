@@ -1,7 +1,7 @@
 import { Particle, ParticleContainer, Texture } from "pixi.js";
 import { convertPathToObj } from "../../../misc/util";
 import { _MD2engine } from "../../engine";
-import { XYtuple } from "../../types";
+import { Mod, XYtuple } from "../../types";
 import { MD2module } from "../main";
 
 interface AddParticleOpts {
@@ -13,11 +13,6 @@ interface AddParticleOpts {
     genF: (p: Particle, n: number, md2: _MD2engine) => void;
 }
 
-interface ParticleManifest {
-    version: [number, number, number];
-    particles: Record<string, string>;
-}
-
 export interface TickerFopts {
     seconds: number;
     n: number;
@@ -27,7 +22,7 @@ export interface TickerFopts {
 }
 
 export class _MD2envModule extends MD2module {
-    private static path = convertPathToObj(import.meta.glob<{ default: ParticleManifest; }>("../../../../../mods/*/particles.json"));
+    private static path = convertPathToObj(import.meta.glob<{ default: Mod.ParticlesV0_1_x; }>("../../../../../mods/*/particles.json"));
     c = new ParticleContainer();
 
     private pl: Record<string, Texture> = {};
@@ -39,26 +34,21 @@ export class _MD2envModule extends MD2module {
         super(md2);
     }
 
-    parseManifest(o: ParticleManifest) {
-        for (const name in o.particles) {
-            const path = o.particles[name];
-            const t: Texture = this.md2.dataManager.getTexture(path);
+    // parseManifest(o: Mod.ParticlesV0_1_x) {
+    //     for (const name in o.data) {
+    //         const path = o.data[name];
+    //         const t: Texture = this.md2.dataManager.getTexture(path);
 
-            this.pl[name] = t;
-        }
-    }
+    //         this.pl[name] = t;
+    //     }
+    // }
 
     async init() {
         this.md2.levelManager.groups.view.addChild(this.c);
-
-        _MD2envModule.path.then(o => {
-            const particleManifests: ParticleManifest[] = Object.values(o);
-            for (const i of particleManifests) this.parseManifest(i);
-        });
     }
 
     getParticle(name: string): Texture {
-        const t: Texture | undefined = this.pl[name];
+        const t: Texture | undefined = this.md2.dataManager.particleRecord[name];
 
         if (!t) {
             this.md2.errorManager.particleNotFound(name);

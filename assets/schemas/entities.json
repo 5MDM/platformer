@@ -4,9 +4,9 @@
     "title": "Entities Schema",
     "description": "Schema for entities",
     "type": "object",
-    "required": ["entities", "version"],
+    "required": ["data", "version"],
     "properties": {
-        "entities": {
+        "data": {
             "type": "object",
             "additionalProperties": {
                 "type": "object",

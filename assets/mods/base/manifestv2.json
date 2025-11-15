@@ -1,0 +1,26 @@
+{
+    "$schema": "../../schemas/manifest-v0.1.x.json",
+    "version": [0, 1, 0],
+    
+    "name": "Base Game",
+    "data": {
+        "blocks": [
+            "./forest/blocks.json"
+        ],
+        "entities": [
+            "./forest/entities.json"
+        ],
+        "items": [
+            "./forest/items.json"
+        ],
+        "particles": [
+            "./forest/particles.json"
+        ],
+        "spritesheets": [
+            {
+                "image": "./spritesheet.png",
+                "data": "./data.json"
+            }
+        ]
+    }
+}

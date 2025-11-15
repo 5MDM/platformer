@@ -3,6 +3,7 @@ import { FgBlock } from "../blocks";
 import { MD2collectComponent } from "./collect";
 import { MD2doorComponent } from "./door";
 import { MD2doorpointComponent } from "./doorpoint";
+import { MD2gateComponent } from "./gate";
 import { MD2glowComponent } from "./glow";
 import { ContinueCollisionResolution, MD2componentModule } from "./main";
 import { MD2rotatingComponent } from "./rotating";
@@ -11,6 +12,10 @@ export class MD2componentManager {
     block: FgBlock;
     enableCollisionLeave() {
         this.block.hasCollisionLeaveEvents = true;
+    }
+
+    disableCollisionLeave() {
+        this.block.hasCollisionLeaveEvents = false;
     }
 
     constructor(fgBlock: FgBlock, defaultComponent: Record<string, Record<string, any>> = {}) {
@@ -24,6 +29,7 @@ export class MD2componentManager {
         rotating: MD2rotatingComponent,
         glow: MD2glowComponent,
         collect: MD2collectComponent,
+        gate: MD2gateComponent,
     };
 
     static md2: _MD2engine;

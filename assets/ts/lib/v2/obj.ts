@@ -1,4 +1,4 @@
-import { _MD2dataManager } from "./data";
+import { _MD2dataManager } from "./data-loaders/data";
 import { _MD2engine } from "./engine";
 import { _MD2errorManager } from "./errors";
 import { _MD2fullGen } from "./generation/full-gen";

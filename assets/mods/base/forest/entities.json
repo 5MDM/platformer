@@ -1,7 +1,7 @@
 {
-    "$schema":  "../../schemas/entities.json",
+    "$schema":  "../../../schemas/entities.json",
     "version": [0, 1, 0],
-    "entities": {
+    "data": {
         "daylin": {
             "textures": {
                 "ud-stand-down": "entities/daylin/daylin-ud-stand-down.png"

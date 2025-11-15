@@ -2,9 +2,10 @@ import { Sprite, Texture } from "pixi.js";
 import { _MD2engine } from "../../engine";
 import { ContinueCollisionResolution, MD2componentModule } from "./main";
 import { MD2componentManager } from "./main-manager";
+import { MD2item } from "../../items/item";
 
 interface DoorOpts {
-    sound: string;
+    sound?: string;
     onOpen: string;
 }
 
@@ -22,7 +23,7 @@ export class MD2doorComponent extends MD2componentModule {
         this.manager.enableCollisionLeave();
     }
 
-    onCollide(): ContinueCollisionResolution {
+    onCollide(md2: _MD2engine): ContinueCollisionResolution {
         if(this.hasCollided) return false;
         this.hasCollided = true;
         this.manager.block.sprite.texture = this.openTexture;

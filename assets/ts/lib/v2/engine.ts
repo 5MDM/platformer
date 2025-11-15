@@ -1,5 +1,6 @@
 import { Application, EventEmitter, SpritesheetData } from "pixi.js";
-import { _MD2dataManager, _MD2dataManagerOpts } from "./data";
+import { _MD2dataManager } from "./data-loaders/data";
+import { _MD2dataManagerOpts } from "./data-loaders/sprite-loader";
 import { _MD2 } from "./obj";
 import { _MD2levelManager } from "./level";
 import { _MD2errorManager } from "./errors";
@@ -54,11 +55,6 @@ export class _MD2engine {
         env: MD2envModule;
         text: MD2textModule;
         gui: MD2GUI;
-    } = {
-        zoom: new MD2zoomModule(this),
-        env: new MD2envModule(this),
-        text: new MD2textModule(this),
-        gui: new MD2GUI(this),
     };
 
     _editorEmit(name: string, ...args: any[]): void {
@@ -93,6 +89,13 @@ export class _MD2engine {
         this.levelManager = new _MD2levelManager(this);
         this.errorManager = new _MD2errorManager();
         this.generator = new _MD2fullGen(this);
+
+        this.modules = {
+            zoom: new MD2zoomModule(this),
+            env: new MD2envModule(this),
+            text: new MD2textModule(this),
+            gui: new MD2GUI(this),
+        };
 
         this.physics.setMatrix(this.levelManager.levelGrids.fg as MDmatrix<FgBlock>);
 

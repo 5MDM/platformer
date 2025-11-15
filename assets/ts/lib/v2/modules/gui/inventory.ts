@@ -2,6 +2,8 @@ import { $$, createValIfDNE, getImageFromURL, ToggleState } from "../../../misc/
 import { MD2GUIpart } from "./types";
 import { MD2GUI } from "./main";
 import { _MD2errorManager } from "../../errors";
+import { _md2events, RegisterItemOpts } from "../../types";
+import { createImageFromTexture } from "../../data-loaders/spritesheet-functions";
 
 const itemsEl = $$("div", {
     attrs: {
@@ -41,15 +43,6 @@ const el = $$("div", {
     ]
 });
 
-type ConsumeItem = boolean | void;
-
-interface RegisterItemOpts {
-    texture: string;
-    useEvent: string;
-    desc: string;
-    img: HTMLImageElement;
-}
-
 interface ItemHolder {
     numTextEl: HTMLSpanElement;
     div: HTMLDivElement;
@@ -57,7 +50,6 @@ interface ItemHolder {
 }
 
 export class MD2GUIinventoryPart extends MD2GUIpart {
-    registeredItems: Record<string, RegisterItemOpts> = {};
     uniqueItems: Record<string, ItemHolder> = {};
 
     state = new ToggleState(() => {
@@ -103,22 +95,23 @@ export class MD2GUIinventoryPart extends MD2GUIpart {
 
         a.name.textContent = name;
         a.img.firstElementChild?.remove();
-        a.desc.innerText = info.desc;
+        a.desc.textContent = info.desc;
 
         a.img.appendChild(info.img);
     }
 
-    logRegisteredItems() {
-        console.log(this.registeredItems);
-    }
+    updateSlot(name: string, n: number = 1) {
+        if(!this.dataManager.registeredItems[name]) return _MD2errorManager.noItemFound(name);
 
-    addItem(name: string, n: number = 1) {
-        if(!this.registeredItems[name]) return _MD2errorManager.noItemFound(name);
+        if(this.uniqueItems[name]) {
+            this.uniqueItems[name].n += n;
+            this.uniqueItems[name].numTextEl.textContent = n.toString();
 
-        if(this.uniqueItems[name]) return this.uniqueItems[name].n += n;
+            return;
+        }
 
         // if item DNE
-        const src = this.registeredItems[name].texture;
+        const src = this.dataManager.registeredItems[name].texture;
 
         const numTextEl = $$("span", {
             text: n.toString(),
@@ -146,9 +139,9 @@ export class MD2GUIinventoryPart extends MD2GUIpart {
             numTextEl,
         };
 
-        this.gui.md2.dataManager.getTextureAsHTMLimage(src)
+        createImageFromTexture(this.gui.md2.dataManager, src)
         .then(img => {
-            img.onpointerup = e => this.itemOnClick(e, name, this.registeredItems[name]);
+            img.onpointerup = e => this.itemOnClick(e, name, this.dataManager.registeredItems[name]);
             div.prepend(img);
         });
 
@@ -162,9 +155,5 @@ export class MD2GUIinventoryPart extends MD2GUIpart {
             this.uniqueItems[name].div.remove();
 
         this.events.emit("item-remove");
-    }
-
-    registerItem(name: string, o: RegisterItemOpts) {
-        this.registeredItems[name] = o;
     }
 }

@@ -1,0 +1,72 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "$schema": {
+            "type": "string"
+        },
+        "version": {
+            "type": "array",
+            "items": {
+                "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+        },
+        "data": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/BlockInfo"
+            }
+        }
+    },
+    "required": [
+        "version",
+        "data"
+    ],
+    "additionalProperties": false,
+    "definitions": {
+        "BlockInfo": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "$ref": "#/definitions/MDgameGridType"
+                },
+                "texture": {
+                    "type": "string"
+                },
+                "components": {
+                    "$ref": "#/definitions/MD2componentObjType"
+                },
+                "isOversize": {
+                    "type": "boolean"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "isAnimated": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "texture",
+                "category"
+            ],
+            "additionalProperties": false
+        },
+        "MDgameGridType": {
+            "type": "string",
+            "enum": [
+                "fg",
+                "bg",
+                "overlay"
+            ]
+        },
+        "MD2componentObjType": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object"
+            }
+        }
+    }
+}

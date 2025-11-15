@@ -20,6 +20,7 @@ app.init({
     useBackBuffer: true,
     backgroundColor: 0,
     context: webglC,
+    preference: "webgl"
 }).then(async () => {
 
     initLevels(md2);

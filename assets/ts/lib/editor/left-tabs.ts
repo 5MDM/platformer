@@ -1,4 +1,5 @@
 import { $$, SimpleExpander, ToggleList } from "../misc/util";
+import { createImageFromTexture } from "../v2/data-loaders/spritesheet-functions";
 import { _MD2engine } from "../v2/engine";
 import { BlockInfo, EntityInfo } from "../v2/types";
 import { MDcreatorToolsUI } from "./creator-tools";
@@ -60,8 +61,13 @@ export function _createLeftTabs(creatorToolsUI: MDcreatorToolsUI) {
                 }
             });
 
-            engine.dataManager.getTextureAsHTMLimage(sampleName, false)
-            .then(img => el.appendChild(img));
+            // engine.dataManager.spritesheetPr
+            // .then(() => {
+            //     engine.dataManager.getTextureAsHTMLimage(sampleName, false)
+            //     .then(img => {
+            //         el.appendChild(img);
+            //     });
+            // });
 
             return el;
         } else {
@@ -75,8 +81,15 @@ export function _createLeftTabs(creatorToolsUI: MDcreatorToolsUI) {
                 }
             });
 
-            engine.dataManager.getTextureAsHTMLimage(blockInfo.texture, true)
-            .then(img => el.appendChild(img));
+            createImageFromTexture(engine.dataManager, blockInfo.texture, true)
+            .then(img => {                
+                el.appendChild(img);
+            });
+
+            // engine.dataManager.getTextureAsHTMLimage(blockInfo.texture, true)
+            // .then(img => {
+            //     el.appendChild(img);
+            // });
 
             return el;
         }
