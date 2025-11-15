@@ -85,10 +85,10 @@ export async function startGame(md2: _MD2engine) {
 
     staticC.filters = [followingLight];
 
-    new MD2devAutomation(md2)
-    .deleteCurrentLevel(self =>
-        self.loadLevel("abandoned_house_inside")
-    );
+    // new MD2devAutomation(md2)
+    // .deleteCurrentLevel(self =>
+    //     self.loadLevel("abandoned_house_inside")
+    // );
 
     globalThis.MD2devAutomation = new MD2devAutomation(md2);
 }
