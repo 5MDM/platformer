@@ -8,7 +8,7 @@ import { Player } from "../entities/player";
 import { Success } from "../level";
 import { AnyTileSprites, BlockCreationOpts, BlockInfo, EntityInfo, LevelJSONoutput, MDgameGridType } from "../types";
 import { greedyMesh } from "./greedy-mesh";
-import { MD2componentObjType } from "../blocks/components/main";
+import { MD2componentObjType } from "../../misc/components";
 import { AnimatedTilingSprite } from "../../misc/animated-tiles";
 
 

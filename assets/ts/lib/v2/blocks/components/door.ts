@@ -1,24 +1,29 @@
 import { Sprite, Texture } from "pixi.js";
 import { _MD2engine } from "../../engine";
-import { ContinueCollisionResolution, MD2componentModule } from "./main";
-import { MD2componentManager } from "./main-manager";
+import { CMM, ContinueCollisionResolution, MD2componentModule } from "../../../misc/components";
 import { MD2item } from "../../items/item";
+import { FgBlock } from "../blocks";
+import { BlockComponentManager } from "./main-manager";
 
 interface DoorOpts {
     sound?: string;
     onOpen: string;
 }
 
-export class MD2doorComponent extends MD2componentModule {
+export class MD2doorComponent extends MD2componentModule<FgBlock> {
     hasCollided = false;
     opts: DoorOpts;
-    closedTexture = this.manager.block.sprite.texture;
+    closedTexture: Texture;
     openTexture: Texture;
+    manager: BlockComponentManager;
 
-    constructor(manager: MD2componentManager, opts: Record<string, any>) {
+    constructor(manager: BlockComponentManager, opts: Record<string, any>) {
         super(manager, opts);
+        this.manager = manager;
+
         this.opts = opts as DoorOpts;
-        this.openTexture = MD2componentManager.md2.dataManager.getTexture(this.opts.onOpen);
+        this.openTexture = BlockComponentManager.md2.dataManager.getTexture(this.opts.onOpen);
+        this.closedTexture = this.manager.target.sprite.texture;
 
         this.manager.enableCollisionLeave();
     }

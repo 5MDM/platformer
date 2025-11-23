@@ -1,3 +1,4 @@
+import { EventEmitter } from "pixi.js";
 import { DragController } from "./drag";
 import { $$, clamp, normalize, radToDeg } from "./util";
 
@@ -9,13 +10,18 @@ interface JoystickOpts {
     outerColor: string;
 }
 
+export type JostickXmovement = "left" | "right";
+export type JoystickYmovement = "up" | "down";
+export type Joystick4Movement = JostickXmovement | JoystickYmovement;
+export type JoystickEvents = Joystick4Movement | "drag" | "reset" | "none";
+
 export class Joystick {  
     parent: HTMLDivElement;
     controller: DragController;  
     orb: HTMLDivElement;
     max: number;
-    xdir: "left" | "right" | "none" = "none";
-    ydir: "up" | "down" | "none" = "none";
+    xdir: JostickXmovement | "none" = "none";
+    ydir: JoystickYmovement | "none" = "none";
     
 
     constructor(opts: JoystickOpts) {
@@ -109,6 +115,8 @@ export class Joystick {
 
             self.onDrag();
 
+            self.events.emit("drag");
+
             return drag(px - centerX, py - centerY);
         };
 
@@ -124,6 +132,7 @@ export class Joystick {
             self.directionY = 0;
             self.orb.style.left = x + "px";
             self.orb.style.top = y + "px";
+            self.events.emit("reset");
             self.onReset();
         }
 
@@ -131,7 +140,9 @@ export class Joystick {
         function checkDir(x: number, y: number) {
             if(x < -hw) {
                 self.xdir = "left";
+                self.events.emit("left");
             } else if(x > hw) {
+                self.events.emit("right");
                 self.xdir = "right";
             } else {
                 self.xdir = "none";
@@ -139,11 +150,15 @@ export class Joystick {
 
             if(y < -hh) {
                 self.ydir = "up";
+                self.events.emit("up");
             } else if(y > hh) {
+                self.events.emit("down");
                 self.ydir = "down";
             } else {
                 self.ydir = "none";
             }
+
+            if(self.xdir == "none" && self.ydir == "none") self.events.emit("none");
 
             const nx = normalize(-maxR, x, maxR) * 2 - 1;
             const ny = -(normalize(-maxR, y, maxR) * 2 - 1);
@@ -154,6 +169,8 @@ export class Joystick {
 
     directionX = 0;
     directionY = 0;
+
+    events = new EventEmitter<JoystickEvents>();
 
     onMove: () => void = () => undefined;
 }

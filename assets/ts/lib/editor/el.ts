@@ -100,6 +100,7 @@ export function _createToolbar(creatorToolsUI: MDcreatorToolsUI) {
                     }],
                     ["Save editor changes", () => md2._editorEmit("save-changes")],
                     ["Cancel editor changes", () => md2._editorEmit("cancel-changes")],
+                    ["Switch Dimensions", () => md2._editorEmit("switch-dimensions")]
                 ]],
                 ["Levels", [
                     ["Nothing here yet"]

@@ -1,6 +1,7 @@
 import { Particle, Sprite, Texture } from "pixi.js";
-import { MD2componentModule } from "./main";
-import { MD2componentManager } from "./main-manager";
+import { MD2componentModule } from "../../../misc/components";
+import { FgBlock } from "../blocks";
+import { BlockComponentManager } from "./main-manager";
 
 interface MD2glowComponentOpts {
     texture: {
@@ -10,20 +11,20 @@ interface MD2glowComponentOpts {
     scale?: number;
 }
 
-export class MD2glowComponent extends MD2componentModule {
+export class MD2glowComponent extends MD2componentModule<FgBlock> {
     opts: MD2glowComponentOpts;
     glowSprite: Sprite;
     
-    constructor(manager: MD2componentManager, opts: Record<string, any>) {
+    constructor(manager: BlockComponentManager, opts: Record<string, any>) {
         super(manager, opts);
         this.opts = opts as MD2glowComponentOpts;
         this.opts.scale ??= 1;
 
         const t: Texture = (this.opts.texture.type == "particle") ? 
-        MD2componentManager.md2.modules.env.getParticle(this.opts.texture.name)
-        : MD2componentManager.md2.dataManager.getTexture(this.opts.texture.name);
+        BlockComponentManager.md2.modules.env.getParticle(this.opts.texture.name)
+        : BlockComponentManager.md2.dataManager.getTexture(this.opts.texture.name);
 
-        const {x, y, w, h, sprite} = this.manager.block;
+        const {x, y, w, h, sprite} = this.manager.target;
 
         const width = w * this.opts.scale;
         const height = h * this.opts.scale;
@@ -41,7 +42,7 @@ export class MD2glowComponent extends MD2componentModule {
             alpha: 0.8,
         });
         
-        this.manager.block.container.addChild(this.glowSprite);
+        this.manager.target.container.addChild(this.glowSprite);
         
         //this.manager.block.container.mask = this.glowSprite;
     }

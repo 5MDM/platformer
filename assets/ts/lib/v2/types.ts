@@ -2,7 +2,7 @@ import { AnimatedSprite, Sprite, SpritesheetData, TilingSprite } from "pixi.js";
 import { GMOutput } from "../misc/keymap";
 import { MDmatrix } from "../misc/matrix";
 import { AnyBlock } from "./blocks/blocks";
-import { MD2componentObjType } from "./blocks/components/main";
+import { MD2componentObjType } from "../misc/components";
 import { AnimatedTilingSprite } from "../misc/animated-tiles";
 
 export type MDgameGridType = "fg" | "bg" | "overlay";

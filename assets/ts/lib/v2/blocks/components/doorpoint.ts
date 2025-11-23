@@ -1,5 +1,6 @@
-import { ContinueCollisionResolution, MD2componentModule } from "./main";
-import { MD2componentManager } from "./main-manager";
+import { ContinueCollisionResolution, MD2componentModule } from "../../../misc/components";
+import { FgBlock } from "../blocks";
+import { BlockComponentManager } from "./main-manager";
 
 interface MD2doorpointOpts {
     toLevel: string;
@@ -7,20 +8,20 @@ interface MD2doorpointOpts {
     linkId: string;
 }
 
-export class MD2doorpointComponent extends MD2componentModule {
+export class MD2doorpointComponent extends MD2componentModule<FgBlock> {
     opts: MD2doorpointOpts;
 
-    constructor(manager: MD2componentManager, opts: Record<string, any>) {
+    constructor(manager: BlockComponentManager, opts: Record<string, any>) {
         super(manager, opts);
         this.opts = opts as MD2doorpointOpts;
 
-        MD2componentManager.md2.levelManager.registerDoorpoint(this);
+        BlockComponentManager.md2.levelManager.registerDoorpoint(this);
     }
 
     onCollide(): ContinueCollisionResolution {
-        MD2componentManager.md2.levelManager.destroyCurrentLevel()
+        BlockComponentManager.md2.levelManager.destroyCurrentLevel()
         .then(() => {
-            MD2componentManager.md2.levelManager.activateDoorpoint(this);
+            BlockComponentManager.md2.levelManager.activateDoorpoint(this);
         });
 
         return true;

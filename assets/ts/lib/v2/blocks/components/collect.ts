@@ -1,14 +1,14 @@
 import { _MD2engine } from "../../engine";
 import { createMD2t } from "../../modules/text/md2t-parser";
-import { ContinueCollisionResolution, MD2componentModule } from "./main";
-import { MD2componentManager } from "./main-manager";
+import { CMM, ContinueCollisionResolution, MD2componentModule } from "../../../misc/components";
+import { FgBlock } from "../blocks";
 
 interface CollectComponentOpts {
     item: string;
 }
 
-export class MD2collectComponent extends MD2componentModule {
-    constructor(manager: MD2componentManager, opts: CollectComponentOpts) {
+export class MD2collectComponent extends MD2componentModule<FgBlock> {
+    constructor(manager: CMM<FgBlock, MD2componentModule<FgBlock>>, opts: CollectComponentOpts) {
         super(manager, opts);
 
         this.opts = opts as CollectComponentOpts;
@@ -18,8 +18,8 @@ export class MD2collectComponent extends MD2componentModule {
         //md2.modules.gui.parts.inventory.addItem(this.opts.item);
         md2.dataManager.addItem(this.opts.item);
         
-        md2.deletor.deleteBlockEntirely(this.manager.block);
-        this.manager.block.destroy();
+        md2.deletor.deleteBlockEntirely(this.manager.target);
+        this.manager.target.destroy();
 
         md2.modules.text.showTitle(createMD2t([
             {

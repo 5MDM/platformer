@@ -1,7 +1,6 @@
 import { MD2editor } from "../editor/main";
 import { AnyBlock, FgBlock } from "./blocks/blocks";
-import { MD2componentModule } from "./blocks/components/main";
-import { MD2componentManager } from "./blocks/components/main-manager";
+import { MD2componentModule } from "../misc/components";
 import { _MD2engine } from "./engine";
 import { Entity } from "./entities/entity";
 import { MDgameGridType } from "./types";
@@ -65,7 +64,7 @@ export class MD2devAutomation {
         return this.lastData;
     }
 
-    lastComponent?: MD2componentModule;
+    lastComponent?: MD2componentModule<FgBlock>;
     getComponent(name: string): this {
         if(this.isStopped || !(this.lastBlock instanceof FgBlock)) return this;
 

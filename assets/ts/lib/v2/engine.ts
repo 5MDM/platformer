@@ -4,7 +4,7 @@ import { _MD2dataManagerOpts } from "./data-loaders/sprite-loader";
 import { _MD2 } from "./obj";
 import { _MD2levelManager } from "./level";
 import { _MD2errorManager } from "./errors";
-import { _MD2physics, _MD2physicsOpts } from "./physics";
+import { _MD2physics, _MD2physicsOpts } from "./physics/main";
 import { MDmatrix } from "../misc/matrix";
 import { FgBlock } from "./blocks/blocks";
 import { _MD2deletor } from "./generation/deletor";
@@ -15,8 +15,8 @@ import { MD2module } from "./modules/main";
 import { MD2envModule } from "./modules/env/main";
 import { MD2textModule } from "./modules/text/text";
 import { MDaudio } from "../misc/audio";
-import { MD2componentManager } from "./blocks/components/main-manager";
 import { MD2GUI } from "./modules/gui/main";
+import { BlockComponentManager } from "./blocks/components/main-manager";
 
 interface EngineOpts {
     engine: {
@@ -31,7 +31,11 @@ interface EngineOpts {
     }
 }
 
+type CDtype = "side" | "td";
+
 export class _MD2engine {
+    CD: CDtype = "td";
+
     blockSize: number;
     blockSizeHalf: number;
     dataManager: _MD2dataManager;
@@ -77,7 +81,7 @@ export class _MD2engine {
     }
 
     constructor(opts: EngineOpts) {
-        MD2componentManager.setEngine(this);
+        BlockComponentManager.setEngine(this);
         this.joystick = opts.engine.joystick;
         this.blockSize = opts.engine.blockSize;
         this.blockSizeHalf = this.blockSize / 2;
@@ -104,6 +108,13 @@ export class _MD2engine {
         });
 
         this.modules.gui.appendToTarget(opts.gui.target);
+
+        this._editorOn("switch-dimensions", () => this.switchDimensions());
+    }
+
+    switchDimensions() {
+        if(this.CD == "td") this.CD = "side"
+        else this.CD = "td";
     }
 
     async init() {

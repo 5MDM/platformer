@@ -134,8 +134,9 @@ export class _MD2levelManager {
     }
 
     recordPlayer(player: Player) {
+        // TODO: potentially remove entity record since it's a duplicate
         this.entityRecord[player.id] = player;
-        this.engine.physics.addEntity(player);
+        this.engine.physics.addPlayer(player);
 
         this.groups.world.addChild(player.container);
     }

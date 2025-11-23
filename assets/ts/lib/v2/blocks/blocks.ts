@@ -1,15 +1,18 @@
 import { AnimatedSprite, Container, Sprite } from "pixi.js";
 import { Entity } from "../entities/entity";
 import { MDgameGridType, LevelJSONoutput, AnySprite } from "../types";
-import { MD2componentManager } from "./components/main-manager";
+import { BlockComponentManager } from "./components/main-manager";
 
 export type AnyBlock = FgBlock | BgBlock;
 
-export interface BasicBoxOpts {
+export interface XYWH {
     x: number;
     y: number;
     w: number;
     h: number;
+}
+
+export interface BasicBoxOpts extends XYWH {
     id: number;
 }
 
@@ -27,7 +30,7 @@ interface FGblockConstructorOpts extends BlockConstructorOpts {
     defaultComponents?: Record<string, Record<string, any>>;
 }
 
-export class BasicBox {
+export class BasicBox implements XYWH {
     cx: number;
     cy: number;
     x: number;
@@ -40,11 +43,16 @@ export class BasicBox {
     halfH: number;
     readonly id: number;
 
+    lastX: number;
+    lastY: number;
+
     container = new Container();
 
     constructor(o: BasicBoxOpts) {
         this.x = o.x;
         this.y = o.y;
+        this.lastX = o.x;
+        this.lastY = o.y;
         this.container.x = o.x;
         this.container.y = o.y;
         this.w = o.w;
@@ -72,7 +80,7 @@ export class BasicBox {
         this.container.y = y;
     }
 
-    testAABB(o: BasicBox): boolean {
+    testAABB(o: BasicBox | {x: number, y: number, maxX: number, maxY: number}): boolean {
         // console.log(`${this.x} < ${o.maxX} 
         //     ${this.maxX} > ${o.x}
         //     ${this.y} < ${o.maxY}
@@ -94,6 +102,31 @@ export class BasicBox {
     iterateBounds(f: (x: number, y: number, lx: number, ly: number) => void) {
         this.iterateBoundsF(this.x, this.y, this.w, this.h, f);
     }
+
+    destroy() {
+        this.container.destroy();
+    }
+
+    setLeft(n: number) {
+        this.setX(this.x - n);
+    }
+
+    setRight(n: number) {
+        this.setX(this.x + n);
+    }
+
+    setUp(n: number) {
+        this.setY(this.y - n);
+    }
+
+    setDown(n: number) {
+        this.setY(this.y + n);
+    }
+
+    setMove(x: number, y: number) {
+        this.setRight(x);
+        this.setUp(y);
+    }
 }
 
 export abstract class Block extends BasicBox {
@@ -108,11 +141,8 @@ export abstract class Block extends BasicBox {
     readonly container = new Container();
     readonly sprite: AnySprite;
 
-    private static hexRatio = 0x111111;
     static defaultLight = 4;
 
-    // 
-    //CL?: ComponentList;
     isOversize = false;
 
     readonly blockSize: number;
@@ -123,7 +153,6 @@ export abstract class Block extends BasicBox {
         if (n < 0 || 16 < n) return;
 
         this.light = n;
-        //this.sprite.tint = (n * Block.hexRatio);
     }
 
     constructor(o: BlockConstructorOpts) {
@@ -137,7 +166,6 @@ export abstract class Block extends BasicBox {
 
         this.container.addChild(this.sprite);
 
-        //this.CL = o.CL;
         this.isOversize = o.isOversize;
 
         this.updateLight(Block.defaultLight);
@@ -199,11 +227,11 @@ export class FgBlock extends Block {
         onCollide: [],
     };
 
-    components: MD2componentManager;
+    components: BlockComponentManager;
 
     constructor(o: FGblockConstructorOpts) {
         super(o);
-        this.components = MD2componentManager.fromObj(this, o.defaultComponents, o.components);
+        this.components = BlockComponentManager.fromObj(this, o.defaultComponents, o.components);
     }
 
     toJSON(): LevelJSONoutput {

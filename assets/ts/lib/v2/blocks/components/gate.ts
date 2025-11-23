@@ -1,10 +1,11 @@
 import { Sprite, Texture } from "pixi.js";
 import { _MD2engine } from "../../engine";
-import { ContinueCollisionResolution, MD2componentModule } from "./main";
-import { MD2componentManager } from "./main-manager";
+import { ContinueCollisionResolution, MD2componentModule } from "../../../misc/components";
 import { MD2item } from "../../items/item";
 import { MD2tweenOnce } from "../../../misc/tweener";
 import { AnySprite } from "../../types";
+import { FgBlock } from "../blocks";
+import { BlockComponentManager } from "./main-manager";
 
 type MD2gateOpeningF = (md2: _MD2engine) => boolean;
 
@@ -15,7 +16,7 @@ export interface GateOpts {
     onOpen?: string;
 }
 
-export class MD2gateComponent extends MD2componentModule {
+export class MD2gateComponent extends MD2componentModule<FgBlock> {
     isUnlocked = false;
 
     openingConditions: Record<string, MD2gateOpeningF> = {};
@@ -25,12 +26,12 @@ export class MD2gateComponent extends MD2componentModule {
 
     openTexture: Texture;
 
-    constructor(manager: MD2componentManager, opts: Record<string, any>) {
+    constructor(manager: BlockComponentManager, opts: Record<string, any>) {
         super(manager, opts);
         this.opts = opts as GateOpts;
 
         if(this.opts.onOpen) {
-            this.openTexture = MD2componentManager.md2.dataManager.getTexture(this.opts.onOpen);
+            this.openTexture = BlockComponentManager.md2.dataManager.getTexture(this.opts.onOpen);
         } else {
             this.fadeToNothing = true;
             this.openTexture = Texture.EMPTY;
@@ -76,11 +77,11 @@ export class MD2gateComponent extends MD2componentModule {
         if(this.canBecomeUnlocked(md2)) {
             this.isOpening = true;
             if(this.fadeToNothing) {
-                MD2tweenOnce<AnySprite>(this.manager.block.sprite, (s, prg) => {
+                MD2tweenOnce<AnySprite>(this.manager.target.sprite, (s, prg) => {
                     s.alpha = prg;
                 }, 2000, () => this.isUnlocked = true);
             } else {
-                this.manager.block.sprite.texture = this.openTexture;
+                this.manager.target.sprite.texture = this.openTexture;
                 this.isUnlocked = true;
             }
 
