@@ -1,12 +1,12 @@
-import { isMobile, Particle, Sprite, Ticker } from "pixi.js";
+import { isMobile, Particle, RenderTexture, Sprite, Texture, Ticker } from "pixi.js";
 import "./audio";
 import { $, clamp, round } from "../lib/misc/util";
 import { _MD2engine } from "../lib/v2/engine";
 import { app, md2 } from "../constants";
 import { MD2editor } from "../lib/editor/main";
 import { MD2envModule } from "../lib/v2/modules/env/main";
-import { MD2lightFilter } from "../lib/v2/lighting/lights";
 import { MD2devAutomation } from "../lib/v2/automation";
+import { MD2lightFilter } from "../lib/v2/lighting/lights";
 
 MD2editor.creatorToolsState.disableIfOn();
 
@@ -82,6 +82,7 @@ export async function startGame(md2: _MD2engine) {
         radius: 7,//8.5,
         follow: player,
     });
+
 
     staticC.filters = [followingLight];
 

@@ -50,15 +50,25 @@ export async function MD2dataManagerParseMod(d: _MD2dataManager, m: Mod.Manifest
         return MD2errors.unsupportedVersion("Mod", m.version, supportedVersion);
 
     async function parse<T extends Object>(e: string[] | undefined, f: (d: _MD2dataManager, data: T) => any) {
-        const val = e;
-        if(!val) return;
+        try {
+            const val = e;
+            if(!val) return;
 
-        for(const path of val) {
-            // removes "./"
-            const actualPath = path.slice(2);
-            const file: T = dir[actualPath];
-            if(CVS(file as any)) continue;
-            await f(d, file);
+            for(const path of val) {
+                // removes "./"
+                const actualPath = path.slice(2);
+                const file: T = dir[actualPath];
+                if(CVS(file as any)) continue;
+
+                try {
+                    await f(d, file);
+                } catch(err) {
+                    MD2errors.err(`Mod loader function couldn't parse. \nData keys: ${Object.keys(file).join(", ")}\n`
+                + `Data values: ${Object.values(file).join(", ")}`);
+                }
+            }
+        } catch(err) {
+            MD2errors.err(`Couldn't parse something in mod loader. \nData: ${e}, ${m}, ${f}`);
         }
     }
 
@@ -104,10 +114,14 @@ async function parseItems(d: _MD2dataManager, file: Mod.ItemsV0_1_x) {
     for(const name in file.data) {
         const itemInfo = file.data[name];
 
-        d.registerItem(name, {
-            ...itemInfo,
-            img: await createImageFromTexture(d, itemInfo.texture)
-        });
+        try {
+            d.registerItem(name, {
+                ...itemInfo,
+                img: await createImageFromTexture(d, itemInfo.texture)
+            });
+        } catch(err) {
+            MD2errors.err(`Couldn't load item "${itemInfo.texture}"`);
+        }
     }
 }
 

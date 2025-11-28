@@ -1,3 +1,4 @@
+import { clamp } from "../../misc/util";
 import { BasicBox, BasicBoxOpts } from "../blocks/blocks";
 import { _MD2errorManager } from "../errors";
 import { AnimControl, AnimControlOpts } from "./anim";
@@ -82,6 +83,11 @@ export class Entity extends BasicBox {
     isJumping = false;
     jumpTime = 0;
     maxJumpTime = 10;
+
+    applyGravity(x: number, y: number) {
+        this.setX(this.x - x);
+        this.setY(this.y + y);
+    }
 }
 
 type Dir4 = "up" | "down" | "left" | "right" | "none";
@@ -145,9 +151,15 @@ export class PlayerControlledEntity extends Entity {
         this.isJumping = true;
         this.jumpTime += 1;
 
-        const smoothing = this.jumpTime + 5 * Math.pow(this.jumpTime / 8, 2);
-        
-        this.fy -= (power - Math.min(power, smoothing)) * PlayerControlledEntity.dt;
+        const tt = 1 - (this.maxJumpTime - this.jumpTime) / this.maxJumpTime;
+
+        const smoothing = (power - .05) * tt;
+
+        const finalPower = clamp(0, power - smoothing, power) * PlayerControlledEntity.dt;
+
+        //console.log(finalPower);
+
+        this.fy -= finalPower;
     }
 
     onLeft(n: number) {

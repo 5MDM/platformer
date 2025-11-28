@@ -61,11 +61,6 @@
             },
             "category": "Forest"
         },
-        "forest grass 2": {
-            "texture": "forest-grass-2.png",
-            "type": "bg",
-            "category": "Forest"
-        },
         "forest bush wall": {
             "texture": "forest-bush-wall.png",
             "type": "fg",

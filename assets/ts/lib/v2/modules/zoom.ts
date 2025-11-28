@@ -18,7 +18,6 @@ export class MD2zoomModule extends MD2module {
         this.setZoom();
 
         addEventListener("resize", () => {
-
             if(this.zoomLevel != 1)
                 this.md2.levelManager.container.x += this.zoomOffsetX / this.zoomLevel;
 

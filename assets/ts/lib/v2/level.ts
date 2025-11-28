@@ -68,17 +68,6 @@ export class _MD2levelManager {
 
     container: Container = new Container();
 
-    darkness: Sprite = new Sprite({
-        texture: Texture.WHITE,
-        tint: 0,
-        width: innerWidth,
-        height: innerHeight,
-        x: 0,
-        y: 0,
-    });
-
-    darknessMask = new Container();
-
     readonly groups = {
         bg: new Container(),
         entity: new Container(),

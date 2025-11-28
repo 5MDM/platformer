@@ -3,7 +3,7 @@
     "version": [0, 1, 0],
     "data": {
         "Abandoned House Gate Key": {
-            "texture": "",
+            "texture": "forest/abandoned-gate-key.png",
             "onUse": "abandoned-house-gate-open",
             "desc": "Opens the gate"
         },

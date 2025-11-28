@@ -6,6 +6,7 @@ import { MD2dataManagerParseMod, MD2dataManagerParseSpritesheets } from "../mod-
 import { RegisterItemOpts, ModInfo, EntityFileInfo, ItemFileInfo } from "../types";
 import { _MD2dataManagerOpts, MD2SpriteLoader } from "./sprite-loader";
 import { combineSpritesheets } from "./spritesheet-functions";
+import { sp } from "../../misc/util";
 
 export class _MD2dataManager extends MD2SpriteLoader {
     registeredItems: Record<string, RegisterItemOpts> = {};
@@ -70,6 +71,16 @@ export class _MD2dataManager extends MD2SpriteLoader {
 
             MD2dataManagerParseSpritesheets(this, this.manifestFiles[path], dir);
         }
+
+        const texture = await Assets.load(this.multiSpritesheetData.image[0]);
+
+        // old loader if needed
+        // const spritesheetO = new Spritesheet({
+        //     data: this.multiSpritesheetData.data[0],
+        //     texture,
+        // });
+
+        // await spritesheet.parse();
 
         const spritesheet = await combineSpritesheets(this.multiSpritesheetData);
         if(!spritesheet) {

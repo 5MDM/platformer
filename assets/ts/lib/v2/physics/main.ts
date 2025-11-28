@@ -31,7 +31,7 @@ export class _MD2physics {
     static isMovingRight = false;
 
     gx: number = 0;
-    gy: number = 6;
+    gy: number = 3;
     suspendGy = false;
     smoothing: number;
 
@@ -156,13 +156,14 @@ export class _MD2physics {
     applyGravity() {
         if(this.engine.CD == "td") return;
         this.ido(o => {
-            if(this.gy != 0) {o.setY(o.y + this.gy);}
-            if(this.gx != 0) {o.setX(o.x - this.gx);}
+            o.applyGravity(this.gx, this.gy);
+            //if(this.gy != 0) {o.setY(o.y + this.gy);}
+            //if(this.gx != 0) {o.setX(o.x - this.gx);}
         });
     }
 
     protected tryJumping() {
-        this.playerGroup.forEach(e => e.onJump(32));
+        this.playerGroup.forEach(e => e.onJump(.7));
     }
 
     sideScrollerPhysicsLoop(j: Joystick) {

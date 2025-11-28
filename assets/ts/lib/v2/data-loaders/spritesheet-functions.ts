@@ -1,4 +1,4 @@
-import { Spritesheet, SpritesheetData, Texture } from "pixi.js";
+import { Assets, Spritesheet, SpritesheetData, Texture, TextureSource } from "pixi.js";
 import { Mod } from "../types";
 import { MD2errors } from "../errors";
 import { _MD2dataManager } from "./data";
@@ -21,12 +21,15 @@ Promise<HTMLImageElement> {
 
     const t = dm.getTexture(textureName);
     const re = t.source.resource;
-    if(!re || !(re instanceof OffscreenCanvas)) {
+
+    if(!re || (!(re instanceof OffscreenCanvas) && !(re instanceof Image))) {
         rej();
+        MD2errors.err(`Resource not found in "${textureName}"`);
 
         return pr;
     };
-    
+
+
     dm.c.width = t.width;
     dm.c.height = t.height;
 
@@ -43,6 +46,10 @@ Promise<HTMLImageElement> {
         img.height = dm.engine.blockSize;
         res(img);
     };
+    img.onerror = () => {
+        MD2errors.err(`Unable to load image "${url}"`);
+        rej();
+    };
 
     return pr;
 }
@@ -50,6 +57,7 @@ Promise<HTMLImageElement> {
 export async function combineSpritesheets
 (multiSpritesheetData: Mod.MultiSpritesheetDataHolder): Promise<Spritesheet | void> {
     const o = multiSpritesheetData;
+
     const images: HTMLImageElement[] = [];
 
     var biggestWidth = 0;
@@ -107,8 +115,16 @@ export async function combineSpritesheets
         y += img.height;
     }
 
+    const url = URL.createObjectURL(await c.convertToBlob());
+    const img = new Image();
+    img.src = url;
+
+    await new Promise<void>(res => {
+        img.onload = () => res();
+    });
+
     const spritesheet = new Spritesheet({
-        texture: Texture.from(c),
+        texture: Texture.from(img),
         data: combinedData
     });
 
