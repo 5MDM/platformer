@@ -14,6 +14,7 @@ import { _md2events, MDgameGridType, XYtuple } from "../v2/types";
 import { _MD2editorMulti } from "./modes/multi";
 import { _MD2editorPan } from "./modes/pan";
 import { _MD2editMode } from "./modes/edit";
+import { _MD2filterMode } from "./modes/filter";
 
 export interface MD2editorOpts {
     engine: _MD2engine;
@@ -44,6 +45,7 @@ export class MD2editor {
     multiEdit: _MD2editorMulti;
     pan: _MD2editorPan;
     edit: _MD2editMode;
+    filter: _MD2filterMode;
 
     container = new Container();
 
@@ -120,6 +122,9 @@ export class MD2editor {
         this.edit = new _MD2editMode(this, editorClickArea);
         this.edit.init();
 
+        this.filter = new _MD2filterMode(this, editorClickArea);
+        this.filter.init();
+
         this.engine.levelManager.groups.static.addChild(this.container);
 
         this.engine._editorOn("save-changes", () => this.saveChanges());
@@ -153,6 +158,8 @@ export class MD2editor {
         });
 
         this.engine._editorOn("pan", this.setupEditorModeEventListener(this.pan));
+
+        this.engine._editorOn("filter", () => this.filter.state.toggle());
 
         this.rotation.onRotation = () => this.onRotation();
 

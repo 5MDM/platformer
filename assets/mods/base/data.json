@@ -280,7 +280,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
 	"sourceSize": {"w":128,"h":128}
 },
-"ui/inventory-tile.png":
+"ui/graphics-filter.png":
 {
 	"frame": {"x":128,"y":584,"w":128,"h":128},
 	"rotated": false,
@@ -288,7 +288,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
 	"sourceSize": {"w":128,"h":128}
 },
-"ui/recenter.png":
+"ui/inventory-tile.png":
 {
 	"frame": {"x":256,"y":584,"w":128,"h":128},
 	"rotated": false,
@@ -296,7 +296,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
 	"sourceSize": {"w":128,"h":128}
 },
-"ui/zoom-in.png":
+"ui/recenter.png":
 {
 	"frame": {"x":384,"y":584,"w":128,"h":128},
 	"rotated": false,
@@ -304,9 +304,17 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
 	"sourceSize": {"w":128,"h":128}
 },
-"ui/zoom-out.png":
+"ui/zoom-in.png":
 {
 	"frame": {"x":0,"y":712,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+"ui/zoom-out.png":
+{
+	"frame": {"x":128,"y":712,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -322,7 +330,7 @@
 },
 "wood-door-open.png":
 {
-	"frame": {"x":128,"y":712,"w":128,"h":128},
+	"frame": {"x":256,"y":712,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -330,7 +338,7 @@
 },
 "wood-door.png":
 {
-	"frame": {"x":256,"y":712,"w":128,"h":128},
+	"frame": {"x":384,"y":712,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -348,6 +356,6 @@
 	"format": "RGBA8888",
 	"size": {"w":512,"h":1864},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:9a204911525bae29920e8f3d02489195:76547ae8cb64c9d5afe63f55d6f93d8f:e425fefcff1e15baea1094a56b981d8d$"
+	"smartupdate": "$TexturePacker:SmartUpdate:aa87d22fd84259f13babde54dc4cc5ea:ca98cb76c97e48f00a0029a7bef91e57:e425fefcff1e15baea1094a56b981d8d$"
 }
 }
