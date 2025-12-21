@@ -1,5 +1,7 @@
 import { AnyBlock } from "../blocks/blocks";
 import { _MD2engine } from "../engine";
+import { Entity } from "../entities/entity";
+import { Projectile } from "../entities/projectile";
 import { Success } from "../level";
 import { LevelJSONoutput, MDgameGridType } from "../types";
 import { greedyMeshGridFromBlockDeletion } from "./greedy-mesh";
@@ -39,8 +41,8 @@ export class _MD2deletor {
     }
 
     deleteBlockByBlockAndWorldPos(block: AnyBlock, dx: number, dy: number): Success {
-        const [x, y] = block.getWorldGridPos();
-        const [w, h] = block.getWorldGridSize();
+        // const [x, y] = block.getWorldGridPos();
+        // const [w, h] = block.getWorldGridSize();
 
         const output = greedyMeshGridFromBlockDeletion(block, dx, dy);
 
@@ -68,7 +70,7 @@ export class _MD2deletor {
 
     private splitBlock(o: DeletionObj) {
         this.deleteBlockEntirely(o.block);
-        
+
         for(const data of o.arr) {
             this.engine.generator.generateBlockFromData(data);
         }
@@ -82,5 +84,17 @@ export class _MD2deletor {
         delete this.engine.levelManager.blockRecord[block.type][block.id];
 
         block.destroy();
+    }
+
+    deleteEntity(e: Entity) {
+        this.engine.levelManager.entityRecord[e.id];
+        this.engine.physics.removeEntity(e);
+        e.destroy();
+    }
+
+    deleteProjectile(e: Projectile) {
+        this.engine.levelManager.projectileRecord[e.id];
+        this.engine.physics.removeEntity(e);
+        e.destroy();
     }
 }

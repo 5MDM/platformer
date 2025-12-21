@@ -22,7 +22,6 @@ export interface TickerFopts {
 }
 
 export class _MD2envModule extends MD2module {
-    private static path = convertPathToObj(import.meta.glob<{ default: Mod.ParticlesV0_1_x; }>("../../../../../mods/*/particles.json"));
     c = new ParticleContainer();
 
     private pl: Record<string, Texture> = {};

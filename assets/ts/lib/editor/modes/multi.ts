@@ -6,8 +6,9 @@ import { LCC } from "../../misc/util";
 import { _md2events, BlockInfo } from "../../v2/types";
 import { MDscalableSprite } from "../../misc/scale-sprite";
 import { Keymap } from "../../misc/keymap";
+import { _MD2editorDragBase } from "./dragbase";
 
-export class _MD2editorMulti extends _MD2editorBase {
+export class _MD2editorMulti extends _MD2editorDragBase {
     firstPlacedDown = false;
     firstX = 0;
     firstY = 0;
@@ -15,28 +16,11 @@ export class _MD2editorMulti extends _MD2editorBase {
     lastPlacedDown = false;
     lastX = 0;
     lastY = 0;
-
-    scp: MDscalableSprite;
-
+    
     private blockArr: AnyBlock[] = [];
 
     constructor(editor: MD2editor, el: HTMLElement) {
         super(editor, el);
-
-        this.scp = new MDscalableSprite(this.editor.engine);
-
-        this.editor.container.addChild(this.scp.sprite);
-
-        this.el.addEventListener("pointerup", e => {
-            if(!this.firstPlacedDown) return;
-            this.lastPlacedDown = true;
-
-            const [x, y] = this.fixPos(e.x, e.y);
-            this.lastX = x;
-            this.lastY = y;
-
-            this.placeSelection();
-        });
 
         this.editor.engine.events.on(_md2events.levelDeleteB, () => {
             while(this.blockArr.length > 0)
@@ -44,37 +28,12 @@ export class _MD2editorMulti extends _MD2editorBase {
         });
     }
 
-    protected dragHandler(rx: number, ry: number): void {
-        const [x, y] = this.getGridPos(rx, ry);
-
-        if(!this.firstPlacedDown) {
-            this.firstPlacedDown = true;
-
-            this.editor.engine.dataManager
+    onFirstPlaceDown(): void {
+        this.editor.engine.dataManager
             .changeTileSpriteTextureByName(this.scp.sprite, this.editor.selectedBlock, false);
-
-            this.scp.sprite.visible = true;
-            
-            this.firstX = x;
-            this.firstY = y;
-
-            this.scp.setPos(x, y);
-
-            return;
-        }
-
-        const rw = x - this.firstX;
-        const rh = y - this.firstY;
-
-        this.scp.setSize(rw, rh);
     }
 
-    private placeSelection() {
-        this.firstPlacedDown = false;
-        this.lastPlacedDown = false;
-
-        const size = this.scp.getSize();
-
+    onPlace(size: [number, number, number, number]) {
         const block = this.editor.engine.generator.createAndReturnBlock({
             name: this.editor.selectedBlock,
             rotation: this.editor.rotation.deg,
@@ -85,6 +44,10 @@ export class _MD2editorMulti extends _MD2editorBase {
         }, false);
 
         if(!block) return;
+        if(this.editor.checkIfOOB(block.x, block.y, block.maxX, block.maxY)) {
+            console.log("OOB");
+            return;
+        }
 
         this.blockArr.push(block);
 
@@ -94,11 +57,5 @@ export class _MD2editorMulti extends _MD2editorBase {
             const matrix = this.editor.grids[this.editor.selectedBlockType];
             matrix.set(x, y, block);
         });
-    }
-
-    protected onDisable(): void {
-        super.onDisable();
-
-        this.scp.sprite.visible = false;
     }
 }

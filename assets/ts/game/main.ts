@@ -8,7 +8,7 @@ import { MD2envModule } from "../lib/v2/modules/env/main";
 import { MD2devAutomation } from "../lib/v2/automation";
 import { MD2lightFilter } from "../lib/v2/lighting/lights";
 
-MD2editor.creatorToolsState.disableIfOn();
+//MD2editor.creatorToolsState.disableIfOn();
 
 const editor = new MD2editor({
     engine: md2,
@@ -37,7 +37,8 @@ function loadAnimations() {
 export async function startGame(md2: _MD2engine) { 
     loadAnimations();
 
-    md2.levelManager.loadLevel("1");
+    //md2.levelManager.loadLevel("1");
+    md2.levelManager.loadLevel("2");
 
     md2.modules.env.addParticles({
         name: "glow",
@@ -88,7 +89,7 @@ export async function startGame(md2: _MD2engine) {
 
     // new MD2devAutomation(md2)
     // .deleteCurrentLevel(self =>
-    //     self.loadLevel("abandoned_house_inside")
+    //     self.loadLevel("2")
     // );
 
     globalThis.MD2devAutomation = new MD2devAutomation(md2);

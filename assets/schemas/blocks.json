@@ -46,6 +46,24 @@
                 },
                 "isAnimated": {
                     "type": "boolean"
+                },
+                "hitbox": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "x": {
+                            "type": "number"
+                        },
+                        "y": {
+                            "type": "number"
+                        },
+                        "w": {
+                            "type": "number"
+                        },
+                        "h": {
+                            "type": "number"
+                        }
+                    }
                 }
             },
             "required": [

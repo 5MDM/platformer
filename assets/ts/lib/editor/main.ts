@@ -2,19 +2,21 @@ import { Container, Sprite, Texture, TilingSprite } from "pixi.js";
 import { _MD2engine } from "../v2/engine";
 import { MDcreatorToolsUI } from "./creator-tools";
 import { editorClickArea } from "./el";
-import { degToRad, RotationHolder, snapToGrid, ToggleState } from "../misc/util";
+import { degToRad, RotationHolder, SimpleExpander, snapToGrid, ToggleState } from "../misc/util";
 import { _MD2editorClick } from "./modes/click";
 import { Player } from "../v2/entities/player";
 import { MDmatrix } from "../misc/matrix";
-import { AnyBlock } from "../v2/blocks/blocks";
+import { AnyBlock, BasicBox } from "../v2/blocks/blocks";
 import { _utilBar } from "./util-bar";
 import { _MD2deleteClick } from "./modes/delete";
 import { _MD2editorBase } from "./modes/main";
-import { _md2events, MDgameGridType, XYtuple } from "../v2/types";
+import { _md2events, MDgameGridType, WeakIndices, XYtuple, XYWH } from "../v2/types";
 import { _MD2editorMulti } from "./modes/multi";
 import { _MD2editorPan } from "./modes/pan";
 import { _MD2editMode } from "./modes/edit";
 import { _MD2filterMode } from "./modes/filter";
+import { _MD2editLevelMode } from "./modes/edit-level";
+import { _MD2shaderMode } from "./modes/shader";
 
 export interface MD2editorOpts {
     engine: _MD2engine;
@@ -26,6 +28,9 @@ export const _editorGridBlocks: HTMLElement[] = [];
 export function _setEditorGridBlocks(e: HTMLElement[]) {
     _editorGridBlocks.push(...e);
 }
+
+export type EditorStates = "click" | "delete" | "multiEdit" | "pan" | "edit"
+| "filter" | "editLevel" | "shade";
 
 export class MD2editor {
     engine: _MD2engine;
@@ -40,12 +45,18 @@ export class MD2editor {
 
     testSprite: TilingSprite | Sprite;
 
-    editorClick: _MD2editorClick;
-    deleteClick: _MD2deleteClick;
-    multiEdit: _MD2editorMulti;
-    pan: _MD2editorPan;
-    edit: _MD2editMode;
-    filter: _MD2filterMode;
+    static EditClassStates: Record<EditorStates, typeof _MD2editorBase> = {
+        click:  _MD2editorClick,
+        delete: _MD2deleteClick,
+        multiEdit: _MD2editorMulti,
+        pan: _MD2editorPan,
+        edit: _MD2editMode,
+        filter: _MD2filterMode,
+        editLevel: _MD2editLevelMode,
+        shade: _MD2shaderMode,
+    };
+
+    editStates: Record<EditorStates, _MD2editorBase>;
 
     container = new Container();
 
@@ -90,14 +101,6 @@ export class MD2editor {
             else if(type == "entity") this.onEntitySelect(name);
         });
 
-        // MD2editor.creatorToolsState.onEnable = function() {
-        //     MDcreatorToolsUI.creatorToolsEl.style.display = "grid";
-        // };
-
-        // MD2editor.creatorToolsState.onDisable = function() {
-        //     MDcreatorToolsUI.creatorToolsEl.style.display = "none";
-        // };
-
         this.testSprite = new TilingSprite({
             width: this.engine.blockSize,
             height: this.engine.blockSize,
@@ -105,25 +108,17 @@ export class MD2editor {
             alpha: 0.5,
         });
 
-        this.editorClick = new _MD2editorClick(this, editorClickArea);
-        this.activateEditorMode = this.editorClick;
-        this.editorClick.state.enableIfOff();
-        this.editorClick.init();
+        this.editStates = {} as Record<EditorStates, _MD2editorBase>;
+        for(const name in MD2editor.EditClassStates) {
+            this.editStates[name] = 
+            new(MD2editor.EditClassStates[name] as typeof _MD2editorBase)(this, editorClickArea);
 
-        this.deleteClick = new _MD2deleteClick(this, editorClickArea);
-        this.deleteClick.init();
+            this.engine.initPromise.then(() => this.editStates[name].init());
+        }
 
-        this.multiEdit = new _MD2editorMulti(this, editorClickArea);
-        this.multiEdit.init();
-
-        this.pan = new _MD2editorPan(this, editorClickArea);
-        this.pan.init();
-
-        this.edit = new _MD2editMode(this, editorClickArea);
-        this.edit.init();
-
-        this.filter = new _MD2filterMode(this, editorClickArea);
-        this.filter.init();
+        this.activateEditorMode = this.editStates.click;
+        this.editStates.click.state.enableIfOff();
+        this.editStates.click.init();
 
         this.engine.levelManager.groups.static.addChild(this.container);
 
@@ -144,22 +139,26 @@ export class MD2editor {
         this.engine._editorOn("rotate-left", () => this.rotateLeft());
         this.engine._editorOn("rotate-right", () => this.rotateRight());
 
-        this.engine._editorOn("placement", this.setupEditorModeEventListener(this.editorClick));
-        this.engine._editorOn("multi", this.setupEditorModeEventListener(this.multiEdit));
-        this.engine._editorOn("delete", this.setupEditorModeEventListener(this.deleteClick));
+        new SimpleExpander<EditorStates, void>(str => {
+            this.engine._editorOn(str, this.setupEditorModeEventListener(this.editStates[str]));
+        }).parse([
+            "click",
+            "multiEdit",
+            "delete",
+            "edit",
+            "shade",
+            "pan",
+            "editLevel"
+        ]);
 
-        this.engine._editorOn("edit", this.setupEditorModeEventListener(this.edit));
-
-        this.engine._editorOn("zoom-out", () => this.engine.modules.zoom.zoomOut(50));
-        this.engine._editorOn("zoom-in", () => this.engine.modules.zoom.zoomIn(50));
+        this.engine._editorOn("zoom out", () => this.engine.modules.zoom.zoomOut(50));
+        this.engine._editorOn("zoom in", () => this.engine.modules.zoom.zoomIn(50));
 
         this.engine._editorOn("recenter", () => {
             this.levelGroups.world.position.set(0);
         });
 
-        this.engine._editorOn("pan", this.setupEditorModeEventListener(this.pan));
-
-        this.engine._editorOn("filter", () => this.filter.state.toggle());
+        this.engine._editorOn("filter", () => this.editStates.filter.state.toggle());
 
         this.rotation.onRotation = () => this.onRotation();
 
@@ -196,7 +195,7 @@ export class MD2editor {
         this.grids.bg.clear();
         this.grids.overlay.clear();
 
-        this.multiEdit.scp.sprite.visible = false;
+        (this.editStates.multiEdit as _MD2editorMulti).scp.sprite.visible = false;
     }
 
     private onRotation() {
@@ -221,7 +220,7 @@ export class MD2editor {
             this.engine.generator.injectBlocks(this.grids);
         } catch(err) {
             console.error(err);
-            alert("There was an error. Check the console");
+            alert("There was an error and changes have been cancelled. Check the console");
         } finally {
             this.cancelChanges();
         }
@@ -300,5 +299,20 @@ export class MD2editor {
         this.engine.levelManager.groups.world.addChild(this.testSprite);
 
         this.setupListeners();
+    }
+
+    checkIfOOB(x: number, y: number, maxX: number, maxY: number): boolean {
+        for(const [a, b] of [[x, y], [maxX, y], [x, maxY], [maxX, maxY]])
+            if(this.checkIfPointIsOOB(a, b)) {
+                console.log(a, b);
+                return true;
+            }
+
+        return false;
+    }
+
+    checkIfPointIsOOB(x: number, y: number): boolean {
+        return this.engine.levelManager.levelGrids.fg
+        .isOOB(this.engine.utils.dbz(x), this.engine.utils.dbz(y));
     }
 }

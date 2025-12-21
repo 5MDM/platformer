@@ -1,11 +1,12 @@
 import { DragController } from "../../misc/drag";
 import { ToggleState } from "../../misc/util";
 import { AnyBlock } from "../../v2/blocks/blocks";
+import { MD2utils } from "../../v2/md2utils";
 import { MD2zoomModule } from "../../v2/modules/zoom";
 import { MDgameGridType } from "../../v2/types";
 import { MD2editor } from "../main";
 
-export abstract class _MD2editorBase {
+export class _MD2editorBase {
     editor: MD2editor;
     el: HTMLElement;
     drag: DragController;
@@ -14,6 +15,8 @@ export abstract class _MD2editorBase {
     state = new ToggleState(() => this.onEnable(), () => this.onDisable());
 
     buttonElement?: HTMLElement;
+
+    util: MD2utils;
 
     protected onEnable() {
         if(this.buttonElement) this.buttonElement.style.setProperty("border-color", "red");
@@ -25,6 +28,8 @@ export abstract class _MD2editorBase {
     constructor(editor: MD2editor, el: HTMLElement) {
         this.editor = editor;
         this.el = el;
+
+        this.util = editor.engine.utils;
 
         this.drag = new DragController({
             touchEl: this.el,
@@ -86,9 +91,6 @@ export abstract class _MD2editorBase {
     }
 
     protected getGridPos(x: number, y: number): [number, number] {
-        return [
-            Math.floor(x / this.editor.engine.blockSize),
-            Math.floor(y / this.editor.engine.blockSize),
-        ];
+        return this.util.dbz2Floor(x, y);
     }
 }

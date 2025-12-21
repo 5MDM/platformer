@@ -122,6 +122,34 @@
                     "needsItems": ["Abandoned House Gate Key"]
                 }
             }
+        },
+        "stone floor 1": {
+            "texture": "forest/stone-floor-1.png",
+            "category": "Forest",
+            "type": "fg"
+        },
+        "stone block": {
+            "texture": "forest/stone-block.png",
+            "category": "Forest",
+            "type": "fg"
+        },
+        "forest stone 1": {
+            "texture": "forest/forest-stone-1.png",
+            "category": "Forest",
+            "type": "fg"
+        },
+        "forest grass": {
+            "texture": "forest/forest-grass-top.png",
+            "category": "Forest",
+            "type": "overlay"
+        },
+        "forest stone edge": {
+            "texture": "forest/forest-stone-edge.png",
+            "category": "Forest",
+            "type": "fg",
+            "hitbox": {
+                "w": 20
+            }
         }
     }
 }

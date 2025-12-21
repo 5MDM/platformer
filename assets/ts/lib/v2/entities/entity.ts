@@ -1,56 +1,35 @@
+import { Container, ContainerChild, EventEmitter } from "pixi.js";
 import { clamp } from "../../misc/util";
-import { BasicBox, BasicBoxOpts } from "../blocks/blocks";
+import { BasicBox, BasicBoxOpts, FgBlock } from "../blocks/blocks";
 import { _MD2errorManager } from "../errors";
 import { AnimControl, AnimControlOpts } from "./anim";
 import { MD2entityComponentManager } from "./components/main";
 
-export interface EntityOpts extends BasicBoxOpts {
+export interface MovingDynamicObjOpts extends BasicBoxOpts {
     name: string;
-    animOpts: AnimControlOpts;
     defaultComponents?: Record<string, Record<string, any>>;
 }
 
-export class Entity extends BasicBox {
-    canJump = true;
+export interface EntityOpts extends MovingDynamicObjOpts {
+    animOpts: AnimControlOpts;
+}
+
+export type MovingDynamicObjEvents = 
+"hitFloor" | "hitCeiling" | "hitLeft" | "hitRight" | "hit";
+
+export abstract class MovingDynamicObj extends BasicBox {
     vx: number = 0;
     vy: number = 0;
     fx = 0;
     fy = 0;
-
-    thisFrame = {
-        hitFloor: false,
-        hitCeiling: false,
-        hitLeft: false,
-        hitRight: false,
-        reset() {
-            this.hitCeiling = false;
-            this.hitFloor = false;
-            this.hitLeft = false;
-            this.hitRight = false;
-        }
-    };
-
-    isPlayer = false;
     qw: number;
 
-    components: MD2entityComponentManager;
+    events = new EventEmitter<MovingDynamicObjEvents, FgBlock>();
 
-    defaultSpeed: number = 2;
-    animController: AnimControl;
-
-    constructor(o: EntityOpts) {
+    constructor(o: MovingDynamicObjOpts) {
         super(o);
+
         this.qw = this.halfW / 2;
-        this.components = new MD2entityComponentManager(this, o.defaultComponents || {});
-        this.animController = new AnimControl(o.animOpts, this.container);
-    }
-
-    tick(dt: number) {
-        this.components.onTick(dt);
-    }
-
-    destroy() {
-        this.animController.destroy();
     }
 
     isStandingOn(o: BasicBox): boolean {
@@ -60,11 +39,6 @@ export class Entity extends BasicBox {
             maxX: this.maxX - this.w / 2,
             maxY: this.maxY
         });
-    }
-
-    resetJump() {
-        this.jumpTime = 0;
-        this.canJump = true;
     }
 
     addFx(n: number) {
@@ -80,13 +54,73 @@ export class Entity extends BasicBox {
     moveDown(n: number) {this.addFy(n)}
     moveUp(n: number) {this.addFy(-n)}
 
+    applyGravity(x: number, y: number) {
+        this.setX(this.x - x);
+        this.setY(this.y + y);
+    }
+
+    tick(dt: number) {}
+
+    thisFrame = {
+        hitFloor: false,
+        hitCeiling: false,
+        hitLeft: false,
+        hitRight: false,
+        reset() {
+            this.hitCeiling = false;
+            this.hitFloor = false;
+            this.hitLeft = false;
+            this.hitRight = false;
+        }
+    };
+
+    resetJump() {
+        this.jumpTime = 0;
+        this.canJump = true;
+    }
+
+    canJump = true;
+
     isJumping = false;
     jumpTime = 0;
     maxJumpTime = 10;
 
-    applyGravity(x: number, y: number) {
-        this.setX(this.x - x);
-        this.setY(this.y + y);
+    isAffectedByGravity = true;
+}
+
+export class Entity extends MovingDynamicObj {
+    isPlayer = false;
+
+    components: MD2entityComponentManager;
+
+    defaultSpeed: number = 2;
+    animController: AnimControl;
+
+    constructor(o: EntityOpts) {
+        super(o);
+        this.components = new MD2entityComponentManager(this, o.defaultComponents || {});
+        this.animController = new AnimControl(o.animOpts, this.container);
+    }
+
+    tick(dt: number) {
+        this.components.onTick(dt);
+    }
+
+    destroy() {
+        super.destroy();
+        this.animController.destroy();
+    }
+
+    lookUp() {
+        
+    }
+
+    lookDown() {}
+
+    init() {
+        for(const name in this.components.components) {
+            this.components.components[name].init();
+        }
     }
 }
 

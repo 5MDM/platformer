@@ -17,6 +17,7 @@ import { MD2textModule } from "./modules/text/text";
 import { MDaudio } from "../misc/audio";
 import { MD2GUI } from "./modules/gui/main";
 import { BlockComponentManager } from "./blocks/components/main-manager";
+import { MD2utils } from "./md2utils";
 
 interface EngineOpts {
     engine: {
@@ -72,16 +73,15 @@ export class _MD2engine {
     initPromise: Promise<void>;
     private initPromiseRes?: () => void;
 
-    divideByBlockSize(n: number): number {
-        return Math.floor(n / this.blockSize);
-    }
-
-    mulByBlockSize(n: number): number {
-        return n * this.blockSize;
-    }
+    utils = new MD2utils(this);
 
     constructor(opts: EngineOpts) {
         BlockComponentManager.setEngine(this);
+
+        this.initPromise = new Promise(res => {
+            this.initPromiseRes = res;
+        });
+
         this.joystick = opts.engine.joystick;
         this.blockSize = opts.engine.blockSize;
         this.blockSizeHalf = this.blockSize / 2;
@@ -102,10 +102,6 @@ export class _MD2engine {
         };
 
         this.physics.setMatrix(this.levelManager.levelGrids.fg as MDmatrix<FgBlock>);
-
-        this.initPromise = new Promise(res => {
-            this.initPromiseRes = res;
-        });
 
         this.modules.gui.appendToTarget(opts.gui.target);
 

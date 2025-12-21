@@ -1,7 +1,7 @@
 
 export class MDaudio {
     audioContext = new AudioContext();
-    audios: Record<string, AudioBufferSourceNode> = {};
+    audios: Record<string, AudioBuffer> = {};
     isReady = false;
 
     private listenerIDs: Record<string, () => void> = {};
@@ -44,7 +44,7 @@ export class MDaudio {
                     .then(e => e.arrayBuffer())
                     .then(buffer => this.audioContext.decodeAudioData(buffer))
                     .then(audioBuffer => {
-                        this.loadBuffer(name, audioBuffer);
+                        this.audios[name] = audioBuffer;
                         res();
                     });
                 }
@@ -54,22 +54,17 @@ export class MDaudio {
         return pr;
     }
 
-    private loadBuffer(name: string, buffer: AudioBuffer) {
-        const src = this.audioContext.createBufferSource();
-        src.buffer = buffer;
-        src.connect(this.audioContext.destination);
-
-        this.audios[name] = src;
-    }
-
     playAudio(name: string) {
         if(!this.isReady) 
             return console.error(new Error(`Can't play "${name}" because context isn't ready`));
 
-        const val = this.audios[name];
-        if(!val) return console.error(new Error(`Can't find audio "${name}"`));
+        const buffer = this.audios[name];
+        if(!buffer) return console.error(new Error(`Can't find audio "${name}"`));
 
+        const src = this.audioContext.createBufferSource();
+        src.buffer = buffer;
+        src.connect(this.audioContext.destination);
         
-        val.start();
+        src.start();
     }
 }

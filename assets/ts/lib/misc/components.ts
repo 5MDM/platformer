@@ -67,6 +67,8 @@ export type ContinueCollisionResolution = boolean;
 export type MD2componentObjType = Record<string, Record<string, any>>;
 
 export class MD2componentModule<T> {
+    isInitialized = false;
+
     protected manager: CMM<T, MD2componentModule<T>>;
 
     opts: Record<string, any>;
@@ -80,7 +82,9 @@ export class MD2componentModule<T> {
         return true;
     }
 
-    init() {}
+    init() {
+        this.isInitialized = true;
+    }
 
     onCollisionLeave() {}
 

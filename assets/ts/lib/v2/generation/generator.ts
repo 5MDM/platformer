@@ -6,10 +6,11 @@ import { _MD2engine } from "../engine";
 import { EntityOpts, Entity } from "../entities/entity";
 import { Player } from "../entities/player";
 import { Success } from "../level";
-import { AnyTileSprites, BlockCreationOpts, BlockInfo, EntityInfo, LevelJSONoutput, MDgameGridType } from "../types";
+import { AnyTileSprites, BlockCreationOpts, BlockInfo, EntityInfo, LevelJSONoutput, MDgameGridType, XYWH } from "../types";
 import { greedyMesh } from "./greedy-mesh";
 import { MD2componentObjType } from "../../misc/components";
 import { AnimatedTilingSprite } from "../../misc/animated-tiles";
+import { MD2errors } from "../errors";
 
 
 export interface BlockOpts {
@@ -43,6 +44,10 @@ export abstract class _MD2Blockgenerator {
             animOpts: {
             },
             name: "player",
+        });
+
+        engine.initPromise.then(() => {
+            this.player.init();
         });
 
         this.engine.levelManager.recordPlayer(this.player);
@@ -165,14 +170,25 @@ export abstract class _MD2Blockgenerator {
         else return this.createStaticSprite(o, def);
     }
 
+    private parseHitbox(o: BlockOpts, def: BlockInfo): XYWH {
+        if(def.hitbox) {            
+            return {
+                x: o.x + (def.hitbox.x ?? 0),
+                y: o.y + (def.hitbox.y ?? 0),
+                w: (def.hitbox.w ?? o.w),
+                h: (def.hitbox.h ?? o.h),
+            };
+        } else return {x: o.x, y: o.y, w: o.w, h: o.h};
+    }
+
     private createFgBlock(o: BlockOpts, def: BlockInfo, sprite: TilingSprite, record: boolean = true) {
         const components = o.components || def.components;
 
         if(def.isOversize) {
-            const hw = this.engine.divideByBlockSize(sprite.width / 2) * this.engine.blockSize;
-            const hh = this.engine.divideByBlockSize(sprite.height / 2) * this.engine.blockSize;
-            const w = this.engine.divideByBlockSize(sprite.width) * this.engine.blockSize;
-            const h = this.engine.divideByBlockSize(sprite.height) * this.engine.blockSize;
+            const hw = this.engine.utils.roundBz(sprite.width / 2);
+            const hh = this.engine.utils.roundBz(sprite.height / 2);
+            const w = this.engine.utils.roundBz(sprite.width);
+            const h = this.engine.utils.roundBz(sprite.height);
 
             sprite.x += hw;
             sprite.y += hh;
@@ -181,14 +197,10 @@ export abstract class _MD2Blockgenerator {
         }
 
         const fgBlock = new FgBlock({
-            x: o.x,
-            y: o.y,
-            w: o.w,
-            h: o.h,
+            ...this.parseHitbox(o, def),
             name: def.texture,
             rotation: o.rotation,
             sprite,
-            //CL: components,
             id: this.engine.dataManager.getNewId(),
             blockSize: this.engine.blockSize,
             isOversize: def.isOversize,
@@ -196,12 +208,7 @@ export abstract class _MD2Blockgenerator {
             components,
         });
 
-        //fgBlock.sprite.x -= this.engine.blockSize / 2;
         if(record) this.engine.levelManager.recordBlock("fg", fgBlock);
-
-        // if (!components || Object.keys(components).length != 0) {
-        //     //this.componentParser.parseComponents(fgBlock);
-        // }
 
         return fgBlock;
     }
@@ -220,7 +227,7 @@ export abstract class _MD2Blockgenerator {
             blockSize: this.engine.blockSize,
             isOversize: def.isOversize,
         });
-
+        
         if(record) this.engine.levelManager.recordBlock(def.type || "bg", bgBlock);
 
         return bgBlock;
@@ -254,7 +261,7 @@ export abstract class _MD2Blockgenerator {
         const block = this.createAndReturnBlock(o);
         if(!block) return block;
 
-        this.engine.levelManager.groups[block.type].addChild(block.sprite);
+        //this.engine.levelManager.groups[block.type].addChild(block.sprite);
 
         return true;
     }
@@ -273,20 +280,22 @@ export abstract class _MD2Blockgenerator {
         return Object.values(this.blockDefs);
     }
 
-    setBackground(name: string) {
-    }
-
     replaceBlocks(data: LevelJSONoutput[]) {
         for(const i of data) {
-            this.generateBlocks({
-                name: i.type,
-                rotation: i.rotation,
-                x: i.x,
-                y: i.y,
-                w: i.w,
-                h: i.h,
-                components: i.components,
-            });
+
+            try {
+                this.generateBlocks({
+                    name: i.type,
+                    rotation: i.rotation,
+                    x: i.x,
+                    y: i.y,
+                    w: i.w,
+                    h: i.h,
+                    components: i.components,
+                });
+            } catch(err) {
+                throw MD2errors.generatingBlockError(i.type, i.x, i.y);
+            }
         }
     }
 
@@ -300,11 +309,16 @@ export abstract class _MD2Blockgenerator {
             h: o.h,
             components: o.components,
         });
-
     }
 
     injectBlocks(grid: Record<MDgameGridType, MDmatrix<AnyBlock>>) {
-        const data: LevelJSONoutput[] = greedyMesh(grid);
+        var data: LevelJSONoutput[];
+        try {
+            data = greedyMesh(grid);
+        } catch(err) {
+
+            throw MD2errors.greedyMeshError();
+        }
         
         this.replaceBlocks(data);
     }

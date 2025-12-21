@@ -1,11 +1,11 @@
-import level1 from "../../compiled-levels/1.json";
-import level2 from "../../compiled-levels/2.json";
-import level3 from "../../compiled-levels/3.json";
+
 import forest1 from "../../compiled-levels/forest/1.json";
 import abandoned_house_inside from "../../compiled-levels/forest/abandoned_house_inside.json";
 import errorLevel from "../../compiled-levels/error.json";
 import { _MD2engine } from "../lib/v2/engine";
 import { LevelDataV0_0_0 } from "../lib/v2/types";
+
+import forest2 from "../../compiled-levels/forest/2.json";
 
 export function initLevels(md2: _MD2engine) {
     function l(name: string, level: Object) {
@@ -14,6 +14,7 @@ export function initLevels(md2: _MD2engine) {
     
     l("1", forest1);
     l("abandoned_house_inside", abandoned_house_inside);
+    l("2", forest2);
 
     l("error", errorLevel as LevelDataV0_0_0);
 }

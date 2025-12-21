@@ -5,7 +5,8 @@
     "name": "Base Game",
     "data": {
         "blocks": [
-            "./forest/blocks.json"
+            "./forest/blocks.json",
+            "./global/blocks.json"
         ],
         "entities": [
             "./forest/entities.json"

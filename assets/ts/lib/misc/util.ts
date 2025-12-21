@@ -415,3 +415,4 @@ onLoad?: (img: HTMLImageElement, ev: Event) => any): Promise<HTMLImageElement> {
 export function createValIfDNE<T>(o: Record<any, T>, key: any, val: T) {
   if(!o[key]) o[key] = val;
 }
+

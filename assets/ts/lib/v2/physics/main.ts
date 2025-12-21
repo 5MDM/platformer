@@ -1,8 +1,10 @@
+import { ControlDump } from "../../misc/control-dump";
 import { Joystick } from "../../misc/joystick";
 import { MDmatrix } from "../../misc/matrix";
 import { FgBlock } from "../blocks/blocks";
 import { _MD2engine } from "../engine";
 import { Entity, PlayerControlledEntity } from "../entities/entity";
+import { Projectile } from "../entities/projectile";
 import { findstaticCollisions } from "./collision-f";
 import { setupMovementLoop } from "./movement";
 
@@ -18,20 +20,23 @@ export class _MD2physics {
     engine: _MD2engine;
     matrix: MDmatrix<FgBlock> = new MDmatrix(1, 1);
 
-    private dynamicObjs = new Map<number, Entity>();
+    private dynamicObjs = new Map<number, Entity | Projectile>();
     private entityGroups: EntityGroupMap[] = [];
     private playerGroup = new Map<number, PlayerControlledEntity>();
 
     static expectedFPS = 1000 / 60;
 
     static isMovementLoopSetup = false;
-    static isMovingUp = false;
-    static isMovingDown = false;
-    static isMovingLeft = false;
-    static isMovingRight = false;
+    // static isMovingUp = false;
+    // static isMovingDown = false;
+    // static isMovingLeft = false;
+    // static isMovingRight = false;
+    // static isJumping = false;
+
+    static controls = new ControlDump();
 
     gx: number = 0;
-    gy: number = 3;
+    gy: number = 5;
     suspendGy = false;
     smoothing: number;
 
@@ -57,6 +62,8 @@ export class _MD2physics {
     dt: number = 0;
     isLoopRunning: boolean = false;
 
+    P = _MD2physics;
+
     TDphysicsLoop(j: Joystick) {
         var dirX = 1;
         var dirY = 1;
@@ -67,41 +74,46 @@ export class _MD2physics {
 
             this.playerGroup.forEach(e => e.move(dirX, dirY));
         } else {
-            if ((_MD2physics.isMovingUp || _MD2physics.isMovingDown)
-                && (_MD2physics.isMovingLeft || _MD2physics.isMovingRight)) {
+            const {up, left, right, down} = this.P.controls.moving;
+
+            if((up || down) && (left || right)) {
                 dirX /= Math.SQRT2;
                 dirY /= Math.SQRT2;
             }
 
-            if (_MD2physics.isMovingUp) this.playerGroup.forEach(e => e.onUp(dirY));
-            if (_MD2physics.isMovingDown) this.playerGroup.forEach(e => e.onDown(dirY));
+            if (up) this.playerGroup.forEach(e => e.onUp(dirY));
+            if (down) this.playerGroup.forEach(e => e.onDown(dirY));
 
-            if (_MD2physics.isMovingLeft) this.playerGroup.forEach(e => e.onLeft(dirX));
+            if (left) this.playerGroup.forEach(e => e.onLeft(dirX));
 
-            if (_MD2physics.isMovingRight) this.playerGroup.forEach(e => e.onRight(dirX));
+            if (right) this.playerGroup.forEach(e => e.onRight(dirX));
 
-            if (!(_MD2physics.isMovingUp
-                || _MD2physics.isMovingDown
-                || _MD2physics.isMovingLeft
-                || _MD2physics.isMovingRight
-            )) this.playerGroup.forEach(e => e.onNotMoving());
+            if (!(up || down || left || right)) this.playerGroup.forEach(e => e.onNotMoving());
         }
 
         this.findCollisions();
     }
 
-    private entityGroupMapRecursiveIteration(fn: (e: Entity) => void, m: EntityGroupMap) {
+    private entityGroupMapRecursiveIteration
+    (fn: (e: Entity | Projectile, isEntity: boolean) => void, m: EntityGroupMap) {
         m.forEach(e => {
+            if(e.isDestroyed) return;
             if(e instanceof Map) return this.entityGroupMapRecursiveIteration(fn, e)
-            else return fn.call(this, e);
+            else return fn.call(this, e, e instanceof Entity);
         });
     }
 
     // iterate dynamic objects
-    ido(fn: (e: Entity) => void) {
+    ido(fn: (e: Entity | Projectile, isEntity: boolean) => void) {
         const self = this;
-        this.dynamicObjs.forEach(e => fn.call(self, e));
-        this.playerGroup.forEach(e => fn.call(self, e));
+        this.dynamicObjs.forEach(e => {
+            if(e.isDestroyed) return;
+            fn(e, e instanceof Entity);
+        });
+        this.playerGroup.forEach(e => {
+            if(e.isDestroyed) return;
+            fn(e, e instanceof Entity);
+        });
 
         this.entityGroupMapRecursiveIteration(fn, this.entityGroups);
     }
@@ -134,10 +146,10 @@ export class _MD2physics {
     }
 
     globalPhysicsLoopBefore() {
-        this.ido(e => {
+        this.ido((e, isEntity) => {
             e.lastX = e.x;
             e.lastY = e.y;
-            e.thisFrame.reset();
+            if(isEntity) (e as Entity).thisFrame.reset();
         });
     }
 
@@ -156,14 +168,13 @@ export class _MD2physics {
     applyGravity() {
         if(this.engine.CD == "td") return;
         this.ido(o => {
+            if(!o.isAffectedByGravity) return;
             o.applyGravity(this.gx, this.gy);
-            //if(this.gy != 0) {o.setY(o.y + this.gy);}
-            //if(this.gx != 0) {o.setX(o.x - this.gx);}
         });
     }
 
     protected tryJumping() {
-        this.playerGroup.forEach(e => e.onJump(.7));
+        this.playerGroup.forEach(e => e.onJump(.9));
     }
 
     sideScrollerPhysicsLoop(j: Joystick) {
@@ -179,19 +190,29 @@ export class _MD2physics {
 
             if(j.directionY > .3) this.tryJumping();
         } else {
-            const p = _MD2physics;
+            const {moving, looking, isJumping} = this.P.controls;
 
-            if(p.isMovingUp) this.tryJumping();
-            else this.playerGroup.forEach(e => e.jumpBreak());
+            if(isJumping) {
+                this.tryJumping();
+            } else {
+                this.playerGroup.forEach(e => e.jumpBreak());
+            }
 
-            if(p.isMovingLeft) this.playerGroup.forEach(e => e.onLeft(dirX));
-            if(p.isMovingRight) this.playerGroup.forEach(e => e.onRight(dirX));
+            if(moving.left) this.playerGroup.forEach(e => e.onLeft(dirX));
+            if(moving.right) this.playerGroup.forEach(e => e.onRight(dirX));
 
-            if(!(p.isMovingUp
-                || p.isMovingDown
-                || p.isMovingLeft
-                || p.isMovingRight
-            )) this.playerGroup.forEach(e => e.onNotMoving())
+            if(looking.up) this.playerGroup.forEach(e => {
+                e.lookUp();
+            });
+
+            if(looking.down) this.playerGroup.forEach(e => e.lookDown());
+
+            if(!(moving.up
+            || moving.down
+            || moving.left
+            || moving.right
+            || isJumping)) 
+                this.playerGroup.forEach(e => e.onNotMoving())
         }
 
         this.findCollisions();
@@ -228,8 +249,12 @@ export class _MD2physics {
         }
     }
 
-    addEntity(entity: Entity) {
+    addEntity(entity: Entity | Projectile) {
         this.dynamicObjs.set(entity.id, entity);
+    }
+
+    removeEntity(e: Entity | Projectile) {
+        this.dynamicObjs.delete(e.id);
     }
 
     addEntityGroup(map: EntityGroupMap) {

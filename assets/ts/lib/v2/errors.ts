@@ -55,9 +55,10 @@ export class _MD2errorManager {
 }
 
 export const MD2errors = {
-    err(msg: string): void {
+    err(msg: string): Error {
         const error = new Error(msg);
         console.error(error);
+        return error;
     },
     notFound(type: string, data: string) {
         this.err(`${type} "${data}" not found`);
@@ -80,5 +81,11 @@ export const MD2errors = {
     },
     ctxErr() {
         this.err("Device refused to draw graphics. (2d context is undefined). Use another browser or device");
+    },
+    greedyMeshError() {
+        return this.err("There was an error with the greedy mesher");
+    },
+    generatingBlockError(name: string, x: number, y: number) {
+        return this.err(`Failed to generate block "${name}" at (${x}, ${y})`);
     }
 };

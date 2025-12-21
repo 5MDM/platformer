@@ -46,6 +46,8 @@ export class BasicBox implements XYWH {
     lastX: number;
     lastY: number;
 
+    randNum: number = Math.floor(Math.random() * 1000);
+
     container = new Container();
 
     constructor(o: BasicBoxOpts) {
@@ -103,7 +105,10 @@ export class BasicBox implements XYWH {
         this.iterateBoundsF(this.x, this.y, this.w, this.h, f);
     }
 
+    isDestroyed = false;
+
     destroy() {
+        this.isDestroyed = true;
         this.container.destroy();
     }
 

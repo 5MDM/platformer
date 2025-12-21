@@ -1,6 +1,7 @@
-import { Texture, TilingSprite } from "pixi.js";
+import { EventEmitter, Texture, TilingSprite } from "pixi.js";
 import { _MD2engine } from "../v2/engine";
 import { XYWH } from "../v2/types";
+import { ToggleState } from "./util";
 
 export class MDscalableSprite {
     sprite: TilingSprite = new TilingSprite({
@@ -51,7 +52,7 @@ export class MDscalableSprite {
     }
 
     setPos(x: number, y: number) {
-        this.sprite.position.set(this.engine.mulByBlockSize(x), this.engine.mulByBlockSize(y));
+        this.sprite.position.set(this.engine.utils.mbz(x), this.engine.utils.mbz(y));
         this.hasOffsettedX = false;
         this.hasOffsettedY = false;
     }
@@ -91,10 +92,10 @@ export class MDscalableSprite {
         }
 
         const size: [number, number, number, number] = [
-            this.engine.divideByBlockSize(x),
-            this.engine.divideByBlockSize(y),
-            this.engine.divideByBlockSize(width),
-            this.engine.divideByBlockSize(height),
+            this.engine.utils.dbz(x),
+            this.engine.utils.dbz(y),
+            this.engine.utils.dbz(width),
+            this.engine.utils.dbz(height),
         ];
 
         return size;

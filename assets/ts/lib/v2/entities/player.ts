@@ -1,5 +1,9 @@
-import { Container } from "pixi.js";
+import { Container, Texture } from "pixi.js";
 import { EntityOpts, PlayerControlledEntity } from "./entity";
+import { MD2componentModule } from "../../misc/components";
+import { WeaponGun } from "./components/weapons/gun";
+import { MDV } from "../../misc/vectors";
+import { Gun4dir } from "./components/weapons/gun4dir";
 
 interface PlayerOpts extends EntityOpts {
     view: Container;
@@ -12,12 +16,47 @@ export class Player extends PlayerControlledEntity {
 
     defaultSpeed: number = .3;
     isPlayer = true;
+    gun: Gun4dir;
 
     constructor(o: PlayerOpts) {
         super(o);
         this.view = o.view;
 
+        const gun = new Gun4dir(
+            this.components,
+            {
+                texture: "doorpoint.png",
+                bounds: {
+                    x: 0,
+                    y: 10,
+                    w: 32,
+                    h: 32,
+                },
+                bulletSpeed: 8,
+            }
+        );
+
+        this.gun = gun;
+
+        this.components.setComponents({
+            gun,
+        });
+
+        addEventListener("keydown", e => {
+            if(e.key != "Shift") return;
+
+            gun.fireMain();
+        }, {passive: true});
+
+        gun.setDirection("right");
+
         this.respondToResize();
+    }
+
+    tick(dt: number): void {
+        this.gun.opts.bulletSpeed = Math.abs(this.fx) + 8;
+
+
     }
 
     respondToResize() {
@@ -61,21 +100,33 @@ export class Player extends PlayerControlledEntity {
     override onUp(n: number) {
         super.onUp(n);
         this.animController.setBasicAction("td-walk-u", true);
+        // this.gun.setDirection("up");
+    }
+
+    override lookUp(): void {
+        this.gun.setDirection("up");
+    }
+
+    override lookDown() {
+        this.gun.setDirection("down");
     }
 
     override onLeft(n: number) {
         super.onLeft(n);
         this.animController.setBasicAction("td-walk-l", true);
+        this.gun.setDirection("left");
     }
 
     override onRight(n: number) {
         super.onRight(n);
         this.animController.setBasicAction("td-walk-r", true);
+        this.gun.setDirection("right");
     }
 
     override onDown(n: number) {
         super.onDown(n);
         this.animController.setBasicAction("td-walk-d", true);
+        this.gun.setDirection("down");
     }
 
     override onNotMoving(): void {

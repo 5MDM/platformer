@@ -1,3 +1,5 @@
+import { Continue } from "../v2/types";
+import { MDV } from "./vectors";
 
 export class MDmatrix<T> {
     public matrix: T[][];
@@ -23,6 +25,13 @@ export class MDmatrix<T> {
             || x > this.w
             || y < 0
             || y > this.h;
+    }
+
+    containsBound(b: MDV.V4) {
+        return b.x > 0
+        && b.y > 0
+        && b.w < this.w
+        && b.h < this.h;
     }
 
     get(x: number, y: number): T | undefined {
@@ -63,8 +72,28 @@ export class MDmatrix<T> {
         this.matrix = [];
     }
 
+    advForEach(f: (t: T, coord: MDV.V2, set: (val: T | any) => void) => Continue | void) {
+        for(const y in this.matrix) {
+            const yo = this.matrix[y];
+            const yInt = parseInt(y);
+
+            for(const x in yo) {
+                const xInt = parseInt(x);
+                const set = (val: T) => this.set(xInt, yInt, val);
+
+                const canContinue = f(yo[x], new MDV.V2(xInt, yInt), set);
+
+                if(!canContinue) return;
+            }
+        }
+    }
+
+    setAllTo(val: T) {
+        this.advForEach((a, b, set) => set(val));
+    }
+
     forEach(f: (t: T) => void) {
-        for (const y in this.matrix) {
+        for(const y in this.matrix) {
             const yo = this.matrix[y];
 
             for (const x in yo) f(yo[x]);

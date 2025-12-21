@@ -8,6 +8,8 @@ import { Player } from "./entities/player";
 import { _md2events, LevelDataV0_0_0, LevelJSONoutput, MDgameGridType, XYtuple } from "./types";
 import { floorToMultiples } from "../misc/util";
 import { MD2doorpointComponent } from "./blocks/components/doorpoint";
+import { MDV } from "../misc/vectors";
+import { Projectile } from "./entities/projectile";
 
 export type Success = boolean; 
 
@@ -35,6 +37,12 @@ Record<number, Record<number, Record<number, (engine: _MD2engine, data: LevelDat
                     });
                 }
 
+                if(data.meta) {
+                    if(data.meta.dimension
+                    && data.meta.dimension != engine.CD
+                    ) engine.switchDimensions();
+                }
+
                 //if(data.background) engine.generator.setBackground(data.background.name);
 
                 return true;
@@ -56,7 +64,8 @@ export class _MD2levelManager {
 
     doorpointMap: Record<string, XYtuple> = {};
 
-    private entityRecord: Record<number, Entity> = {};
+    entityRecord: Record<number, Entity> = {};
+    projectileRecord: Record<number, Projectile> = {};
 
     engine: _MD2engine;
 
@@ -92,10 +101,7 @@ export class _MD2levelManager {
         this.groups.view.addChild(this.groups.static);
         this.groups.world.addChild(this.groups.view);
 
-        //this.groups.static.mask = this.masks.static;
-        
         this.container.addChild(this.groups.world);
-        //this.groups.world.addChild(this.darkness);
     }
 
     recordBlock(type: MDgameGridType, o: AnyBlock) {
@@ -105,14 +111,15 @@ export class _MD2levelManager {
         const oldBlock: AnyBlock | undefined = this.levelGrids[type].get(x, y);
         if(oldBlock) this.engine.deletor.deleteBlockByBlockAndWorldPos(oldBlock, x, y);
 
+        o.sprite.x += o.blockSize / 2;
+        this.groups[type].addChild(o.container);
+
         this.levelGrids[type].set(x, y, o);
         this.blockRecord[type][o.id] = o;
 
         Keymap.IterateGMrect(x, y, w, h, (x, y) =>
             this.levelGrids[type].set(x, y, o)
         );
-
-        this.groups[type].addChild(o.container);
     }
 
     recordEntity(entity: Entity) {
@@ -128,6 +135,12 @@ export class _MD2levelManager {
         this.engine.physics.addPlayer(player);
 
         this.groups.world.addChild(player.container);
+    }
+
+    recordProjectile(p: Projectile) {
+        this.projectileRecord[p.id] = p;
+        this.groups.fg.addChild(p.container);
+        this.engine.physics.addEntity(p);
     }
 
     setLevel(name: string, data: LevelDataV0_0_0): Success {
@@ -264,7 +277,35 @@ export class _MD2levelManager {
             }
     }
 
-    registerDoorpoint(dp: MD2doorpointComponent) {
+    sampleFgBlocks(bounds: MDV.V4): AnyBlock[] {
+        if(!this.levelGrids.fg.containsBound(bounds)) return [];
 
+        const blocks: AnyBlock[] = [];
+
+        bounds.forEachIntPoint(({x, y}) => {
+            const block = this.levelGrids.fg.get(x, y);
+            if(!block) return;
+            blocks.push(block);
+        });
+
+        return blocks;
+    }
+
+    getOutsideFacingPoints(bounds: MDV.V4): MDV.V2[] {
+        const blocks = this.sampleFgBlocks(bounds);
+        if(!blocks) return [];
+
+        const points: MDV.V2[] = [];
+
+        for(const block of blocks) {
+            const bounds = MDV.V4.fromBounds(block);
+            points.push(...bounds.getOutsideIntPoints(this.engine.blockSize));
+        }
+
+        return points;
+    }
+
+    registerDoorpoint(dp: MD2doorpointComponent) {
+        // why is this just empty
     }
 }

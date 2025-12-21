@@ -24,6 +24,7 @@ export interface BlockInfo {
     isOversize: boolean;
     category: string;
     isAnimated?: boolean;
+    hitbox?: Partial<XYWH>;
 }
 
 interface ModDataFileBase {
@@ -33,6 +34,9 @@ interface ModDataFileBase {
 
 export interface LevelDataV0_0_0 extends ModDataFileBase {
     blocks: LevelJSONoutput[];
+    meta?: {
+        dimension?: "td" | "side";
+    };
     //background?: BackgroundOpts;
 }
 
@@ -85,6 +89,7 @@ export namespace Mod {
         isOversize?: boolean;
         category: string;
         isAnimated?: boolean;
+        hitbox?: Partial<XYWH>;
     }
 
     export type BlocksV0_1_x = Mod.ModFileBaseLayout<Mod.BlockJSONinfo>;
@@ -153,3 +158,5 @@ export interface RegisterItemOpts {
     desc: string;
     img: HTMLImageElement;
 }
+
+export type Continue = boolean;
