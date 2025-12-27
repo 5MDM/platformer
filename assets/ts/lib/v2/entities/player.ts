@@ -2,7 +2,7 @@ import { Container, Texture } from "pixi.js";
 import { EntityOpts, PlayerControlledEntity } from "./entity";
 import { MD2componentModule } from "../../misc/components";
 import { WeaponGun } from "./components/weapons/gun";
-import { MDV } from "../../misc/vectors";
+import { MDV } from "../../misc/vectors/vectors";
 import { Gun4dir } from "./components/weapons/gun4dir";
 
 interface PlayerOpts extends EntityOpts {

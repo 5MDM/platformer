@@ -1,6 +1,7 @@
-import { XYWH } from "../v2/types";
-import { MDmatrix } from "./matrix";
-import { SimpleExpander } from "./util";
+import { XYWH } from "../../v2/types";
+import {vectorMixin1} from "./outside-points";
+import { vectorMixin2 } from "./point-adjacency";
+// import "./tests";
 
 export namespace MDV {
     export type XY = {
@@ -40,6 +41,24 @@ export namespace MDV {
             this.y *= n;
             return this;
         }
+
+        floor() {
+            this.x = Math.floor(this.x);
+            this.y = Math.floor(this.y);
+            return this;
+        }
+
+        round() {
+            this.x = Math.round(this.x);
+            this.y = Math.round(this.y);
+            return this;
+        }
+
+        ceil() {
+            this.x = Math.ceil(this.x);
+            this.y = Math.ceil(this.y);
+            return this;
+        }
     }
 
     export type V4cornersArray = [
@@ -48,6 +67,40 @@ export namespace MDV {
         TwoNumArr,
         TwoNumArr,
     ];
+
+    export interface V4neighboringCellHolder {
+        topLeft: V2;
+        top: V2;
+        topRight: V2;
+        bottomLeft: V2;
+        bottom: V2;
+        bottomRight: V2;
+        point: V2;
+
+        left: V2;
+        right: V2;
+    }
+
+    export interface V4NeighborCellType extends Partial<V4neighboringCellHolder> {
+        type: V4cellNeighborType;
+    }
+
+    export type V4cellNeighborType = 
+    "isolated" |
+    "top" |
+    "top-left-corner" |
+    "top-right-corner" |
+    "top-U" |
+    "left" |
+    "right" |
+    "left-U" |
+    "right-U" |
+    "bottom-U" |
+    "bottom-left-corner" |
+    "bottom-right-corner" |
+    "bottom" |
+    "top-down-pipe" |
+    "left-right-pipe";
 
     export class V4 implements XYWH {
         x: number;
@@ -88,48 +141,9 @@ export namespace MDV {
             }
         }
 
-        getOutsideIntPoints(step = 1): V2[] {
-            const arr: V2[] = [];
-            const maxX = this.x + this.w;
-            const maxY = this.y + this.h;
-
-            const set = (x: number, y: number) => {
-                arr.push(new V2(x, y));
-            };
-
-            // singular block
-            if(maxX <= this.x + step
-            && maxY <= this.y + step
-            ) return [new V2(this.x, this.y)];
-
-            if(maxX <= this.x + step) {
-                // singular width
-                for(let y = this.y; y < maxY; y += step) {
-                    set(this.x, y);
-                }
-
-                return arr;
-            } else if(maxY <= this.y + step) {
-                // singular height
-                for(let x = this.x; x < maxX; x += step) {
-                    set(x, this.y);
-                }
-
-                return arr;
-            }
-
-            for(let x = this.x; x < maxX; x += step) {
-                set(x, this.y);
-                set(x, maxY);
-            }
-
-            for(let y = this.y + step; y < maxY - step; y += step) {
-                set(this.x, y);
-                set(maxX, y);
-            }
-
-            return arr;
-        }
+        getOutsideIntPoints(step = 1, inset = 0): V2[] {return [] as V2[]}
+        getNeighboringOutsidePoints(step = 1, inset = 0): Partial<MDV.V4neighboringCellHolder>[]
+        {return [] as Partial<MDV.V4neighboringCellHolder>[]}
 
         static fromArr(arr: [number, number, number, number]): V4 {
             return new V4(...arr);
@@ -155,19 +169,16 @@ export namespace MDV {
 
             return this;
         }
+
+        findAdjacencyForEachPoint(
+            this: MDV.V4,
+            steps = 1,
+            inset = 0,
+        ): MDV.V4NeighborCellType[] {
+            return [] as MDV.V4NeighborCellType[];
+        }
     }
 }
 
-// new SimpleExpander<[number, number, number], void>(([x, y, expected]) => {
-//     const points = new MDV.V4(0, 0, x, y).getOutsideIntPoints();
-//     console.assert(points.length == expected, 
-//         `\n"size (${x}, ${y}) with length ${points.length} != ${expected}`
-//     );
-// }).parse([
-//     [1, 1, 1],
-//     [2, 2, 4],
-//     [2, 3, 6],
-//     [4, 4, 12],
-//     [1, 10, 10],
-//     [3, 2, 6]
-// ]);
+Object.assign(MDV.V4.prototype, vectorMixin1);
+Object.assign(MDV.V4.prototype, vectorMixin2);

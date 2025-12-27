@@ -8,7 +8,7 @@ import { Sprite, Texture } from "pixi.js";
 // 129fff
 
 app.init({
-    background: "#000",
+    background: "#fff",
     resizeTo: window,
     antialias: false,
     autoDensity: true,

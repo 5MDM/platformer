@@ -416,3 +416,11 @@ export function createValIfDNE<T>(o: Record<any, T>, key: any, val: T) {
   if(!o[key]) o[key] = val;
 }
 
+export function simpleSwitch<Key extends string>
+(main: Key, o: Partial<Record<Key, (keyName: string) => any>>, context?: any) {
+  if(context) {
+    o[main]?.call(main, context);
+  } else {
+    o[main]?.(main);
+  }
+}

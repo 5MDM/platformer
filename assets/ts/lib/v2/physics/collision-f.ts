@@ -1,6 +1,6 @@
 import { blockSize } from "../../../constants";
 import { MDmatrix } from "../../misc/matrix";
-import { MDV } from "../../misc/vectors";
+import { MDV } from "../../misc/vectors/vectors";
 import { FgBlock } from "../blocks/blocks";
 import { _MD2engine } from "../engine";
 import { Entity, MovingDynamicObj } from "../entities/entity";

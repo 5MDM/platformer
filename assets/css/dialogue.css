@@ -66,3 +66,30 @@
         font-size: 0.5rem;
     }
 }
+/* 
+#vec-div {
+    display: grid;
+    grid-template-areas: 
+    "top-left top-right"
+    "bottom-left bottom-right";
+
+    position: absolute;
+    z-index: 9999;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    background-color: #222222;
+
+    gap: 5px;
+}
+
+#vec-div > .vec-point {
+    display: block;
+    position: relative;
+    border: 3px solid green;
+    color: white;
+    font-size: 1.2em;
+} */

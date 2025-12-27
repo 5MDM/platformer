@@ -137,6 +137,8 @@ export class BasicBox implements XYWH {
 export abstract class Block extends BasicBox {
     readonly type: MDgameGridType = "bg";
 
+    isShaded = false;
+
     readonly name: string;
     readonly rotation: number; // degrees
     isOverlay: boolean = false;

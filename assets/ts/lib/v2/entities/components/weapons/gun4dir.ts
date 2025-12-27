@@ -1,6 +1,6 @@
 import { audio } from "../../../../../game/audio";
 import { Joystick4Movement } from "../../../../misc/joystick";
-import { MDV } from "../../../../misc/vectors";
+import { MDV } from "../../../../misc/vectors/vectors";
 import { WeaponGun } from "./gun";
 
 const V2 = MDV.V2;

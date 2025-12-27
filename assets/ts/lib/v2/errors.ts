@@ -87,5 +87,8 @@ export const MD2errors = {
     },
     generatingBlockError(name: string, x: number, y: number) {
         return this.err(`Failed to generate block "${name}" at (${x}, ${y})`);
+    },
+    ifStatementErr() {
+        return this.err(`"if" statement error`);
     }
 };

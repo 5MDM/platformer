@@ -4,7 +4,7 @@ import { WeaponsComponent } from "../weapons";
 import { XYWH } from "../../../types";
 import { Entity } from "../../entity";
 import { createMD2t } from "../../../modules/text/md2t-parser";
-import { MDV } from "../../../../misc/vectors";
+import { MDV } from "../../../../misc/vectors/vectors";
 import { Projectile } from "../../projectile";
 import { FgBlock } from "../../../blocks/blocks";
 import { audio } from "../../../../../game/audio";

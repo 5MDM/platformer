@@ -2,7 +2,7 @@ import { buildPixelLine, Container, EventEmitter, Texture, Ticker } from "pixi.j
 import { MD2componentModule } from "../../../misc/components";
 import { Entity } from "../entity";
 import { MD2entityComponentManager } from "./main";
-import { MDV } from "../../../misc/vectors";
+import { MDV } from "../../../misc/vectors/vectors";
 import { MD2tweener, MD2tweenOnce, TweenF } from "../../../misc/tweener";
 import { XYWH } from "../../types";
 import { Projectile } from "../projectile";

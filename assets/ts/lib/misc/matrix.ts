@@ -1,5 +1,5 @@
 import { Continue } from "../v2/types";
-import { MDV } from "./vectors";
+import { MDV } from "./vectors/vectors";
 
 export class MDmatrix<T> {
     public matrix: T[][];

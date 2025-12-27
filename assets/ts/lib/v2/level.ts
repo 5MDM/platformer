@@ -8,7 +8,7 @@ import { Player } from "./entities/player";
 import { _md2events, LevelDataV0_0_0, LevelJSONoutput, MDgameGridType, XYtuple } from "./types";
 import { floorToMultiples } from "../misc/util";
 import { MD2doorpointComponent } from "./blocks/components/doorpoint";
-import { MDV } from "../misc/vectors";
+import { MDV } from "../misc/vectors/vectors";
 import { Projectile } from "./entities/projectile";
 
 export type Success = boolean; 

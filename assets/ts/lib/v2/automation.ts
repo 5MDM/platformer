@@ -4,6 +4,8 @@ import { MD2componentModule } from "../misc/components";
 import { _MD2engine } from "./engine";
 import { Entity } from "./entities/entity";
 import { MDgameGridType } from "./types";
+import { MDV } from "../misc/vectors/vectors";
+import { Sprite, Texture } from "pixi.js";
 
 interface AutomationDataHolder {
     val: unknown;
@@ -22,6 +24,7 @@ export class MD2devAutomation {
     isStopped = false;
 
     protected lastBlock?: AnyBlock;
+    protected lastCreatedFgBlock?: FgBlock;
 
     private setVal(val: unknown, type?: string) {
         this.lastData.val = val;
@@ -117,6 +120,33 @@ export class MD2devAutomation {
     tp(entity: Entity, x: number | undefined, y: number | undefined) {
         if(x) entity.setX(x);
         if(y) entity.setY(y);
+        return this;
+    }
+
+    createFgBlockByTexture
+    (pos: MDV.V2, texture: Texture, record = true, isOversize = false) {
+        const block = new FgBlock({
+            name: texture.label || "custom-automation-block",
+            isOversize,
+            blockSize: this.engine.blockSize,
+            id: this.engine.dataManager.getNewId(),
+            x: pos.x,
+            y: pos.y,
+            rotation: 0,
+            sprite: new Sprite(texture),
+            w: this.engine.blockSize,
+            h: this.engine.blockSize,
+        });
+
+        if(record) this.engine.levelManager.recordBlock("fg", block);
+
+        this.lastCreatedFgBlock = block;
+
+        return this;
+    }
+
+    getLastCreatedFgBlock(f: (block: FgBlock) => void) {
+        f(this.lastCreatedFgBlock!);
         return this;
     }
 }
