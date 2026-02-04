@@ -126,6 +126,12 @@ export class MDmatrix<T> {
         return m;
     }
 
+    setRow(y: number, t: T) {
+        if(!this.matrix[y]) return;
+
+        for(let x = 0; x < this.w; x++) this.set(x, y, t);
+    }
+
     checkIfEMpty(): boolean {
         var isEmpty = true;
 
@@ -134,5 +140,15 @@ export class MDmatrix<T> {
         });
 
         return isEmpty;
+    }
+
+    copyFrom(m: MDmatrix<T>) {
+        m.advForEach((t: T, coord: MDV.V2) => {
+            if(coord.x > this.w
+            || coord.y > this.h
+            ) return;
+
+            this.set(coord.x, coord.y, t);
+        });
     }
 }

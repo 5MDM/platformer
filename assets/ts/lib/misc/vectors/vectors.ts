@@ -1,7 +1,7 @@
 import { XYWH } from "../../v2/types";
 import {vectorMixin1} from "./outside-points";
 import { vectorMixin2 } from "./point-adjacency";
-// import "./tests";
+// import { startTests } from "./tests";
 
 export namespace MDV {
     export type XY = {
@@ -59,6 +59,11 @@ export namespace MDV {
             this.y = Math.ceil(this.y);
             return this;
         }
+
+        add(p: V2) {
+            this.x += p.x;
+            this.y += p.y;
+        }
     }
 
     export type V4cornersArray = [
@@ -85,20 +90,22 @@ export namespace MDV {
         type: V4cellNeighborType;
     }
 
-    export type V4cellNeighborType = 
-    "isolated" |
-    "top" |
-    "top-left-corner" |
-    "top-right-corner" |
+    export type V4cell8sidesType = 
+    "top-left-corner"
+    | "top-right-corner"
+    | "top"
+    | "left" 
+    | "right"
+    | "bottom-left-corner"
+    | "bottom-right-corner" 
+    | "bottom";
+
+    export type V4cellNeighborType = V4cell8sidesType
+    | "isolated" |
     "top-U" |
-    "left" |
-    "right" |
     "left-U" |
     "right-U" |
     "bottom-U" |
-    "bottom-left-corner" |
-    "bottom-right-corner" |
-    "bottom" |
     "top-down-pipe" |
     "left-right-pipe";
 
@@ -133,12 +140,24 @@ export namespace MDV {
             for(const i of arr) f(V2.fromArray(i));
         }
 
-        forEachIntPoint(f: (v2: V2) => void) {
-            for(let fy = this.y; fy < this.y +this.h; fy++) {
-                for(let fx = this.x; fx < this.x + this.w; fx++) {
+        forEachIntPoint(f: (v2: V2) => void, inset = 0) {
+            for(let fy = this.y + inset; fy < this.y + this.h - inset; fy++) {
+                for(let fx = this.x + inset; fx < this.x + this.w - inset; fx++) {
                     f(new V2(fx, fy));
                 }
             }
+        }
+
+        clone() {
+            return MDV.V4.fromBounds(this);
+        }
+
+        floor() {
+            this.x = Math.floor(this.x);
+            this.y = Math.floor(this.y);
+            this.w = Math.floor(this.w);
+            this.h = Math.floor(this.h);
+            return this;
         }
 
         getOutsideIntPoints(step = 1, inset = 0): V2[] {return [] as V2[]}
@@ -158,6 +177,7 @@ export namespace MDV {
             this.y /= n;
             this.w /= n;
             this.h /= n;
+            return this;
         }
 
         floorDivideS(n: number, base = 1) {
@@ -170,15 +190,77 @@ export namespace MDV {
             return this;
         }
 
-        findAdjacencyForEachPoint(
+        findAdjacencyForEachOutsidePoint(
             this: MDV.V4,
             steps = 1,
             inset = 0,
         ): MDV.V4NeighborCellType[] {
             return [] as MDV.V4NeighborCellType[];
         }
+
+        findAdjacencyForEachPoint
+        (this: MDV.V4, steps = 1, inset = 0):
+        MDV.V4NeighborCellType[] {
+            return [] as MDV.V4NeighborCellType[];
+        }
+
+        findAdjacencyFromCell(cell: Partial<V4neighboringCellHolder>): MDV.V4NeighborCellType {
+            return undefined as unknown as MDV.V4NeighborCellType;
+        }
+
+        findNeighborCellsFromPoint(point: MDV.V2, steps = 1):
+        Partial<MDV.V4neighboringCellHolder> {
+            return undefined as unknown as MDV.V4neighboringCellHolder;
+        }
+
+        addV2(v2: V2) {
+            this.x += v2.x;
+            this.y += v2.y;
+        }
+
+        static cell8posGrid: Record<MDV.V4cell8sidesType, MDV.V2> = {
+            "top-left-corner": new V2(-1, -1),
+            "top": new V2(0, -1),
+            "top-right-corner": new V2(1, -1),
+            "left": new V2(-1, 0),
+            "right": new V2(1, 0),
+            "bottom-left-corner": new V2(-1, 1),
+            "bottom": new V2(0, 1),
+            "bottom-right-corner": new V2(1, 1),
+        };
+
+        static clone8posGrid(): Record<MDV.V4cell8sidesType, MDV.V2> {
+            const o: Record<MDV.V4cell8sidesType, MDV.V2> = 
+            {} as Record<MDV.V4cell8sidesType, MDV.V2>;
+
+            for(const name in V4.cell8posGrid) {
+                const p: V2 = V4.cell8posGrid[name].clone();
+                o[name] = p;
+            }
+
+            return o;
+        }
+
+        static getCell8PosGridMultipliedByNum(steps = 1): Record<MDV.V4cell8sidesType, MDV.V2> {
+            const grid: Record<MDV.V4cell8sidesType, MDV.V2> = V4.clone8posGrid();
+            for(const name in grid) {
+                const p: MDV.V2 = grid[name];
+                p.multiplyS(steps);
+            }
+
+            return grid;
+        }
+
+        containsOrAlignsWithPoint(p: V2) {
+            return this.x <= p.x
+            && this.x + this.w >= p.x
+            && this.y <= p.y
+            && this.y + this.h >= p.y;
+        }
     }
 }
 
 Object.assign(MDV.V4.prototype, vectorMixin1);
 Object.assign(MDV.V4.prototype, vectorMixin2);
+
+// startTests();

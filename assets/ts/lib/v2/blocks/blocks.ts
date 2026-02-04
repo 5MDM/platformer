@@ -221,6 +221,8 @@ export abstract class Block extends BasicBox {
     iterateWorldBounds(f: (x: number, y: number, lx: number, ly: number) => void) {
         this.iterateBoundsF(...this.getWorldGridPos(), ...this.getWorldGridSize(), f);
     }
+
+    shadeRecord: Record<number, AnyBlock> = {};
 }
 
 export class FgBlock extends Block {

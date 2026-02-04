@@ -69,10 +69,12 @@ export class _MD2levelManager {
 
     engine: _MD2engine;
 
+    static maxLevelSize = 128;
+
     levelGrids: Record<MDgameGridType, MDmatrix<AnyBlock>> = {
-        overlay: new MDmatrix<BgBlock>(128, 128),
-        fg: new MDmatrix<FgBlock>(128, 128),
-        bg: new MDmatrix<BgBlock>(128, 128),
+        overlay: new MDmatrix<BgBlock>(_MD2levelManager.maxLevelSize, _MD2levelManager.maxLevelSize),
+        fg: new MDmatrix<FgBlock>(_MD2levelManager.maxLevelSize, _MD2levelManager.maxLevelSize),
+        bg: new MDmatrix<BgBlock>(_MD2levelManager.maxLevelSize, _MD2levelManager.maxLevelSize),
     };
 
     container: Container = new Container();

@@ -381,6 +381,11 @@ export class RotationHolder {
 
 export function NOOP<T extends unknown[], R = void>(..._args: T): R | undefined {return;}
 
+export function NOOPR
+<Args extends unknown[], Return = void>
+(..._args: Args): Return 
+{return undefined as unknown as Return;}
+
 export function getContainerCoords(e: Container): [number, number] {
   return [e.x, e.y];
 }
@@ -416,11 +421,18 @@ export function createValIfDNE<T>(o: Record<any, T>, key: any, val: T) {
   if(!o[key]) o[key] = val;
 }
 
-export function simpleSwitch<Key extends string>
-(main: Key, o: Partial<Record<Key, (keyName: string) => any>>, context?: any) {
+export function simpleSwitch<Key extends string, C = undefined>
+(main: Key, o: Partial<Record<Key | "default", (this: C, keyName: string) => any>>, context?: C) {
   if(context) {
-    o[main]?.call(main, context);
+    const f = o[main];
+
+    if(f) f.call(context, main);
+    else o.default?.call(context, main);
+
   } else {
-    o[main]?.(main);
+    const f = o[main];
+    
+    if(f) f.call(undefined!, main);
+    else o.default?.call(undefined!, main);
   }
 }

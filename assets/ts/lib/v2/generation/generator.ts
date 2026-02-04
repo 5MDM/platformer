@@ -1,4 +1,4 @@
-import { AnimatedSprite, Sprite, TilingSprite } from "pixi.js";
+import { AnimatedSprite, Sprite, Ticker, TilingSprite } from "pixi.js";
 import { MDmatrix } from "../../misc/matrix";
 import { degToRad } from "../../misc/util";
 import { FgBlock, BgBlock, AnyBlock, BasicBox } from "../blocks/blocks";

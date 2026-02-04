@@ -5,6 +5,7 @@ import { AnyBlock } from "./blocks/blocks";
 import { MD2componentObjType } from "../misc/components";
 import { AnimatedTilingSprite } from "../misc/animated-tiles";
 
+export type Stop = boolean;
 export type MDgameGridType = "fg" | "bg" | "overlay";
 
 export interface LevelJSONoutput extends GMOutput {
@@ -160,3 +161,6 @@ export interface RegisterItemOpts {
 }
 
 export type Continue = boolean;
+export interface XYWHR extends XYWH {
+    rotation: number;
+}

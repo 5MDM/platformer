@@ -2,7 +2,7 @@
 
 "apt-bg.png":
 {
-	"frame": {"x":256,"y":1024,"w":512,"h":512},
+	"frame": {"x":256,"y":896,"w":512,"h":512},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":512,"h":512},
@@ -40,9 +40,17 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
 	"sourceSize": {"w":128,"h":128}
 },
-"bluestone.png":
+"black.png":
 {
 	"frame": {"x":128,"y":128,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+"bluestone.png":
+{
+	"frame": {"x":256,"y":128,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -58,7 +66,7 @@
 },
 "doorpoint.png":
 {
-	"frame": {"x":256,"y":128,"w":128,"h":128},
+	"frame": {"x":384,"y":128,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -74,7 +82,7 @@
 },
 "first_house.png":
 {
-	"frame": {"x":768,"y":512,"w":192,"h":256},
+	"frame": {"x":0,"y":640,"w":192,"h":256},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":192,"h":256},
@@ -82,7 +90,7 @@
 },
 "floor-tile.png":
 {
-	"frame": {"x":384,"y":128,"w":128,"h":128},
+	"frame": {"x":512,"y":128,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -98,7 +106,7 @@
 },
 "forest-bush-wall.png":
 {
-	"frame": {"x":512,"y":128,"w":128,"h":128},
+	"frame": {"x":640,"y":128,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -106,7 +114,7 @@
 },
 "forest/abandoned-gate-key.png":
 {
-	"frame": {"x":640,"y":128,"w":128,"h":128},
+	"frame": {"x":768,"y":128,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -122,7 +130,7 @@
 },
 "forest/forest-grass-top.png":
 {
-	"frame": {"x":768,"y":128,"w":128,"h":128},
+	"frame": {"x":0,"y":256,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -130,7 +138,7 @@
 },
 "forest/forest-stone-1.png":
 {
-	"frame": {"x":0,"y":256,"w":128,"h":128},
+	"frame": {"x":128,"y":256,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -138,7 +146,7 @@
 },
 "forest/forest-stone-edge.png":
 {
-	"frame": {"x":128,"y":256,"w":128,"h":128},
+	"frame": {"x":256,"y":256,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -146,7 +154,7 @@
 },
 "forest/gate.png":
 {
-	"frame": {"x":0,"y":768,"w":256,"h":256},
+	"frame": {"x":192,"y":640,"w":256,"h":256},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":256,"h":256},
@@ -154,7 +162,7 @@
 },
 "forest/grass-top-1.png":
 {
-	"frame": {"x":256,"y":256,"w":128,"h":128},
+	"frame": {"x":384,"y":256,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -162,7 +170,7 @@
 },
 "forest/moss-rocks-1.png":
 {
-	"frame": {"x":384,"y":256,"w":128,"h":128},
+	"frame": {"x":512,"y":256,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -170,7 +178,7 @@
 },
 "forest/stone-block.png":
 {
-	"frame": {"x":256,"y":768,"w":256,"h":256},
+	"frame": {"x":448,"y":640,"w":256,"h":256},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":256,"h":256},
@@ -178,7 +186,7 @@
 },
 "forest/stone-floor-1.png":
 {
-	"frame": {"x":512,"y":768,"w":256,"h":256},
+	"frame": {"x":704,"y":640,"w":256,"h":256},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":256,"h":256},
@@ -186,7 +194,7 @@
 },
 "global-env/item-sparkle.png":
 {
-	"frame": {"x":512,"y":256,"w":128,"h":128},
+	"frame": {"x":640,"y":256,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -194,7 +202,7 @@
 },
 "grass_block_1.png":
 {
-	"frame": {"x":0,"y":1024,"w":256,"h":256},
+	"frame": {"x":0,"y":896,"w":256,"h":256},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":256,"h":256},
@@ -202,7 +210,7 @@
 },
 "invis.png":
 {
-	"frame": {"x":640,"y":256,"w":128,"h":128},
+	"frame": {"x":768,"y":256,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -210,7 +218,7 @@
 },
 "items/weapons/gun.png":
 {
-	"frame": {"x":768,"y":256,"w":128,"h":128},
+	"frame": {"x":0,"y":384,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -218,7 +226,7 @@
 },
 "kitchen-table.png":
 {
-	"frame": {"x":0,"y":384,"w":128,"h":128},
+	"frame": {"x":128,"y":384,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -226,7 +234,7 @@
 },
 "kitchen-top.png":
 {
-	"frame": {"x":128,"y":384,"w":128,"h":128},
+	"frame": {"x":256,"y":384,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -234,7 +242,7 @@
 },
 "particles/glow.png":
 {
-	"frame": {"x":256,"y":384,"w":128,"h":128},
+	"frame": {"x":384,"y":384,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -330,7 +338,7 @@
 },
 "ui/apt-bg.png":
 {
-	"frame": {"x":384,"y":384,"w":128,"h":128},
+	"frame": {"x":512,"y":384,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -338,7 +346,7 @@
 },
 "ui/edit-level.png":
 {
-	"frame": {"x":512,"y":384,"w":128,"h":128},
+	"frame": {"x":640,"y":384,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -346,7 +354,7 @@
 },
 "ui/edit.png":
 {
-	"frame": {"x":640,"y":384,"w":128,"h":128},
+	"frame": {"x":768,"y":384,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -354,7 +362,7 @@
 },
 "ui/graphics-filter.png":
 {
-	"frame": {"x":768,"y":384,"w":128,"h":128},
+	"frame": {"x":0,"y":512,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -362,7 +370,7 @@
 },
 "ui/inventory-tile.png":
 {
-	"frame": {"x":0,"y":512,"w":128,"h":128},
+	"frame": {"x":128,"y":512,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -370,7 +378,7 @@
 },
 "ui/recenter.png":
 {
-	"frame": {"x":128,"y":512,"w":128,"h":128},
+	"frame": {"x":256,"y":512,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -378,7 +386,7 @@
 },
 "ui/zoom-in.png":
 {
-	"frame": {"x":256,"y":512,"w":128,"h":128},
+	"frame": {"x":384,"y":512,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -386,7 +394,7 @@
 },
 "ui/zoom-out.png":
 {
-	"frame": {"x":384,"y":512,"w":128,"h":128},
+	"frame": {"x":512,"y":512,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -402,7 +410,7 @@
 },
 "wood-door-open.png":
 {
-	"frame": {"x":512,"y":512,"w":128,"h":128},
+	"frame": {"x":640,"y":512,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -410,7 +418,7 @@
 },
 "wood-door.png":
 {
-	"frame": {"x":640,"y":512,"w":128,"h":128},
+	"frame": {"x":768,"y":512,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -426,8 +434,8 @@
 	"version": "1.1",
 	"image": "spritesheet.png",
 	"format": "RGBA8888",
-	"size": {"w":960,"h":1536},
+	"size": {"w":960,"h":1408},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:255699226001bfaea63287dd2786fb19:3776d7f10bbf2ab8a3b2ece4f565bbb6:e425fefcff1e15baea1094a56b981d8d$"
+	"smartupdate": "$TexturePacker:SmartUpdate:78669a59ea05d3131e7f701cddeeffcf:cfe96233bf357a78a823e7e84c884c82:e425fefcff1e15baea1094a56b981d8d$"
 }
 }

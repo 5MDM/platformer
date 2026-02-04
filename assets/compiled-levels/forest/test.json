@@ -1,0 +1,44 @@
+{
+    "version": [
+        0,
+        0,
+        0
+    ],
+    "blocks": [
+        {
+            "x": 68,
+            "y": 56,
+            "w": 5,
+            "h": 6,
+            "rotation": 0,
+            "type": "forest/forest-stone-1.png"
+        },
+        {
+            "x": 62,
+            "y": 60,
+            "w": 4,
+            "h": 4,
+            "rotation": 0,
+            "type": "forest/forest-stone-1.png"
+        },
+        {
+            "x": 65,
+            "y": 66,
+            "w": 6,
+            "h": 2,
+            "rotation": 0,
+            "type": "forest/forest-stone-1.png"
+        },
+        {
+            "x": 66,
+            "y": 64,
+            "w": 1,
+            "h": 1,
+            "type": "@",
+            "rotation": 0
+        }
+    ],
+    "meta": {
+        "dimension": "side"
+    }
+}

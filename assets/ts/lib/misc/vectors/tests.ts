@@ -14,6 +14,9 @@
 //     [3, 2, 6]
 // ]);
 
+import { SimpleExpander } from "../util";
+import { MDV } from "./vectors";
+
 // const el = $$("div", {
 //     attrs: {
 //         id: "vec-div"
@@ -63,3 +66,24 @@
 // .parse([
 //     [3, 3]
 // ]);
+
+export function startTests() {
+    // new SimpleExpander<[number, number, number, number?], void>(([w, h, expected, steps = 1]) => {
+    //     const b = new MDV.V4(0, 0, w, h);
+    //     const origin = new MDV.V2(Math.floor(w / 2), Math.floor(h / 2));
+
+    //     const cell = b.findNeighborCellsFromPoint(origin, steps);
+
+    //     const l = Object.keys(cell).length - 1;
+    //     console.assert(l == expected,
+    //         `${l} != ${expected}`,
+    //         cell
+    //     );
+    // })
+    // .parse([
+    //     [4, 4, 8],
+    //     [4, 4, 0, 4],
+    //     [4, 4, 8, 2],
+    //     [2, 2, 8]
+    // ]);
+}

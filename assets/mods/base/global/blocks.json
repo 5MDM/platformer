@@ -11,6 +11,11 @@
             "category": "Forest",
             "texture": "black-fade-corner.png",
             "type": "overlay"
+        },
+        "black": {
+            "category": "Forest",
+            "texture": "black.png",
+            "type": "overlay"
         }
     }
 }

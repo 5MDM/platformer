@@ -47,14 +47,14 @@ export const vectorMixin1 = {
 
     getNeighboringOutsidePoints(this: MDV.V4, step = 1, inset = 0): Partial<MDV.V4neighboringCellHolder>[] {
         const arr: Partial<MDV.V4neighboringCellHolder>[] = [];
-        const maxX = this.x + this.w;
-        const maxY = this.y + this.h;
+        //const maxX = this.x + this.w;
+        //const maxY = this.y + this.h;
 
         const ib: XYWH = {
             x: this.x - inset,
             y: this.y - inset,
-            w: maxX - inset,
-            h: maxY - inset,
+            w: this.x + this.w - inset,
+            h: this.y + this.h - inset,
         };
 
         if(ib.w <= 0 || ib.h <= 0) return [];
@@ -76,63 +76,63 @@ export const vectorMixin1 = {
             point: new MDV.V2(this.x, this.y),
         }];
 
-        if(maxX <= this.x + step) {
+        if(ib.w <= ib.x + step) {
             // singular width (column)
-            set(this.x, this.y, {
-                bottom: new MDV.V2(this.x, this.y + step),
+            set(ib.x, ib.y, {
+                bottom: new MDV.V2(ib.x, ib.y + step),
             });
 
-            for(let y = this.y + step; y < maxY - step; y += step) {
-                set(this.x, y, {
-                    top: new MDV.V2(this.x, y - step),
-                    bottom: new MDV.V2(this.x, y + step),
+            for(let y = ib.y + step; y < ib.h - step; y += step) {
+                set(ib.x, y, {
+                    top: new MDV.V2(ib.x, y - step),
+                    bottom: new MDV.V2(ib.x, y + step),
                 });
             }
 
-            set(this.x, LCMmaxY, {
-                top: new MDV.V2(this.x, LCMmaxY - step)
+            set(ib.x, LCMmaxY, {
+                top: new MDV.V2(ib.x, LCMmaxY - step)
             });
 
             return arr;
-        } else if(maxY <= this.y + step) {
+        } else if(ib.h <= ib.y + step) {
             // singular height (row)
-            set(this.x, this.y, {
-                right: new MDV.V2(this.x + step, this.y),
+            set(ib.x, ib.y, {
+                right: new MDV.V2(ib.x + step, ib.y),
             });
 
-            for(let x = this.x + step; x < maxX - step; x += step) {
+            for(let x = ib.x + step; x < ib.w - step; x += step) {
                 set(x, this.y, {
-                    left: new MDV.V2(x - step, this.y),
-                    right: new MDV.V2(x + step, this.y),
+                    left: new MDV.V2(x - step, ib.y),
+                    right: new MDV.V2(x + step, ib.y),
                 });
             }
 
-            set(LCMmaxX, this.y, {
-                left: new MDV.V2(LCMmaxX - step, this.y),
+            set(LCMmaxX, ib.y, {
+                left: new MDV.V2(LCMmaxX - step, ib.y),
             });
 
             return arr;
         }
 
         // top left
-        set(this.x, this.y, {
-            bottomRight: new MDV.V2(this.x + step, this.y + step),
-            bottom: new MDV.V2(this.x, this.y + step),
-            right: new MDV.V2(this.x + step, this.y),
+        set(ib.x, ib.y, {
+            bottomRight: new MDV.V2(ib.x + step, ib.y + step),
+            bottom: new MDV.V2(ib.x, ib.y + step),
+            right: new MDV.V2(ib.x + step, ib.y),
         });
 
         // top right
-        set(LCMmaxX, this.y, {
-            bottom: new MDV.V2(LCMmaxX, this.y + step),
-            left: new MDV.V2(LCMmaxX - step, this.y),
-            bottomLeft: new MDV.V2(LCMmaxX - step, this.y + step),
+        set(LCMmaxX, ib.y, {
+            bottom: new MDV.V2(LCMmaxX, ib.y + step),
+            left: new MDV.V2(LCMmaxX - step, ib.y),
+            bottomLeft: new MDV.V2(LCMmaxX - step, ib.y + step),
         });
 
         // bottom left
-        set(this.x, LCMmaxY, {
-            top: new MDV.V2(this.x, LCMmaxY - step),
-            right: new MDV.V2(this.x + step, LCMmaxY),
-            topRight: new MDV.V2(this.x + step, LCMmaxY - step),
+        set(ib.x, LCMmaxY, {
+            top: new MDV.V2(ib.x, LCMmaxY - step),
+            right: new MDV.V2(ib.x + step, LCMmaxY),
+            topRight: new MDV.V2(ib.x + step, LCMmaxY - step),
         });
 
         // bottom right
@@ -142,45 +142,47 @@ export const vectorMixin1 = {
             topLeft: new MDV.V2(LCMmaxX - step, LCMmaxY - step),
         });
 
-        for(let x = this.x + step; x < maxX - step; x += step) {
+        for(let x = ib.x + step; x < ib.w - step; x += step) {
             const leftX = x - step;
             const rightX = x + step;
-            const bottomY = this.y + step;
+            const bottomY = ib.y + step;
 
             set(x, this.y, {
-                left: new MDV.V2(leftX, this.y),
+                left: new MDV.V2(leftX, ib.y),
                 bottomLeft: new MDV.V2(leftX, bottomY),
                 bottom: new MDV.V2(x, bottomY),
                 bottomRight: new MDV.V2(rightX, bottomY),
-                right: new MDV.V2(rightX, this.y),
+                right: new MDV.V2(rightX, ib.y),
             });
 
-            set(x, maxY, {
-                left: new MDV.V2(leftX, maxY),
-                topLeft: new MDV.V2(leftX, maxY - step),
-                top: new MDV.V2(x, maxY - step),
-                topRight: new MDV.V2(rightX, maxY - step),
-                right: new MDV.V2(rightX, maxY),
+            // recently fixed
+            set(x, ib.h - step, {
+                left: new MDV.V2(leftX, ib.h),
+                topLeft: new MDV.V2(leftX, ib.h - step),
+                top: new MDV.V2(x, ib.h - step),
+                topRight: new MDV.V2(rightX, ib.h - step),
+                right: new MDV.V2(rightX, ib.h),
             });
         }
 
-        for(let y = this.y + step; y < maxY - step; y += step) {
+        for(let y = ib.y + step; y < ib.h - step; y += step) {
             const bottomY = y + step;
 
-            set(this.x, y, {
-                top: new MDV.V2(this.x, y - step),
-                topRight: new MDV.V2(this.x + step, y - step),
-                bottom: new MDV.V2(this.x, bottomY),
-                bottomRight: new MDV.V2(this.x + step, bottomY),
-                right: new MDV.V2(this.x + step, y),
+            set(ib.x, y, {
+                top: new MDV.V2(ib.x, y - step),
+                topRight: new MDV.V2(ib.x + step, y - step),
+                bottom: new MDV.V2(ib.x, bottomY),
+                bottomRight: new MDV.V2(ib.x + step, bottomY),
+                right: new MDV.V2(ib.x + step, y),
             });
 
-            set(maxX, y, {
-                topLeft: new MDV.V2(maxX - step, y - step),
-                top: new MDV.V2(maxX, y - step),
-                left: new MDV.V2(maxX - step, y),
-                bottomLeft: new MDV.V2(maxX - step, y + step),
-                bottom: new MDV.V2(maxX, y + step),
+            // recently fixed
+            set(ib.w - step, y, {
+                topLeft: new MDV.V2(ib.w - step, y - step),
+                top: new MDV.V2(ib.w, y - step),
+                left: new MDV.V2(ib.w - step, y),
+                bottomLeft: new MDV.V2(ib.w - step, y + step),
+                bottom: new MDV.V2(ib.w, y + step),
             });
         }
 
