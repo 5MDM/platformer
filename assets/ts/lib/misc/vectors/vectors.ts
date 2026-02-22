@@ -1,4 +1,5 @@
 import { XYWH } from "../../v2/types";
+import { MDmatrix } from "../matrix";
 import {vectorMixin1} from "./outside-points";
 import { vectorMixin2 } from "./point-adjacency";
 // import { startTests } from "./tests";
@@ -10,6 +11,11 @@ export namespace MDV {
     }
 
     export type TwoNumArr = [number, number];
+
+    export interface GetNeighboringOutsidePointsUsingGridOutput {
+        outsidePoints: Partial<MDV.V4neighboringCellHolder>[];
+        removedPoints: Partial<MDV.V4neighboringCellHolder>[];
+    };
 
     export class V2 implements XY {
         x: number;
@@ -73,6 +79,17 @@ export namespace MDV {
         TwoNumArr,
     ];
 
+    export const V4neighboringCellPropMap = {
+        topLeft: true,
+        top: true,
+        topRight: true,
+        bottomLeft: true,
+        bottom: true,
+        bottomRight: true,
+        left: true,
+        right: true,
+    };
+
     export interface V4neighboringCellHolder {
         topLeft: V2;
         top: V2;
@@ -108,6 +125,11 @@ export namespace MDV {
     "bottom-U" |
     "top-down-pipe" |
     "left-right-pipe";
+
+    export interface FindAdjacencyForEachOutsidePointUsingGridOutput {
+        main: V4NeighborCellType[];
+        removedPoints: Partial<MDV.V4neighboringCellHolder>[];
+    }
 
     export class V4 implements XYWH {
         x: number;
@@ -148,6 +170,14 @@ export namespace MDV {
             }
         }
 
+        forEachIntPointByStep(f: (v2: V2) => void, step = 1, inset = 0) {
+            for(let fy = this.y + inset; fy < this.y + this.h - inset; fy += step) {
+                for(let fx = this.x + inset; fx < this.x + this.w - inset; fx += step) {
+                    f(new V2(fx, fy));
+                }
+            }
+        }
+
         clone() {
             return MDV.V4.fromBounds(this);
         }
@@ -180,6 +210,14 @@ export namespace MDV {
             return this;
         }
 
+        multiplyS(n: number) {
+            this.x *= n;
+            this.y *= n;
+            this.w *= n;
+            this.h *= n;
+            return this;
+        }
+
         floorDivideS(n: number, base = 1) {
             this.divideS(n);
             this.x = Math.floor(this.x * base) / base;
@@ -206,6 +244,19 @@ export namespace MDV {
 
         findAdjacencyFromCell(cell: Partial<V4neighboringCellHolder>): MDV.V4NeighborCellType {
             return undefined as unknown as MDV.V4NeighborCellType;
+        }
+
+        findAdjacencyForEachOutsidePointUsingGrid<T>(
+            grid: MDmatrix<T>,
+            step = 1,
+            inset = 0,
+        ): FindAdjacencyForEachOutsidePointUsingGridOutput {
+            return {} as FindAdjacencyForEachOutsidePointUsingGridOutput;
+        }
+
+        getNeighboringOutsidePointsUsingGrid<T>(grid: MDmatrix<T>, step = 1, inset = 0): 
+        GetNeighboringOutsidePointsUsingGridOutput {
+            return {} as GetNeighboringOutsidePointsUsingGridOutput;
         }
 
         findNeighborCellsFromPoint(point: MDV.V2, steps = 1):

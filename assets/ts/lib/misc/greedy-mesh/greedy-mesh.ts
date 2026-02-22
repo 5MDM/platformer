@@ -42,6 +42,9 @@ function sweep(output: XYWH[], matrix: MDmatrix<boolean>, x: number, y: number) 
     output.push({x, y, w, h});
 }
 
+/**
+ *  This is destructive and will modify the original array
+ */
 export function greedyMeshBooleans(m: MDmatrix<boolean>): XYWH[] {
     const output: XYWH[] = [];
     

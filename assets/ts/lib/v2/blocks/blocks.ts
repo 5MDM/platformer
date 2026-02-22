@@ -1,16 +1,9 @@
 import { AnimatedSprite, Container, Sprite } from "pixi.js";
 import { Entity } from "../entities/entity";
-import { MDgameGridType, LevelJSONoutput, AnySprite } from "../types";
+import { MDgameGridType, LevelJSONoutput, AnySprite, XYWH } from "../types";
 import { BlockComponentManager } from "./components/main-manager";
 
 export type AnyBlock = FgBlock | BgBlock;
-
-export interface XYWH {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-}
 
 export interface BasicBoxOpts extends XYWH {
     id: number;

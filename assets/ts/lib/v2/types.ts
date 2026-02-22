@@ -8,6 +8,8 @@ import { AnimatedTilingSprite } from "../misc/animated-tiles";
 export type Stop = boolean;
 export type MDgameGridType = "fg" | "bg" | "overlay";
 
+
+
 export interface LevelJSONoutput extends GMOutput {
     rotation: number;
     components?: Record<string, Record<string, any>>;
@@ -163,4 +165,10 @@ export interface RegisterItemOpts {
 export type Continue = boolean;
 export interface XYWHR extends XYWH {
     rotation: number;
+}
+
+export interface XYandMatrix<T> {
+    x: number;
+    y: number;
+    matrix: MDmatrix<T>;
 }

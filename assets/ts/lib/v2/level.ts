@@ -5,7 +5,7 @@ import { AnyBlock, BgBlock, FgBlock } from "./blocks/blocks";
 import { _MD2engine } from "./engine";
 import { Entity } from "./entities/entity";
 import { Player } from "./entities/player";
-import { _md2events, LevelDataV0_0_0, LevelJSONoutput, MDgameGridType, XYtuple } from "./types";
+import { _md2events, LevelDataV0_0_0, LevelJSONoutput, MDgameGridType, XYandMatrix, XYtuple } from "./types";
 import { floorToMultiples } from "../misc/util";
 import { MD2doorpointComponent } from "./blocks/components/doorpoint";
 import { MDV } from "../misc/vectors/vectors";
@@ -291,6 +291,42 @@ export class _MD2levelManager {
         });
 
         return blocks;
+    }
+
+    sampleIndividualFgBlocks(bounds: MDV.V4, minimizeSize = false): XYandMatrix<FgBlock> | false {
+        var noResults = false;
+        var w = bounds.w;
+        var h = bounds.h;
+
+        if(minimizeSize) {
+            w = 0;
+            h = 0;
+            bounds.forEachIntPoint(({x, y}) => {
+                const nw = x - bounds.x + 1;
+                const nh = y - bounds.y + 1;
+
+                if(nw > w) w = nw;
+                if(nh > h) h = nh;
+                if(nw == 0 || nh == 0) return noResults = true;
+            });
+        }
+
+        if(noResults) return false;
+
+        const m = new MDmatrix<FgBlock>(w, h);
+
+        bounds.forEachIntPoint(({x, y}) => {
+            const block = this.levelGrids.fg.get(x, y) as FgBlock;
+            if(!block) return;
+
+            m.set(x, y, block);
+        });
+        
+        return {
+            x: bounds.x,
+            y: bounds.y,
+            matrix: m,
+        };
     }
 
     getOutsideFacingPoints(bounds: MDV.V4): MDV.V2[] {

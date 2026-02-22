@@ -151,4 +151,15 @@ export class MDmatrix<T> {
             this.set(coord.x, coord.y, t);
         });
     }
+
+    clone(): MDmatrix<T> {
+        const m = new MDmatrix<T>(this.w, this.h);
+
+        this.advForEach((t, coord: MDV.V2) => {
+            m.set(coord.x, coord.y, t);
+            return true;
+        });
+
+        return m;
+    }
 }

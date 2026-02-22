@@ -16,7 +16,7 @@ import { _MD2editorPan } from "./modes/pan";
 import { _MD2editMode } from "./modes/edit";
 import { _MD2filterMode } from "./modes/filter";
 import { _MD2editLevelMode } from "./modes/edit-level";
-import { _MD2shaderMode } from "./modes/shader";
+import { EditorRegionShadows } from "./modes/regions/shadows";
 
 export interface MD2editorOpts {
     engine: _MD2engine;
@@ -53,7 +53,7 @@ export class MD2editor {
         edit: _MD2editMode,
         filter: _MD2filterMode,
         editLevel: _MD2editLevelMode,
-        shade: _MD2shaderMode,
+        shade: EditorRegionShadows,
     };
 
     editStates: Record<EditorStates, _MD2editorBase>;

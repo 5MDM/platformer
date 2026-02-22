@@ -21,7 +21,7 @@ export class MD2GUItopBarPart extends MD2GUIpart {
     constructor(gui: MD2GUI) {
         super(gui);
 
-        el.addEventListener("pointerup", () => gui.parts.inventory.state.toggle());
+        menuBtn.addEventListener("pointerup", () => gui.parts.inventory.state.toggle());
     }
 
 

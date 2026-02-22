@@ -1,4 +1,6 @@
 import { XYWH } from "../../v2/types";
+import { MDmatrix } from "../matrix";
+import { simpleSwitch } from "../util";
 import { MDV } from "./vectors";
 
 export const vectorMixin1 = {
@@ -45,6 +47,91 @@ export const vectorMixin1 = {
         return arr;
     },
 
+    getNeighboringOutsidePointsUsingGrid<T>(
+        this: MDV.V4,
+        grid: MDmatrix<T>,
+        step = 1,
+        inset = 0,
+        
+    ): MDV.GetNeighboringOutsidePointsUsingGridOutput {
+        const removedPoints: Partial<MDV.V4neighboringCellHolder>[] = [];
+        const oldPoints = this.getNeighboringOutsidePoints(step, inset);
+
+        for(const n in oldPoints) {
+            const point = oldPoints[n];
+            var isPointAnOutsidePoint = false;
+
+            for(const key in MDV.V4neighboringCellPropMap) {
+                if(!point[key]) {
+                    // Check surroundings with the grid.
+                    // This is to stop the greedy mesh
+                    // from messing things up
+
+                    // topLeft: true,
+                    // top: true,
+                    // topRight: true,
+                    // bottomLeft: true,
+                    // bottom: true,
+                    // bottomRight: true,
+                    // left: true,
+                    // right: true,
+
+                    // the fix was using point.point instead of "this"
+                    // I was stupid all along
+                    var x = point.point!.x;
+                    var y = point.point!.y;
+
+                    simpleSwitch<string, keyof MDV.V4NeighborCellType>(key, {
+                        topLeft() {
+                            x -= step;
+                            y -= step;
+                        },
+                        top() {y -= step},
+                        topRight() {
+                            x += step;
+                            y -= step;
+                        },
+                        bottomLeft() {
+                            x -= step;
+                            y += step;
+                        },
+                        bottom() {y += step},
+                        bottomRight() {
+                            x += step;
+                            y += step;
+                        },
+                        left() {x -= step},
+                        right() {x += step},
+                    });
+
+                    const found = grid.get(x, y);
+
+                    if(found) point[key] = new MDV.V2(x, y);
+                    else isPointAnOutsidePoint = true;
+                }
+            }
+
+            // checks if all 8 surroundings are
+            // not air
+
+            if(!isPointAnOutsidePoint)
+                for(const key in MDV.V4neighboringCellPropMap) 
+                    if(!point[key]) {
+                        isPointAnOutsidePoint = true;
+                        break;
+                    }
+
+            if(!isPointAnOutsidePoint) {
+                removedPoints.push(...oldPoints.splice(Number(n), 1));
+            }
+        }
+
+        return {
+            outsidePoints: oldPoints,
+            removedPoints,
+        };
+    },
+
     getNeighboringOutsidePoints(this: MDV.V4, step = 1, inset = 0): Partial<MDV.V4neighboringCellHolder>[] {
         const arr: Partial<MDV.V4neighboringCellHolder>[] = [];
         //const maxX = this.x + this.w;
@@ -76,8 +163,11 @@ export const vectorMixin1 = {
             point: new MDV.V2(this.x, this.y),
         }];
 
+        // checka if this is a 1 block wide column
         if(ib.w <= ib.x + step) {
             // singular width (column)
+            // this goes up to down
+
             set(ib.x, ib.y, {
                 bottom: new MDV.V2(ib.x, ib.y + step),
             });
@@ -95,7 +185,11 @@ export const vectorMixin1 = {
 
             return arr;
         } else if(ib.h <= ib.y + step) {
+            // checks if this is a 1 block tall row
+
             // singular height (row)
+            // this goes left to right
+
             set(ib.x, ib.y, {
                 right: new MDV.V2(ib.x + step, ib.y),
             });
@@ -113,6 +207,8 @@ export const vectorMixin1 = {
 
             return arr;
         }
+
+        // all the normal blocks are processed below this comment
 
         // top left
         set(ib.x, ib.y, {

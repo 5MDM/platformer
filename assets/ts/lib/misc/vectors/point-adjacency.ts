@@ -1,4 +1,5 @@
 import { MD2errors } from "../../v2/errors";
+import { MDmatrix } from "../matrix";
 import { MDV } from "./vectors";
 
 
@@ -165,5 +166,23 @@ export const vectorMixin2 = {
         return arr;
     },
 
+    findAdjacencyForEachOutsidePointUsingGrid<T>(
+        this: MDV.V4,
+        grid: MDmatrix<T>,
+        step = 1,
+        inset = 0,
+    ): MDV.FindAdjacencyForEachOutsidePointUsingGridOutput {
 
+        const points = this.getNeighboringOutsidePointsUsingGrid(grid, step, inset);
+        const arr: MDV.V4NeighborCellType[] = [];
+
+        for(const c of points.outsidePoints) {
+            arr.push(this.findAdjacencyFromCell(c));
+        }
+
+        return {
+            main: arr,
+            removedPoints: points.removedPoints,
+        };
+    }
 };
