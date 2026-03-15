@@ -107,6 +107,12 @@ export namespace MDV {
         type: V4cellNeighborType;
     }
 
+    export type V4cellIcornerType = 
+    "top-left-icorner"
+    | "top-right-icorner"
+    | "bottom-left-icorner"
+    | "bottom-right-icorner";
+
     export type V4cell8sidesType = 
     "top-left-corner"
     | "top-right-corner"
@@ -118,6 +124,7 @@ export namespace MDV {
     | "bottom";
 
     export type V4cellNeighborType = V4cell8sidesType
+    | V4cellIcornerType
     | "isolated" |
     "top-U" |
     "left-U" |

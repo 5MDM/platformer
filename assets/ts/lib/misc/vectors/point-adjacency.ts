@@ -2,6 +2,37 @@ import { MD2errors } from "../../v2/errors";
 import { MDmatrix } from "../matrix";
 import { MDV } from "./vectors";
 
+/**
+ * Top and bottom MUST BE TRUE
+ */
+function checkForIcorner(c: Partial<MDV.V4NeighborCellType>): false | MDV.V4cellIcornerType {
+    // an iCorner has only 1 blank spot (for now)
+    // ###
+    // #@#
+    // ##
+
+    if(!(c.left && c.right)) return false;
+
+    const corners = {
+        bottomLeft: c.bottomLeft,
+        bottomRight: c.bottomRight, 
+        topLeft: c.topLeft, 
+        topRight: c.topRight
+    };
+
+    var countedFalse = 0;
+    for(const key in corners)
+        if(!corners[key]) countedFalse++;
+    
+    if(countedFalse != 1) return false;
+
+    if(!corners.bottomLeft) return "bottom-left-icorner";
+    if(!corners.bottomRight) return "bottom-right-icorner";
+    if(!corners.topLeft) return "top-left-icorner";
+    if(!corners.topRight) return "top-right-icorner";
+
+    return false;
+}
 
 export const vectorMixin2 = {
     findNeighborCellsFromPoint(
@@ -94,7 +125,12 @@ export const vectorMixin2 = {
                     type: "right-U"
                 };
             } else if(c.top && c.bottom) {
-                return {
+                // first iCorner check starts here
+                // top, bottom, left are all true
+                const type = checkForIcorner(c);
+
+                if(type) return {...c, type};
+                else return {
                     ...c,
                     type: "right"
                 };
@@ -113,7 +149,13 @@ export const vectorMixin2 = {
                     type: "left-U"
                 };
             } else if(c.top && c.bottom) {
-                return {
+                // second iCorner check starts here
+                // top, bottom, right are all true
+
+                const type = checkForIcorner(c);
+
+                if(type) return {...c, type};
+                else return {
                     ...c,
                     type: "left"
                 };

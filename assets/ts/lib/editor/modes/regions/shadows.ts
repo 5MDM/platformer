@@ -1,10 +1,12 @@
-import { Container, Sprite, Texture, TilingSprite } from "pixi.js";
+import { Container, Point, Sprite, Texture, TilingSprite } from "pixi.js";
 import { MDV } from "../../../misc/vectors/vectors";
 import { FgBlock } from "../../../v2/blocks/blocks";
-import { XYWH } from "../../../v2/types";
+import { XYWH, XYWHR } from "../../../v2/types";
 import { MD2editor } from "../../main";
 import { EditorRegionBase } from "./base";
 import { $$, degToRad, simpleSwitch, ToggleState } from "../../../misc/util";
+import { EditorRegionBaseShader } from "./baseShader";
+import { MD2errors } from "../../../v2/errors";
 
 const toggleShadowBtn = $$("button", {
     text: "Toggle Shadows"
@@ -20,7 +22,11 @@ const el = $$("div", {
     }
 });
 
-export class EditorRegionShadows extends EditorRegionBase<FgBlock> {
+type GMkeys = "block" | "corner" | "invalid" | "iCorner";
+
+export class EditorRegionShadows extends EditorRegionBaseShader<FgBlock> {
+    mustClearPrevious = true;
+
     override getItemF(v2: MDV.V2) {
         return (this.editor.engine.levelManager
         .levelGrids.fg.get(v2.x, v2.y) as FgBlock | undefined);
@@ -29,69 +35,32 @@ export class EditorRegionShadows extends EditorRegionBase<FgBlock> {
     override textures = {
         shaded: Texture.WHITE,
         shadeCorner: Texture.WHITE,
+        shadeIcorner: Texture.WHITE,
     };
-
-    shadowC = new Container();
 
     init(): void {
         super.init();
-        this.editor.engine.levelManager.groups.static.addChild(this.c);
 
         this.el.appendChild(el);
 
         toggleShadowBtn.addEventListener("pointerup", this.shadowState.toggle.bind(this));
 
-        this.editor.engine.levelManager.groups.static.addChild(this.shadowC);
-
         this.textures.shaded = this.editor.engine.dataManager.getTexture("black-fade.png");
         this.textures.shadeCorner = this.editor.engine.dataManager.getTexture("black-fade-corner.png");
+        this.textures.shadeIcorner = this.editor.engine.dataManager.getTexture("black-icorner.png");
     }
 
     shadowState = new ToggleState(this.onShadowEnable.bind(this), this.onShadowDisable.bind(this));
 
     onShadowEnable() {
-        this.shadowC.visible = true;
+        this.fillsC.visible = true;
     }
 
     onShadowDisable() {
-        this.shadowC.visible = false;
+        this.fillsC.visible = false;
     }
 
-    protected sprites: Sprite[] = [];
-    protected shadows: (Sprite | TilingSprite)[] = [];
-    protected c = new Container();
-
-    protected clearPrevious() {
-        this.c.removeChildren();
-        for(const s of this.sprites) s.destroy();
-        this.sprites = [];
-
-        this.shadowC.removeChildren();
-        for(const s of this.shadows) s.destroy();
-        this.shadows = [];
-    }
-
-    override onGreedyMesh(boxes: XYWH[]): void {
-        this.clearPrevious();
-
-        for(const box of boxes) {
-            this.colorBoxes(box);
-            this.generateShadows(box);
-            this.fillVoid(box);
-        }
-    }
-
-    fillVoid(box: XYWH) {
-        const bounds = MDV.V4.fromBounds(box);
-        if(bounds.w <= 2 || bounds.h <= 2) return;
-
-        const ib = bounds.clone();
-        ib.x += 1;
-        ib.y += 1;
-        ib.w -= 2;
-        ib.h -= 2;
-        ib.multiplyS(this.editor.engine.blockSize);
-
+    onVoidFill(ib: MDV.V4): void {
         const s = new TilingSprite({
             texture: Texture.WHITE,
             position: ib,
@@ -101,52 +70,17 @@ export class EditorRegionShadows extends EditorRegionBase<FgBlock> {
 
         s.tint = 0;
 
-        this.shadowC.addChild(s);
-        this.shadows.push(s);
-    }
-
-    generateShadows(box: XYWH) {
-        const bounds = MDV.V4.fromBounds(box);
-
-        const points = bounds.findAdjacencyForEachOutsidePointUsingGrid(this.regionMap);
-
-        for(const i of points.removedPoints) {
-            const bz = this.editor.engine.blockSize;
-            const p = i.point!.clone().multiplyS(bz);
-
-            const s = new Sprite({
-                texture: Texture.WHITE,
-                position: p,
-                width: bz,
-                height: bz,
-            });
-
-            s.tint = 0;
-
-            this.shadowC.addChild(s);
-            this.shadows.push(s);
-        }
-
-        for(const cell of points.main) {
-            const gridCoord = cell.point!.clone();
-
-            const block = this.editor.engine.levelManager.levelGrids.fg
-            .get(gridCoord.x, gridCoord.y) as FgBlock;
-
-            if(block) {
-                gridCoord.multiplyS(this.editor.engine.blockSize);
-                gridCoord.x += this.editor.engine.blockSizeHalf;
-                gridCoord.y += this.editor.engine.blockSizeHalf;
-
-                this.shade(gridCoord, cell);
-            }
-        }
+        this.fillsC.addChild(s);
+        this.fills.push(s);
     }
 
     shade({x, y}: MDV.V2, cell: MDV.V4NeighborCellType) {
         var rotation = 0;
         var texture = this.textures.shaded;
         var invalid = false;
+
+        var isCorner = false;
+        var isIcorner = false;
 
         const th = this.textures;
 
@@ -160,47 +94,63 @@ export class EditorRegionShadows extends EditorRegionBase<FgBlock> {
             left() {
                 rotation = 180;
             },
-            right() {
-                //console.log(0)
-            },
+            right() {},
             "top-left-corner"() {
                 texture = th.shadeCorner;
+                isCorner = true;
                 rotation = -90;
             },
             "top-right-corner"() {
                 texture = th.shadeCorner;
+                isCorner = true;
             },
             "bottom-left-corner"() {
                 texture = th.shadeCorner;
+                isCorner = true;
                 rotation = 180;
             },
             "bottom-right-corner"() {
                 texture = th.shadeCorner;
                 rotation = 90;
+                isCorner = true;
+            },
+            "bottom-left-icorner"() {
+                isIcorner = true;
+                rotation = 90;
+            },
+            "bottom-right-icorner"() {
+                isIcorner = true;
+            },
+            "top-left-icorner"() {
+                isIcorner = true;
+                rotation = 180;
+            },
+            "top-right-icorner"() {
+                isIcorner = true;
+                rotation = 270;
+            },
+            isolated() {
+                MD2errors.err("Isolated shade found at " + `(${x}, ${y})`);
             },
             default() {
                 invalid = true;
             }
         }, this);
 
-        const bz = this.editor.engine.blockSize;
-        const s = new Sprite({
-            texture,
-            position: {x, y},
-            width: bz,
-            height: bz,
-            rotation: degToRad(rotation),
-            anchor: .5,
-        });
+        var name: GMkeys = "block";
+        if(isCorner) name = "corner";
+        if(isIcorner) name = "iCorner";
+        if(invalid) name = "invalid";
 
-        if(invalid) s.texture = Texture.WHITE;
-
-        this.shadowC.addChild(s);
+        this.fillMap.add(this.fillMap.createNameHash(
+            name,
+            rotation,
+        ), cell.point!);
     }
 
-    colorBoxes(box: XYWH) {
-        const {x, y, w, h} = MDV.V4.fromBounds(box)
-        .multiplyS(this.editor.engine.blockSize);
+    colorBoxes(p: MDV.V4) {
+        const {x, y, w, h} = 
+        p.multiplyS(this.editor.engine.blockSize);
 
         const s = new Sprite({
             texture: Texture.WHITE,
@@ -214,5 +164,92 @@ export class EditorRegionShadows extends EditorRegionBase<FgBlock> {
 
         this.sprites.push(s);
         this.c.addChild(s);
+    }
+
+    onGreedyMeshFinish(): void {
+        const o: Record<GMkeys, XYWHR[]> = this.fillMap.greedyMesh();
+        const bz = this.editor.engine.blockSize;
+
+        if(o.block) for(const i of o.block) 
+            this.generateBlock(MDV.V4.fromBounds(i).multiplyS(bz), degToRad(i.rotation));
+
+        if(o.corner) for(const i of o.corner) 
+            this.generateCorner(MDV.V4.fromBounds(i).multiplyS(bz), degToRad(i.rotation));
+
+        if(o.iCorner) for(const i of o.iCorner) 
+            this.generateIcorner(MDV.V4.fromBounds(i).multiplyS(bz), degToRad(i.rotation));
+
+        if(o.invalid) for(const i of o.invalid) 
+            this.generateInvalid(MDV.V4.fromBounds(i).multiplyS(bz), degToRad(i.rotation));
+    }
+
+    generateBlock(b: MDV.V4, r: number) {
+        const t = this.textures.shaded;
+
+        const s = new TilingSprite({
+            tileRotation: r,
+            position: b,
+            tileScale: new MDV.V4(
+                this.editor.engine.blockSize / t.width,
+                this.editor.engine.blockSize / t.height,
+            ),
+            width: b.w + .1,
+            height: b.h + .1,
+            texture: t,
+        });
+
+        this.fillsC.addChild(s);
+        this.fills.push(s);
+    }
+
+    generateIcorner(b: MDV.V4, r: number) {
+        const t = this.textures.shadeIcorner;
+
+        const s = new TilingSprite({
+            tileRotation: r,
+            position: b,
+            tileScale: new MDV.V4(
+                this.editor.engine.blockSize / t.width,
+                this.editor.engine.blockSize / t.height,
+            ),
+            width: b.w + .1,
+            height: b.h + .1,
+            texture: t
+        });
+
+        this.fillsC.addChild(s);
+        this.fills.push(s);
+    }
+
+    generateCorner(b: MDV.V4, r: number) {
+        const t = this.textures.shadeCorner;
+
+        const s = new TilingSprite({
+            tileRotation: r,
+            position: b,
+            tileScale: new MDV.V4(
+                this.editor.engine.blockSize / t.width,
+                this.editor.engine.blockSize / t.height,
+            ),
+            width: b.w + .1,
+            height: b.h + .1,
+            texture: t,
+        });
+
+        this.fillsC.addChild(s);
+        this.fills.push(s);
+    }
+
+    generateInvalid(b: MDV.V4, r: number) {
+        const s = new TilingSprite({
+            tileRotation: r,
+            position: b,
+            width: b.w,
+            height: b.h,
+            texture: Texture.WHITE,
+        });
+
+        this.fillsC.addChild(s);
+        this.fills.push(s);
     }
 }

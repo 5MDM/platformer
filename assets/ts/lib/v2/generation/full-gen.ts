@@ -1,11 +1,11 @@
-import { Sprite, Texture, TilingSprite } from "pixi.js";
+import { Sprite, Texture, Ticker, TilingSprite } from "pixi.js";
 import { _MD2Blockgenerator } from "./generator";
 import { _MD2engine } from "../engine";
 import { Entity, EntityOpts, MovingDynamicObj, MovingDynamicObjOpts } from "../entities/entity";
 import { Projectile, ProjectileOpts } from "../entities/projectile";
 
 export class _MD2fullGen extends _MD2Blockgenerator {
-    bgSprite = new TilingSprite({
+    private readonly bgSprite = new Sprite({
         texture: Texture.EMPTY,
         width: innerWidth,
         height: innerHeight,
@@ -16,6 +16,10 @@ export class _MD2fullGen extends _MD2Blockgenerator {
         super(md2);
 
         this.engine.levelManager.groups.world.addChild(this.bgSprite);
+
+        this.engine.dataManager.spritesheetPr.then(() => {
+           this.setBackground("forest/grass-bg.png");
+        });
     }
 
     createEntitySprite(name: string): Sprite {
@@ -75,6 +79,12 @@ export class _MD2fullGen extends _MD2Blockgenerator {
             return;
         }
 
-        this.bgSprite.texture = t;
+        t.source.scaleMode = "linear";
+
+        const bg = this.bgSprite;
+        bg.texture = t;
+
+        const ratio = bg.texture.width / bg.texture.height;
+        bg.width = innerHeight * ratio;
     }
 }

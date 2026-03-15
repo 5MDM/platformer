@@ -39,7 +39,7 @@ const utilBarButtons = new SimpleExpander<[
     ["edit", "edit.png", true],
     ["filter", "graphics-filter.png", false],
     ["editLevel", "edit-level.png"],
-    ["shade", "rotate-right.png"]
+    ["shade", "shadow.png"]
 ]);
 
 new MixedList().bind(utilBarButtons);

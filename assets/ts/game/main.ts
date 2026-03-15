@@ -38,8 +38,8 @@ export async function startGame(md2: _MD2engine) {
     loadAnimations();
 
     //md2.levelManager.loadLevel("1");
-    //md2.levelManager.loadLevel("2");
-    md2.levelManager.loadLevel("test");
+    md2.levelManager.loadLevel("2");
+    //md2.levelManager.loadLevel("test");
 
     md2.modules.env.addParticles({
         name: "glow",
