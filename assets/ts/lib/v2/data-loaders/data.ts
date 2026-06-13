@@ -72,16 +72,7 @@ export class _MD2dataManager extends MD2SpriteLoader {
             MD2dataManagerParseSpritesheets(this, this.manifestFiles[path], dir);
         }
 
-        const texture = await Assets.load(this.multiSpritesheetData.image[0]);
-
-        // old loader if needed
-        // const spritesheetO = new Spritesheet({
-        //     data: this.multiSpritesheetData.data[0],
-        //     texture,
-        // });
-
-        // await spritesheet.parse();
-
+        // fix this
         const spritesheet = await combineSpritesheets(this.multiSpritesheetData);
         if(!spritesheet) {
             alert("Spritesheet failed to load. Please check the console");
@@ -94,6 +85,15 @@ export class _MD2dataManager extends MD2SpriteLoader {
 
         this.getTexture = this.initializedGetTexture;
         this.getAnimationTextures = this.initializedGetAnimationTextures;
+
+        for(const [name, val] of this.spritesheetMap) {
+            await val.parse();
+            
+            const arr = Object.entries(val.textures);
+            for(const [name, texture] of arr) {
+                this.textureRegistry.set(name, texture);
+            }
+        }
 
         this.spritesheetRes();
 

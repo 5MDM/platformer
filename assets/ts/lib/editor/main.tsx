@@ -17,6 +17,8 @@ import { _MD2editMode } from "./modes/edit";
 import { _MD2filterMode } from "./modes/filter";
 import { _MD2editLevelMode } from "./modes/edit-level";
 import { EditorRegionShadows } from "./modes/regions/shadows";
+import { createSignal, JSX } from "solid-js";
+import { MDCTUI } from "./v2/main-ui";
 
 export interface MD2editorOpts {
     engine: _MD2engine;
@@ -42,6 +44,7 @@ export class MD2editor {
     isEntitySelected = false;
 
     ui: MDcreatorToolsUI;
+    newUi: MDCTUI;
 
     testSprite: TilingSprite | Sprite;
 
@@ -78,11 +81,13 @@ export class MD2editor {
     rotation = new RotationHolder();
 
     static creatorToolsState = new ToggleState(() => {
-        MDcreatorToolsUI.creatorToolsEl.style.display = "grid";
-        MDcreatorToolsUI.creatorToolsEl.parentElement!.classList.remove("disabled");
+        MDcreatorToolsUI.visibilitySignal[1](true);
+        //MDcreatorToolsUI.creatorToolsEl.style.display = "grid";
+        //MDcreatorToolsUI.creatorToolsEl.parentElement!.classList.remove("disabled");
     }, () => {
-        MDcreatorToolsUI.creatorToolsEl.style.display = "none";
-        MDcreatorToolsUI.creatorToolsEl.parentElement!.classList.add("disabled");
+        MDcreatorToolsUI.visibilitySignal[1](false);
+        //MDcreatorToolsUI.creatorToolsEl.style.display = "none";
+        //MDcreatorToolsUI.creatorToolsEl.parentElement!.classList.add("disabled");
     }, true);
 
     constructor(o: MD2editorOpts) {
@@ -92,7 +97,7 @@ export class MD2editor {
         this.player = this.engine.generator.player;
 
         this.ui = new MDcreatorToolsUI(this);
-        this.ui.bindTo(o.el);
+        //this.ui.bindTo(o.el);
 
         this.engine.initPromise.then(() => this.init());
 
@@ -163,6 +168,9 @@ export class MD2editor {
         this.rotation.onRotation = () => this.onRotation();
 
         this.engine.events.on(_md2events.levelDeleteB, () => this.cancelChanges());
+
+        this.newUi = new MDCTUI(this);
+        this.newUi.renderTo(o.el);
     }
 
     private setupEditorModeEventListener(mode: _MD2editorBase): (el: HTMLElement) => void {
@@ -292,13 +300,15 @@ export class MD2editor {
     }
 
     private init() {
+        
         this.ui.setGridBlocks(this.engine.generator.getBlockDefArr());
         
-        this.ui.setGridEntities(this.engine.generator.getEntityDefArr());
+        //this.ui.setGridEntities(this.engine.generator.getEntityDefArr());
 
         this.engine.levelManager.groups.world.addChild(this.testSprite);
-
         this.setupListeners();
+
+        this.newUi.addBlocksByArray(this.engine.generator.getBlockDefArr());
     }
 
     checkIfOOB(x: number, y: number, maxX: number, maxY: number): boolean {

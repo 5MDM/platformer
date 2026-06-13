@@ -43,7 +43,8 @@ export class Player extends PlayerControlledEntity {
         });
 
         addEventListener("keydown", e => {
-            if(e.key != "Shift") return;
+            if(e.key != "Shift"
+            || e.location != 2) return;
 
             gun.fireMain();
         }, {passive: true});

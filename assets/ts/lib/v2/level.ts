@@ -18,10 +18,13 @@ Record<number, Record<number, Record<number, (engine: _MD2engine, data: LevelDat
     0: {
         0: {
             0(engine, data) {
+                var wasSpawnPointFound = false;
                 for(const block of data.blocks) {
+                    if(!wasSpawnPointFound) 
                     if(block.type == "@") {
                         _MD2levelManager.spawnX = block.x;
                         _MD2levelManager.spawnY = block.y;
+                        wasSpawnPointFound = true;
 
                         continue;
                     }

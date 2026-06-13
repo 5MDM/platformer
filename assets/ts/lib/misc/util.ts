@@ -436,3 +436,17 @@ export function simpleSwitch<Key extends string, C = undefined>
     else o.default?.call(undefined!, main);
   }
 }
+
+export function objToCSSstring(o: Dict<string>): string {
+  var s = "";
+  for(const key in o) {
+    const txt = `${key}:${o[key]};`;
+    s += txt;
+  }
+
+  return s;
+}
+
+export type Dict<T> = Record<string, T>;
+export type Smap<T> = Map<string, T>;
+export type Primative3 = string | number | boolean;

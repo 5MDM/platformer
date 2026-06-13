@@ -109,7 +109,9 @@ export function _createToolbar(creatorToolsUI: MDcreatorToolsUI) {
         ]
     });
 
-    MDcreatorToolsUI.el.prepend(toolbar);
+    const [getArr, setArr] = MDcreatorToolsUI.signals.toolbarArr;
+    setArr([...getArr(), toolbar]);
+    //MDcreatorToolsUI.el.prepend(toolbar);
 }
 
 export const editorClickArea = $$("div", {

@@ -1,6 +1,7 @@
 import {defineConfig} from "vite";
 import {checker} from "vite-plugin-checker";
 import ViteYaml from '@modyfi/vite-plugin-yaml';
+import solidPlugin from "vite-plugin-solid";
 
 export default defineConfig({
   build: {
@@ -12,9 +13,11 @@ export default defineConfig({
       typescript: true,
     }),
     ViteYaml(),
+    solidPlugin(),
     /*react({
       devTarget: "es2022",
     }),*/
+    
   ],
   base: "/platformer/",
 });

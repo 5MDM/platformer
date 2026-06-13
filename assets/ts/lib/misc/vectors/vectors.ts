@@ -274,6 +274,11 @@ export namespace MDV {
         addV2(v2: V2) {
             this.x += v2.x;
             this.y += v2.y;
+            return this;
+        }
+
+        static getViewport() {
+            return new V4(0, 0, innerWidth, innerHeight);
         }
 
         static cell8posGrid: Record<MDV.V4cell8sidesType, MDV.V2> = {
@@ -314,6 +319,14 @@ export namespace MDV {
             && this.x + this.w >= p.x
             && this.y <= p.y
             && this.y + this.h >= p.y;
+        }
+
+        static fromDOMrect(domBox: DOMRect): V4 {
+            return new V4(domBox.x, domBox.y, domBox.width, domBox.height);
+        }
+
+        static fromElementBounds(el: Element): V4 {
+            return V4.fromDOMrect(el.getBoundingClientRect());
         }
     }
 }

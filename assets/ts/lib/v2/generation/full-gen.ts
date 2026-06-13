@@ -75,7 +75,7 @@ export class _MD2fullGen extends _MD2Blockgenerator {
     setBackground(name: string) {
         const t = this.engine.dataManager.getTexture(name);
         if(t == Texture.WHITE) {
-            alert(`"${name}" is an invalid texture for the background`);
+            //alert(`"${name}" is an invalid texture for the background`);
             return;
         }
 

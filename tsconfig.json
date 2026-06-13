@@ -31,7 +31,9 @@
       "strict": true,     
                                        
       "noFallthroughCasesInSwitch": true,               
-      "skipLibCheck": true                                 
+      "skipLibCheck": true,
+      "jsx": "preserve", 
+      "jsxImportSource": "solid-js"              
     },
     "include": ["assets", "assets/ts/lib/v2/automation.ts"]
   }

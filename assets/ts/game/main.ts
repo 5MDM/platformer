@@ -17,7 +17,11 @@ const editor = new MD2editor({
 
 const player = md2.generator.player;
 
-function loadAnimations() {   
+// problems with the atlas generator:
+// 1. Animation names don't have dashes in them
+// 2. Animation arrays have items without the ".png" ending
+
+function loadAnimations() {  
     const walkR = md2.dataManager.getAnimation("player-side-walk");
     walkR.scale.x = -1;
     walkR.position.x = 30;
@@ -37,8 +41,8 @@ function loadAnimations() {
 export async function startGame(md2: _MD2engine) { 
     loadAnimations();
 
-    //md2.levelManager.loadLevel("1");
-    md2.levelManager.loadLevel("2");
+    md2.levelManager.loadLevel("1");
+    //md2.levelManager.loadLevel("2");
     //md2.levelManager.loadLevel("test");
 
     md2.modules.env.addParticles({

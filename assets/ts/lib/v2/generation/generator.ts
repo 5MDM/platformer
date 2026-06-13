@@ -11,6 +11,7 @@ import { greedyMesh } from "./greedy-mesh";
 import { MD2componentObjType } from "../../misc/components";
 import { AnimatedTilingSprite } from "../../misc/animated-tiles";
 import { MD2errors } from "../errors";
+import { MDregexUtils } from "../engine-utils/regex";
 
 
 export interface BlockOpts {
@@ -53,7 +54,9 @@ export abstract class _MD2Blockgenerator {
         this.engine.levelManager.recordPlayer(this.player);
     }
 
-    getBlockDef(name: string): BlockInfo | false {
+    getBlockDef(path: string): BlockInfo | false {
+        const [ss, name] = MDregexUtils.splitResourcePath(path);
+
         const blockDef = this.blockDefs[name];
         if (blockDef) return blockDef;
         else {
