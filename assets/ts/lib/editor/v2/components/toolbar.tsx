@@ -1,11 +1,12 @@
 import { JSX } from "solid-js/jsx-runtime";
-import { MD2editor } from "../main";
-import { _MD2engine } from "../../v2/engine";
-import { MDCTUI, MDCTUIids } from "./main-ui";
+import { MD2editor } from "../../main";
+import { _MD2engine } from "../../../v2/engine";
+import { MDCTUI, MDCTUIids } from "../main-ui";
 import { createSignal, For, Show, Signal } from "solid-js";
+import { MD2editorV2 } from "../editor";
 
 interface ToolbarObj {
-    [name: string]: ToolbarObj | ((editor: MD2editor, md2: _MD2engine) => void) | string;
+    [name: string]: ToolbarObj | ((editor: MD2editorV2, md2: _MD2engine) => void) | string;
 }
 
 const toolbarObj: ToolbarObj = {
@@ -49,7 +50,7 @@ function onDropdownBtnClick(signal: Signal<boolean>) {
     signal[1](!signal[0]());
 }
 
-function ToolbarEl(props: {obj: ToolbarObj, editor: MD2editor, id?: string}): JSX.Element {
+function ToolbarEl(props: {obj: ToolbarObj, editor: MD2editorV2, id?: string}): JSX.Element {
     return <div id={props.id}>
         <For each={Object.entries(props.obj)}>{([name, val]) => {
             const type = typeof val;
@@ -74,14 +75,13 @@ function ToolbarEl(props: {obj: ToolbarObj, editor: MD2editor, id?: string}): JS
             
             // runs a function
             else return <button onclick={
-                () => (val as ((editor: MD2editor, md2: _MD2engine) => void))(props.editor, props.editor.engine)
-                }>
-                    {name}
-                </button>;
+                () => (val as ((editor: MD2editorV2, md2: _MD2engine) => void))
+                (props.editor, props.editor.engine)
+            }>{name}</button>;
         }}</For>
     </div>;
 }
 
-export function MDCTUItoolbar(props: {editor: MD2editor}): JSX.Element {
+export function MDCTUItoolbar(props: {editor: MD2editorV2}): JSX.Element {
     return <ToolbarEl id={MDCTUIids.toolbar} obj={toolbarObj} editor={props.editor} />
 }

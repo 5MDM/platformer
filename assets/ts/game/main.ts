@@ -7,13 +7,16 @@ import { MD2editor } from "../lib/editor/main";
 import { MD2envModule } from "../lib/v2/modules/env/main";
 import { MD2devAutomation } from "../lib/v2/automation";
 import { MD2lightFilter } from "../lib/v2/lighting/lights";
+import { MD2editorV2 } from "../lib/editor/v2/editor";
 
 //MD2editor.creatorToolsState.disableIfOn();
 
-const editor = new MD2editor({
-    engine: md2,
-    el: $("#ui > #editor-v2-c") as HTMLDivElement,
-});
+// const editor = new MD2editor({
+//     engine: md2,
+//     el: $("#ui > #editor-v2-c") as HTMLDivElement,
+// });
+
+const editor = new MD2editorV2(md2, $("#ui > #editor-v2-c"));
 
 const player = md2.generator.player;
 

@@ -133,11 +133,3 @@
 #ui > #editor-v2-c > #editor-v2 .editor-select option:checked {
     font-weight: bold;
 }
-
-#ui > #editor-v2-c > #editor-v2 .block-grid-c > div {
-    display: grid;
-    position: fixed;
-    border: 10px #555 outset;
-    background: radial-gradient(lightgray, gray);
-    width: 100%;
-}

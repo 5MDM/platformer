@@ -21,6 +21,10 @@ export namespace MDV {
         x: number;
         y: number;
 
+        *[Symbol.iterator]() {
+            for(const i of [this.x, this.y]) yield i;
+        }
+
         constructor(x = 0, y = 0) {
             this.x = x;
             this.y = y;
@@ -32,6 +36,12 @@ export namespace MDV {
 
         static fromPoint(o: {x: number; y: number}) {
             return new V2(o.x, o.y);
+        }
+
+        set(x: number, y: number): this {
+            this.x = x;
+            this.y = y;
+            return this;
         }
 
         clone(): V2 {return V2.fromPoint(this)}
@@ -149,6 +159,10 @@ export namespace MDV {
             this.y = y;
             this.w = w;
             this.h = h;
+        }
+
+        *[Symbol.iterator]() {
+            for(const i of [this.x, this.y, this.w, this.h]) yield i;
         }
 
         toArr(): [number, number, number, number] {
@@ -279,6 +293,13 @@ export namespace MDV {
 
         static getViewport() {
             return new V4(0, 0, innerWidth, innerHeight);
+        }
+
+        applyToElementAsRelativePx(el: HTMLElement) {
+            el.style.left = this.x + "px";
+            el.style.bottom = this.y + "px";
+            el.style.width = this.w + "px";
+            el.style.height = this.h + "px";
         }
 
         static cell8posGrid: Record<MDV.V4cell8sidesType, MDV.V2> = {

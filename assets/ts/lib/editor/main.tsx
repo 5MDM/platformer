@@ -44,7 +44,7 @@ export class MD2editor {
     isEntitySelected = false;
 
     ui: MDcreatorToolsUI;
-    newUi: MDCTUI;
+    //newUi: MDCTUI;
 
     testSprite: TilingSprite | Sprite;
 
@@ -169,8 +169,8 @@ export class MD2editor {
 
         this.engine.events.on(_md2events.levelDeleteB, () => this.cancelChanges());
 
-        this.newUi = new MDCTUI(this);
-        this.newUi.renderTo(o.el);
+        //this.newUi = new MDCTUI(this);
+        //this.newUi.renderTo(o.el);
     }
 
     private setupEditorModeEventListener(mode: _MD2editorBase): (el: HTMLElement) => void {
@@ -308,7 +308,7 @@ export class MD2editor {
         this.engine.levelManager.groups.world.addChild(this.testSprite);
         this.setupListeners();
 
-        this.newUi.addBlocksByArray(this.engine.generator.getBlockDefArr());
+        //this.newUi.addBlocksByArray(this.engine.generator.getBlockDefArr());
     }
 
     checkIfOOB(x: number, y: number, maxX: number, maxY: number): boolean {

@@ -79,6 +79,12 @@ export class CSSunitTable {
         } else return val as Primative3;
     }
 
+    getStr(key: string): string {
+        const val = this.genTable[key];
+        if(!val || typeof val !== "string") return "";
+        return val;
+    }
+ 
     operator(key: string, type: CSSunitTableOperators, n: number) {
         const old = this.getNum(key);
         if(type == "+=") this.set(key, old + n);

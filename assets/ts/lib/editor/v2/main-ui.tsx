@@ -2,40 +2,50 @@ import { createStore } from "solid-js/store";
 import { Dict } from "../../misc/util";
 import { BlockInfo } from "../../v2/types";
 import { MD2editor } from "../main";
-import { MDCTUItoolbar } from "./toolbar";
+import { MDCTUItoolbar } from "./components/toolbar";
 import { JSX } from "solid-js/jsx-runtime";
 import { render } from "solid-js/web";
 import { createSignal } from "solid-js";
-import { MDCTUIblockGridContainer } from "./block-grid";
+import { MDCTUIblockGridContainer } from "./components/block-grid";
+import { MD2editorV2 } from "./editor";
+import { EditorV2panel } from "./components/panel";
 
 export const MDCTUIids = {
     centerContainer: "center-block",
     toolbar: "toolbar",
-    editor: "editor-v2"
+    editor: "editor-v2",
+    panel: "editor-v2-panel",
+    categories: "editor-v2-categories",
+    utilBtns: "editor-v2-util-btns",
+    modeBtns: "editor-v2-mode-btns",
 };
 
 export const MDCTUIclasses = {
-    blockGridC: "block-grid-c"
+    blockGridC: "block-grid-c",
 };
 
 export class MDCTUI {
     currentCategory = createSignal("Forest");
     categoryStore = createStore<Dict<BlockInfo[]>>({});
+    readonly selectedBlockSignal = createSignal<BlockInfo | undefined>();
+    readonly getSelectedBlock = this.selectedBlockSignal[0];
 
     visibilitySignal = createSignal(true);
 
-    editor: MD2editor;
-    constructor(editor: MD2editor) {
+    editor: MD2editorV2;
+    constructor(editor: MD2editorV2) {
         this.editor = editor;
+    }
+
+    onBlockSelect(o: BlockInfo) {
+        
     }
 
     renderTo(el: HTMLElement) {
         render(() =>
             <div id={MDCTUIids.editor}>
-                <MDCTUItoolbar editor={this.editor} />
-                <MDCTUIblockGridContainer 
-                    categoryStore={this.categoryStore} 
-                    currentCategorySignal={this.currentCategory} />
+                {/* <MDCTUItoolbar editor={this.editor} /> */}
+                <EditorV2panel id={MDCTUIids.panel} editor={this.editor} />
             </div>
         , el);
     }

@@ -11,8 +11,11 @@
     width: 100vw;
     height: 25px;
     justify-content: center;
+
+    pointer-events: none;
 }
 
 #md2-gui-target > #topBar > button {
     border-radius: 25px;
+    pointer-events: auto;
 }

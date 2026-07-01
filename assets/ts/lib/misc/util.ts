@@ -263,10 +263,10 @@ export function snapToGrid(n: number, gridPos: number, blockSize: number): numbe
 export class ToggleState {
   isToggled: boolean;
 
-  constructor(onEnable: () => void, onDisable: () => void, isToggled: boolean = false) {
+  constructor(onEnable?: () => void, onDisable?: () => void, isToggled: boolean = false) {
     this.isToggled = isToggled;
-    this.onEnable = onEnable;
-    this.onDisable = onDisable;
+    this.onEnable = onEnable || NOOP;
+    this.onDisable = onDisable || NOOP;
   }
 
   toggle() {
@@ -450,3 +450,7 @@ export function objToCSSstring(o: Dict<string>): string {
 export type Dict<T> = Record<string, T>;
 export type Smap<T> = Map<string, T>;
 export type Primative3 = string | number | boolean;
+export type PointerMoveEvent = PointerEvent & {
+  target: Element;
+  currentTarget: HTMLElement;
+};

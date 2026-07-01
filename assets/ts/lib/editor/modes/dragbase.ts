@@ -1,11 +1,7 @@
-import { Sprite, Texture, TilingSprite } from "pixi.js";
 import { _MD2editorBase } from "./main"
 import { MD2editor } from "../main";
-import { AnyBlock } from "../../v2/blocks/blocks";
-import { LCC } from "../../misc/util";
 import { _md2events, BlockInfo, XYWH } from "../../v2/types";
 import { MDscalableSprite } from "../../misc/scale-sprite";
-import { Keymap } from "../../misc/keymap";
 
 export abstract class _MD2editorDragBase extends _MD2editorBase {
     firstPlacedDown = false;
