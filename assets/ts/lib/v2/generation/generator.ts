@@ -314,6 +314,9 @@ export abstract class _MD2Blockgenerator {
         });
     }
 
+    /** @param grid - a record of 3 grids holding blocks.
+     *  THIS WILL CLEAR THE GRIDS
+     */
     injectBlocks(grid: Record<MDgameGridType, MDmatrix<AnyBlock>>) {
         var data: LevelJSONoutput[];
         try {

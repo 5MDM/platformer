@@ -5,7 +5,7 @@ import { MD2editor } from "../main";
 import { MDCTUItoolbar } from "./components/toolbar";
 import { JSX } from "solid-js/jsx-runtime";
 import { render } from "solid-js/web";
-import { createSignal } from "solid-js";
+import { createSignal, Show } from "solid-js";
 import { MDCTUIblockGridContainer } from "./components/block-grid";
 import { MD2editorV2 } from "./editor";
 import { EditorV2panel } from "./components/panel";
@@ -30,7 +30,7 @@ export class MDCTUI {
     readonly selectedBlockSignal = createSignal<BlockInfo | undefined>();
     readonly getSelectedBlock = this.selectedBlockSignal[0];
 
-    visibilitySignal = createSignal(true);
+    readonly visibilitySignal = createSignal(true);
 
     editor: MD2editorV2;
     constructor(editor: MD2editorV2) {
@@ -42,12 +42,12 @@ export class MDCTUI {
     }
 
     renderTo(el: HTMLElement) {
-        render(() =>
-            <div id={MDCTUIids.editor}>
-                {/* <MDCTUItoolbar editor={this.editor} /> */}
+        render(() => <div id={MDCTUIids.editor}>
+            <MDCTUItoolbar editor={this.editor} />
+            <Show when={this.visibilitySignal[0]()}>
                 <EditorV2panel id={MDCTUIids.panel} editor={this.editor} />
-            </div>
-        , el);
+            </Show>
+        </div>, el);
     }
 
     addBlocksByArray(blocks: BlockInfo[]) {

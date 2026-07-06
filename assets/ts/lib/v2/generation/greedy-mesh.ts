@@ -13,7 +13,14 @@ interface Bounds {
     doesExist: boolean;
 }
 
+function fillDegreeList(list: Record<Degrees, Record<number, AnyBlock>>, m: MDmatrix<AnyBlock>) {
+    m.forEach(block => 
+        list[block.rotation as Degrees][block.id] = block
+    );
+}
+
 export function greedyMesh(grids: WorldGrids): LevelJSONoutput[] {
+    // each item is an object of Record<Degree, Record<id, block>>
     const lists: Record<MDgameGridType, Record<Degrees, Record<number, AnyBlock>>> = {
         fg: createDegreesRecord(),
         bg: createDegreesRecord(),
@@ -22,9 +29,12 @@ export function greedyMesh(grids: WorldGrids): LevelJSONoutput[] {
 
     const blockNames: Record<Degrees, Record<string, MDmatrix<AnyBlock>>> = createDegreesRecord();
 
-    grids.fg.forEach((block) => lists.fg[block.rotation as Degrees][block.id] = block);
-    grids.bg.forEach((block) => lists.bg[block.rotation as Degrees][block.id] = block);
-    grids.overlay.forEach((block) => lists.overlay[block.rotation as Degrees][block.id] = block);
+    for(const name in grids)
+        fillDegreeList(lists[name], grids[name] as MDmatrix<AnyBlock>);
+
+    // grids.fg.forEach((block) => lists.fg[block.rotation as Degrees][block.id] = block);
+    // grids.bg.forEach((block) => lists.bg[block.rotation as Degrees][block.id] = block);
+    // grids.overlay.forEach((block) => lists.overlay[block.rotation as Degrees][block.id] = block);
     
     // sort grids
     for(const type in lists) {    

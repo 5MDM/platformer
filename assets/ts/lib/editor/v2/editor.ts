@@ -1,4 +1,4 @@
-import { Container, ContainerChild } from "pixi.js";
+import { Container, ContainerChild, Sprite } from "pixi.js";
 import { _MD2engine } from "../../v2/engine";
 import { BaseMode } from "./modes/templates/base-mode";
 import { MDgameGridType } from "../../v2/types";
@@ -8,12 +8,20 @@ import { MDCTUI } from "./main-ui";
 import { MD2editor } from "../main";
 import { PlaceBlock } from "./modes/placeBlock";
 import { createSignal, Signal } from "solid-js";
+import { initToolbarEvents } from "./toolbarEvents";
+import { EnableState } from "../../misc/enable-state";
 
 type Mode = new (editor: MD2editorV2, targetEl: HTMLElement) => BaseMode;
 
 export class MD2editorV2 {
     engine: _MD2engine;
     targetEl: HTMLElement;
+
+    state = new EnableState(() => {
+        this.ui.visibilitySignal[1](true);
+    }, () => {
+        this.ui.visibilitySignal[1](false);
+    }, true);
 
     levelGroups: {
         bg: Container<ContainerChild>;
@@ -55,6 +63,8 @@ export class MD2editorV2 {
         this.levelGroups = this.engine.levelManager.groups;
 
         this.engine.initPromise.then(this.init.bind(this));
+
+        initToolbarEvents(this);
     }
 
     private init() {
@@ -87,11 +97,19 @@ export class MD2editorV2 {
 
     static maxLevelSize = 1024;
 
-    editorGrids: Record<MDgameGridType, MDmatrix<FgBlock> | MDmatrix<BgBlock>> = {
+    editorGrids: Record<MDgameGridType, (MDmatrix<FgBlock> | MDmatrix<BgBlock>)> = {
         fg: new MDmatrix(st.maxLevelSize, st.maxLevelSize),
         bg: new MDmatrix(st.maxLevelSize, st.maxLevelSize),
         overlay: new MDmatrix(st.maxLevelSize, st.maxLevelSize),
     };
+    
+    forEachGrid(
+        f: (grid: MDmatrix<FgBlock> | MDmatrix<BgBlock>, name: MDgameGridType) => void
+    ) {
+        f(this.editorGrids.fg, "fg");
+        f(this.editorGrids.bg, "bg");
+        f(this.editorGrids.overlay, "overlay");
+    }
 
     ui: MDCTUI = new MDCTUI(this);
 }

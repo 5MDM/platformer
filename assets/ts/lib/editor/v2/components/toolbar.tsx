@@ -28,9 +28,7 @@ const toolbarObj: ToolbarObj = {
         }
     },
     Edit: {
-        "Toggle Editor"() {
-            MD2editor.creatorToolsState.toggle();
-        },
+        "Toggle Editor": "toggle-editor",
         "Save Changes": "save-changes",
         "Cancel editor changes": "cancel-changes",
         "Switch dimensions": "switch-dimensions",

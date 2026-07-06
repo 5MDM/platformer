@@ -1,13 +1,15 @@
 import { JSX } from "solid-js/jsx-runtime";
 import { SetStoreFunction, Store } from "solid-js/store";
-import { Dict } from "../../../misc/util";
+import { Dict, NOOP } from "../../../misc/util";
 import { BlockInfo } from "../../../v2/types";
 import { createEffect, createSignal, For, on, Show, Signal, splitProps, Suspense } from "solid-js";
-import { MDCTUI, MDCTUIclasses } from "../main-ui";
+import { MDCTUI, MDCTUIclasses, MDCTUIids } from "../main-ui";
 import { createImageFromTexture } from "../../../v2/data-loaders/spritesheet-functions";
 import { _MD2engine } from "../../../v2/engine";
 import { Iwindow } from "../../../misc/el/window";
 import { SelectItemDiv } from "../../../misc/el/select";
+import { MD2editor } from "../../main";
+import { MD2editorV2 } from "../editor";
 
 const [getPrArr, setPrArr] = createSignal<Promise<HTMLImageElement[]>[]>([]);
 
@@ -60,6 +62,8 @@ export function MDCTUIblockGridContainer(props: {
     onSelect: (o: BlockInfo) => void;
     md2: _MD2engine;
     selectedBlockSignal: Signal<BlockInfo | undefined>;
+    visibleSignal: Signal<boolean>;
+    editor: MD2editorV2;
 }): JSX.Element {
     const [getMoveFlag, setMoveFlag] = createSignal(false);
     Promise.all(getPrArr())
@@ -67,13 +71,26 @@ export function MDCTUIblockGridContainer(props: {
 
     return <div class={MDCTUIclasses.blockGridC}>
         <Iwindow 
-            heightPercent={50}
-            leftPercent={50}
-            widthPercent={50}
+            visibilitySignal={props.visibleSignal}
+            heightPercent={40}
+            leftPercent={40}
+            widthPercent={60}
             title="Blocks"
             canMove={getMoveFlag}
             shrinkToScreen={true} 
             borderWidth={10}>
+            <SelectItemDiv<string>
+                itemSignal={props.editor.ui.currentCategory}
+                onSelect={NOOP}
+                id={MDCTUIids.categories}
+            >{setSelectedItem => 
+                <For each={["Forest", "Entities", "Town"]}>{categoryName =>
+                    <button 
+                        class={(props.editor.ui.currentCategory[0]() === categoryName) ? "selected" : undefined}
+                        onclick={() => setSelectedItem(categoryName)}>{categoryName}</button>
+                }</For>
+            }</SelectItemDiv>
+
             <For each={Object.entries(props.categoryStore[0])}>{([categoryName, blocks]) => 
                 <Show when={props.currentCategorySignal[0]() == categoryName}>
                     <BlockGrid

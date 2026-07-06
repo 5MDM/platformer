@@ -3,9 +3,11 @@
 
     > #editor-v2-panel {
         #editor-v2-categories {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, 100px);
-            grid-template-rows: repeat(auto-fit, 100px);
+            display: flex;
+            flex-direction: row;
+            // grid-template-columns: repeat(auto-fit, 100px);
+            // grid-template-rows: repeat(auto-fit, 100px);
+            height: 80px;
             
             button {
                 width: 100%;
@@ -43,6 +45,12 @@
 
     .block-grid-c {
         > .i-window {
+            > .i-window-bottom {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+
             .mdctui-block-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, 100px);

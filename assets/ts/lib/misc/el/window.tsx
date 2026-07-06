@@ -1,4 +1,4 @@
-import { Accessor, createSignal, Show, splitProps } from "solid-js";
+import { Accessor, createSignal, Show, Signal, splitProps } from "solid-js";
 import { JSX } from "solid-js/jsx-runtime";
 import { MovableContent, MovableContentOpts } from "./movable-content";
 import { CSSunitTable } from "./solidjs";
@@ -21,6 +21,7 @@ export function Iwindow(p: {
     widthPercent?: number;
     leftPercent?: number;
     bottomPercent?: number;
+    visibilitySignal: Signal<boolean>
     [index: string]: any;
 } & IwindowOpts) {
     p.borderWidth ??= 10;
@@ -29,7 +30,7 @@ export function Iwindow(p: {
     const [props, other] = splitProps(p, [
         "children", "onClose", "onMinimize", "onExtend",
         "title", "events", "heightPercent", "widthPercent",
-        "leftPercent", "bottomPercent"
+        "leftPercent", "bottomPercent", "visibilitySignal"
     ]);
 
     const events = props.events || new EventEmitter();
@@ -92,27 +93,29 @@ export function Iwindow(p: {
     }
 
     function close() {
-
+        props.visibilitySignal[1](false);
     }
     
-    const el = <MovableContent 
-        events={events} 
-        customCSStable={table} 
-        inertiaDecay={.96}
-        {...other} 
-        class="i-window">
-        <div class="i-window-top">
-            <Show when={props.title}>
-                <p>{props.title}</p>
+    const el = <Show when={props.visibilitySignal[0]()}>
+        <MovableContent 
+            events={events} 
+            customCSStable={table} 
+            inertiaDecay={.96}
+            {...other} 
+            class="i-window">
+            <div class="i-window-top">
+                <Show when={props.title}>
+                    <p>{props.title}</p>
+                </Show>
+                <button onclick={minimize}>-</button>
+                <button onclick={maximize}>□</button>
+                <button onclick={close}>X</button>
+            </div>
+            <Show when={!getMinimizationState()}>
+                <div class="i-window-bottom">{props.children}</div>
             </Show>
-            <button onclick={minimize}>-</button>
-            <button onclick={maximize}>[ ]</button>
-            <button onclick={close}>X</button>
-        </div>
-        <Show when={!getMinimizationState()}>
-            <div class="i-window-bottom">{props.children}</div>
-        </Show>
-    </MovableContent>;
+        </MovableContent>;
+    </Show>
 
     return el;
 }

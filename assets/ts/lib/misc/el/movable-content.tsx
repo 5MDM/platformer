@@ -134,7 +134,7 @@ export function MovableContent(p: {
                 movement: new MDV.V2(e.movementX, e.movementY),
                 box: MDV.V4.fromElementBounds(e.currentTarget),
                 translateF([x, y]) {
-
+                    
                 }
             });
 

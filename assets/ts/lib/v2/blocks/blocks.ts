@@ -139,6 +139,7 @@ export abstract class Block extends BasicBox {
     light: number = 0;
 
     readonly container = new Container();
+    readonly editorIndicatorSprites = new Container();
     readonly sprite: AnySprite;
 
     static defaultLight = 4;
@@ -155,6 +156,14 @@ export abstract class Block extends BasicBox {
         this.light = n;
     }
 
+    destroyEditorIndicatorSprites() {
+        const c = this.editorIndicatorSprites;
+        for(const i of c.children)
+            i.destroy();
+        
+        c.removeChildren();
+    }
+
     constructor(o: BlockConstructorOpts) {
         super(o);
         this.rotation = o.rotation;
@@ -164,6 +173,7 @@ export abstract class Block extends BasicBox {
 
         this.container.x -= this.blockSize / 2;
 
+        this.container.addChild(this.editorIndicatorSprites);
         this.container.addChild(this.sprite);
 
         this.isOversize = o.isOversize;

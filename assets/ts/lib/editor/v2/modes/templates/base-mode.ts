@@ -1,4 +1,4 @@
-import { Container, ContainerChild } from "pixi.js";
+import { Container, ContainerChild, Graphics, Sprite, Texture } from "pixi.js";
 import { DragController } from "../../../../misc/drag";
 import { EnableState } from "../../../../misc/enable-state";
 import { _MD2engine } from "../../../../v2/engine";
@@ -42,6 +42,15 @@ export abstract class BaseMode {
 
         this.dragController.changeDefaultandNormalGrab("default");
         this.dragController.changeDefaultAndNormalGrabbing("pointer");
+
+        const g = new Graphics();
+        g.rect(0, 0, this.engine.blockSize + 1, this.engine.blockSize + 1)
+        .stroke({
+            width: 2,
+            color: "yellow"
+        });
+
+        this.yellowBorderTexture = this.engine.app.renderer.generateTexture(g);
     }
 
     getBlockFromEditorGrid<T extends AnyBlock>
@@ -101,16 +110,44 @@ export abstract class BaseMode {
 
     abstract onDrag(blockPos: MDV.V2, pointerPosChange: MDV.V2): void;
 
+    yellowBorderTexture: Texture;
+
     blockTools = {
         self: this,
+        isSpaceEmpty(gridName: MDgameGridType, gridPos: MDV.V2): boolean {
+            const grid = this.self.editor.editorGrids[gridName];
+            const block = grid.get(gridPos.x, gridPos.y);
+
+            return block == undefined;
+        },
+        isSpaceEmptyOnAllGrids(gridPos: MDV.V2): boolean {
+            var isEmpty = true;
+            this.self.editor.forEachGrid(g => {
+                if(g.get(gridPos.x, gridPos.y)) isEmpty = false;
+            });
+
+            return isEmpty;
+        },
         createSingleBlock(name: string, gridPos: MDV.V2, rotation = 0, record = false) {
             return this.createBlock(name, new MDV.V4(...gridPos, 1, 1), rotation, record);
         },
         createBlock(
             name: string, [x, y, w, h]: MDV.V4, rotation: number = 0, record = false
         ): AnyBlock | false {
-            return this.self.editor.engine.generator
+            const block = this.self.editor.engine.generator
             .createAndReturnBlock({name, x, y, w, h, rotation}, record);
+            const bz = this.self.engine.blockSize;
+            const bzh = this.self.engine.blockSizeHalf;
+
+            const ye = new Sprite(this.self.yellowBorderTexture);
+            ye.position.set(x * bz, y * bz);
+
+            if(block) {
+                block.container.x += bzh;
+                block.container.addChild(ye);
+            }
+
+            return block;
         },
         createBlockAndRecordInEditor<T extends AnyBlock>(
             name: string, 
@@ -120,7 +157,7 @@ export abstract class BaseMode {
             const block = this.createBlock(name, box, rotation) as (T | false);
             if(!block) return false;
 
-            this.self.editor.c.addChild(block.sprite);
+            this.self.editor.c.addChild(block.container);
             (this.self.editor.editorGrids[block.type] as MDmatrix<T>).set(box.x, box.y, block);
             return block;
         },
@@ -133,10 +170,19 @@ export abstract class BaseMode {
             const block = this.createBlock(name, new MDV.V4(x, y, 1, 1), rotation) as (T | false);
             if(!block) return false;
 
-            this.self.editor.c.addChild(block.sprite);
+            this.self.editor.c.addChild(block.container);
 
             (this.self.editor.editorGrids[block.type] as MDmatrix<T>).set(x, y, block);
             return block;
         },
+        getGrid(type: MDgameGridType) {return this.self.editor.editorGrids[type]},
+        deleteSingleBlockInEditor(type: MDgameGridType, gridPos: MDV.V2) {
+            const g = this.getGrid(type);
+            const b = g.get(gridPos.x, gridPos.y);
+            if(!b) return;
+
+            this.self.editor.c.removeChild(b.container, b.sprite);
+            g.delete(gridPos.x, gridPos.y);
+        }
     };
 }
