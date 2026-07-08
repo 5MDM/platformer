@@ -10,6 +10,7 @@ import { PlaceBlock } from "./modes/placeBlock";
 import { createSignal, Signal } from "solid-js";
 import { initToolbarEvents } from "./toolbarEvents";
 import { EnableState } from "../../misc/enable-state";
+import { Delete } from "./modes/delete";
 
 type Mode = new (editor: MD2editorV2, targetEl: HTMLElement) => BaseMode;
 
@@ -89,6 +90,7 @@ export class MD2editorV2 {
     areModesParsed = false;
     private modesToBeParsed: Mode[] = [
         PlaceBlock,
+        Delete,
     ];
 
     modes: Record<string, BaseMode> = {};

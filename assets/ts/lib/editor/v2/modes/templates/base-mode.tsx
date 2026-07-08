@@ -7,11 +7,16 @@ import { MD2editorV2 } from "../../editor";
 import { MDgameGridType, XYtuple } from "../../../../v2/types";
 import { snapToGrid } from "../../../../misc/util";
 import { MDV } from "../../../../misc/vectors/vectors";
-import { AnyBlock } from "../../../../v2/blocks/blocks";
+import { AnyBlock, BgBlock, FgBlock } from "../../../../v2/blocks/blocks";
 import { MDmatrix } from "../../../../misc/matrix";
+import { createSignal, JSXElement, Show } from "solid-js";
+import { JSX } from "solid-js/h/jsx-runtime";
 
 export abstract class BaseMode {
-    state = new EnableState();
+    readonly state = new EnableState(() => this.stateSignal[1](true), () => this.stateSignal[1](false));
+    readonly stateSignal = createSignal<boolean>(this.state.isEnabled);
+    readonly getState = this.stateSignal[0];
+    hasModeSettings = false;
 
     engine: _MD2engine;
 
@@ -36,6 +41,8 @@ export abstract class BaseMode {
         this.dragController = new DragController({
             touchEl: this.targetEl,
             isMultitouch: false,
+            ignorePropogatedEvents: true,
+            elementAllowList: ["editor-v2"]
         });
 
         this.dragController.disable();
@@ -64,6 +71,9 @@ export abstract class BaseMode {
     init() {
         this.dragController.enable();
         this.dragController.onDrag = (dx, dy, x, y) => this.triggerDragEvent(x, y, dx, dy);
+
+        if(this.hasModeSettings) 
+            this.state.events.on("enabled", () => this.editor.ui.setModeSettingsVisibility(true));
     }
 
     protected getWorldPos(rx: number, ry: number): [number, number] {
@@ -111,6 +121,12 @@ export abstract class BaseMode {
     abstract onDrag(blockPos: MDV.V2, pointerPosChange: MDV.V2): void;
 
     yellowBorderTexture: Texture;
+
+    protected addModeSettingsEl(el: JSXElement) {
+        this.editor.ui.editorModeSettingsElementArray.push(
+            <Show when={this.getState()}>{el}</Show>
+        );
+    }
 
     blockTools = {
         self: this,
@@ -183,6 +199,34 @@ export abstract class BaseMode {
 
             this.self.editor.c.removeChild(b.container, b.sprite);
             g.delete(gridPos.x, gridPos.y);
+        },
+        getWorldBlocks<T extends MDgameGridType[]>(types: T, [x, y]: MDV.V2)
+        : GridTypeBlocks {
+            const o: Partial<GridTypeBlocks> = {};
+            for(const type of types) {
+                const grid = this.self.engine.levelManager.levelGrids[type];
+                const block = grid.get(x, y) || false;
+                o[type] = block as (FgBlock & BgBlock) | undefined;
+            }
+
+            return o as GridTypeBlocks;
+        },
+        getEditorBlocks<T extends MDgameGridType[]>(types: T, [x, y]: MDV.V2)
+        : GridTypeBlocks {
+            const o: Partial<GridTypeBlocks> = {};
+            for(const type of types) {
+                const grid = this.self.editor.editorGrids[type];
+                const block = grid.get(x, y) || false;
+                o[type] = block as (FgBlock & BgBlock) | undefined;
+            }
+
+            return o as GridTypeBlocks;
         }
     };
+}
+
+interface GridTypeBlocks {
+    fg: FgBlock | undefined;
+    bg: BgBlock | undefined;
+    overlay: BgBlock | undefined;
 }

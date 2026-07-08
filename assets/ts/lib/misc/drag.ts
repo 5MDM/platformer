@@ -5,6 +5,8 @@ interface DragControllerOpts {
     enabled?: boolean;
     isMultitouch: boolean;
     customDownElement?: HTMLElement;
+    ignorePropogatedEvents?: boolean;
+    elementAllowList?: string[];
 }
 
 // multitouch improvements made by DeltAndy
@@ -20,6 +22,7 @@ export class DragController {
     grabbing: Cursor = "grabbing";
     defaultGrab: Cursor = "grab";
     defaultGrabbing: Cursor = "grabbing";
+    elementAllowList?: string[] = [];
 
     isDisabled = false;
 
@@ -27,6 +30,7 @@ export class DragController {
         this.downElement = o.customDownElement || o.touchEl;
         this.isMultitouch = o.isMultitouch;
         this.touchEl = o.touchEl;
+        this.elementAllowList = o.elementAllowList;
         if(o.enabled ?? true) this.enable();
 
         this.setupListeners();
@@ -41,22 +45,15 @@ export class DragController {
         if(this.isMultitouch) {
             this.touchEl.addEventListener
             ("touchmove", e => Array.from(e.targetTouches).forEach(t => this.touchMove(t)));
-
-            //this.touchEl.ontouchmove = e => Array.from(e.targetTouches).forEach(t => this.touchMove(t));
         } else {
-
-            this.touchEl.addEventListener("touchmove", e => this.touchMove(e.targetTouches[e.targetTouches.length-1]));
-            //this.touchEl.ontouchmove = e => this.touchMove(e.targetTouches[e.targetTouches.length-1]);
+            this.touchEl.addEventListener
+            ("touchmove", e => this.touchMove(e.targetTouches[e.targetTouches.length-1]));
         }
 
         this.touchEl.addEventListener("mouseleave", e => this.mouseUp(e));
-        //this.touchEl.onmouseleave = e => this.mouseUp(e);
         this.downElement.addEventListener("mousedown", e => this.mouseDown(e));
-        //this.downElement.onmousedown = e => this.mouseDown(e);
         this.touchEl.addEventListener("mouseup", e => this.mouseUp(e));
-        //this.touchEl.onmouseup = e => this.mouseUp(e);
         this.touchEl.addEventListener("mousemove", e => this.mouseMove(e));
-        //this.touchEl.onmousemove = e => this.mouseMove(e);
     }
 
     enable() {
@@ -68,21 +65,22 @@ export class DragController {
 
     disable() {
         this.isDisabled = true;
-        //this.touchEl.onpointerdown = null;
-        //this.touchEl.onpointerup = null;
-        //this.touchEl.ontouchmove = null;
-
-        //this.touchEl.onmousedown = null;
-        //this.touchEl.onmouseup = null;
-        //this.touchEl.onmousemove = null;
-
         this.canDrag = false;
         this.touchEl.style.cursor = "default";
+    }
+
+    private checkIfElementIsAllowed(e: MouseEvent | Touch): boolean {
+        if(this.elementAllowList) 
+            if(e.target instanceof HTMLElement)
+                return this.elementAllowList.includes(e.target.id);
+            else return false;
+        else return true;
     }
 
     private mouseMove(e: MouseEvent) {
         if (!this.canDrag) return;
         if (!this.isMouseDown) return;
+        if(!this.checkIfElementIsAllowed(e)) return;
         
         const x = -e.movementX;
         const y = -e.movementY;
@@ -92,6 +90,7 @@ export class DragController {
 
     private touchMove(e: Touch) {
         if(!this.canDrag) return;
+        if(!this.checkIfElementIsAllowed(e)) return;
 
         const touch = this.touchPosition.get(e.identifier);
         if(!touch) return;
@@ -105,6 +104,7 @@ export class DragController {
     onDrag: (x: number, y: number, px: number, py: number) => void = () => undefined;
 
     private touchDown(e: PointerEvent) {
+        if(!this.checkIfElementIsAllowed(e)) return;
         this.touchPosition.set(e.pointerId, {lastX: e.pageX, lastY: e.pageY});
         this.onDrag(0, 0, e.pageX, e.pageY);
     }
@@ -114,6 +114,7 @@ export class DragController {
     }
 
     private mouseDown(e: MouseEvent) {
+        if(!this.checkIfElementIsAllowed(e)) return;
         this.isMouseDown = true;
         this.downElement.style.cursor = this.grabbing;
         this.onDrag(0, 0, e.pageX, e.pageY);

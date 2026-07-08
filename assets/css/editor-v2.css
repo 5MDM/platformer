@@ -12,39 +12,6 @@
     flex-grow: 1;
 }
 
-#ui > #editor-v2-c > #editor-v2 > #toolbar {
-    display: flex;
-    width: 70%;
-    max-height: 25px;
-    position: absolute;
-    top: 25px;
-}
-
-#ui > #editor-v2-c > #editor-v2.disabled > #toolbar {
-    filter: opacity(.1);
-    border-color: black;
-}
-
-
-#ui > #editor-v2-c > #editor-v2 > #toolbar div {
-    flex-grow: 1;
-    border: 5px outset green;
-    position: relative;
-}
-
-#ui > #editor-v2-c > #editor-v2 > #toolbar div > button {
-    background: linear-gradient(silver, gray);
-    width: 100%;
-    min-height: 100%;
-    font-size: .7rem;
-    padding: 4px;
-    border: none;
-}
-
-#ui > #editor-v2-c > #editor-v2 > #toolbar div > button:active {
-    background: linear-gradient(gray, #555);
-}
-
 #ui > #editor-v2-c > #editor-v2 > #creator-tools {
     position: relative;
     border-top: 5px solid silver;

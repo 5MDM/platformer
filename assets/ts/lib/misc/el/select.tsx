@@ -4,7 +4,7 @@ export function SelectItemDiv<T extends string | number | Object | undefined>(p:
     children: (
         setSelectedItem: (o: T) => void, 
     ) => JSX.Element;
-    onSelect: (o: T) => void;
+    onSelect?: (o: T) => void;
     onUnselect?: (o: T) => void;
     itemSignal: Signal<T>;
     [i: string]: any;
@@ -18,7 +18,7 @@ export function SelectItemDiv<T extends string | number | Object | undefined>(p:
     function setSelectedItem(o: T) {
         if(getId() !== undefined) props.onUnselect?.(o);
         setId(o as Exclude<T, Function>);
-        props.onSelect(o);
+        props.onSelect?.(o);
     }
 
     return <div {...other}>

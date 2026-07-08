@@ -18,7 +18,7 @@ export function initToolbarEvents(editor: MD2editorV2) {
             console.error(err);
             alert("There was an error and changes have been cancelled. Check the console");
         } finally {
-            md2._editorEmit("cancel-changes");
+            setTimeout(() => md2._editorEmit("cancel-changes"), 100);
         }
     });
 

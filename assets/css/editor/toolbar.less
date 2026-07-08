@@ -1,0 +1,47 @@
+
+#editor-v2 {
+    > #toolbar {
+        display: flex;
+        width: 70%;
+        max-height: 25px;
+        position: absolute;
+        top: 25px;
+
+        &.disabled {
+            filter: opacity(.1);
+            border-color: black;
+        }
+
+        > div div > button {
+            // any buttons except for the parent ones
+            border-top: 2px solid gray;
+            width: 90%;
+            position: relative;
+            left: 10%;
+            background-color: white;
+        }
+
+        div {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            position: relative;
+            margin: none;
+            padding: none;
+
+            > button {
+                background: silver;
+                width: 100%;
+                margin: none;
+                font-size: .7rem;
+                padding: 5px;
+                border: none;
+                border-left: 3px solid gray;
+
+                &:active {
+                    background: linear-gradient(gray, #555);
+                }
+            }
+        }
+    }
+}

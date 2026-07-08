@@ -31,6 +31,10 @@ export class MDCTUI {
     readonly getSelectedBlock = this.selectedBlockSignal[0];
 
     readonly visibilitySignal = createSignal(true);
+    readonly modeSettingsVisiblitySignal = createSignal(false);
+    readonly setModeSettingsVisibility = this.modeSettingsVisiblitySignal[1];
+    static modeSettingsId = "#editor-v2-mode-settings";
+    readonly editorModeSettingsElementArray: JSX.Element[] = [];
 
     editor: MD2editorV2;
     constructor(editor: MD2editorV2) {
@@ -45,7 +49,11 @@ export class MDCTUI {
         render(() => <div id={MDCTUIids.editor}>
             <MDCTUItoolbar editor={this.editor} />
             <Show when={this.visibilitySignal[0]()}>
-                <EditorV2panel id={MDCTUIids.panel} editor={this.editor} />
+                <EditorV2panel 
+                    modeSettingsVisiblitySignal={this.modeSettingsVisiblitySignal} 
+                    id={MDCTUIids.panel} 
+                    editorModeSettings={this.editorModeSettingsElementArray}
+                    editor={this.editor} />
             </Show>
         </div>, el);
     }

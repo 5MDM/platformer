@@ -1,6 +1,20 @@
 #editor-v2 {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 
+    #md2-editor-v2-mode-settings-c {
+        > button {
+            // back btn
+            width: 60px;
+            height: 30px;
+            font-size: .7em;
+            padding: 5px;
+            color: white;
+            background: linear-gradient(red, darkred);
+            border-radius: 0;
+            margin: 4px;
+        }
+    }
+
     > #editor-v2-panel {
         #editor-v2-categories {
             display: flex;
@@ -15,9 +29,10 @@
             }
         }
 
-        #editor-v2-util-btns > .i-window-bottom {
+        #editor-v2-util-btns > .i-window-bottom > #editor-v2-mode-btns {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, 80px);
+            grid-template-rows: repeat(auto-fit, 80px);
 
             overflow-y: hidden;
 
@@ -26,8 +41,8 @@
             }
             
             button {
-                width: 100px;
-                height: 100px;
+                width: 100%;
+                height: 100%;
             }
 
             #editor-v2-mode-btns {
@@ -62,8 +77,8 @@
                 padding: 15px;
 
                 @keyframes e {
-                    0% {border-width: 2px;}
-                    100% {border-width: 0;}
+                    0% {border-width: 2px}
+                    100% {border-width: 0}
                 }
             }
         }

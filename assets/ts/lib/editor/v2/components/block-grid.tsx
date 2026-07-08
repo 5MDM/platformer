@@ -81,7 +81,6 @@ export function MDCTUIblockGridContainer(props: {
             borderWidth={10}>
             <SelectItemDiv<string>
                 itemSignal={props.editor.ui.currentCategory}
-                onSelect={NOOP}
                 id={MDCTUIids.categories}
             >{setSelectedItem => 
                 <For each={["Forest", "Entities", "Town"]}>{categoryName =>
