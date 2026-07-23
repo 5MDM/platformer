@@ -21,7 +21,7 @@ export function Iwindow(p: {
     widthPercent?: number;
     leftPercent?: number;
     bottomPercent?: number;
-    visibilitySignal: Signal<boolean>
+    visibilitySignal?: Signal<boolean>
     [index: string]: any;
 } & IwindowOpts) {
     p.borderWidth ??= 10;
@@ -32,6 +32,9 @@ export function Iwindow(p: {
         "title", "events", "heightPercent", "widthPercent",
         "leftPercent", "bottomPercent", "visibilitySignal"
     ]);
+
+    props.visibilitySignal ||= createSignal(true);
+    const {visibilitySignal} = props;
 
     const events = props.events || new EventEmitter();
 
@@ -93,16 +96,16 @@ export function Iwindow(p: {
     }
 
     function close() {
-        props.visibilitySignal[1](false);
+        visibilitySignal[1](false);
     }
     
-    const el = <Show when={props.visibilitySignal[0]()}>
+    const el = <Show when={visibilitySignal[0]()}>
         <MovableContent 
             events={events} 
             customCSStable={table} 
             inertiaDecay={.96}
             {...other} 
-            class="i-window">
+            class={"i-window " + (other.class ?? "")}>
             <div class="i-window-top">
                 <Show when={props.title}>
                     <p>{props.title}</p>
@@ -114,7 +117,7 @@ export function Iwindow(p: {
             <Show when={!getMinimizationState()}>
                 <div class="i-window-bottom">{props.children}</div>
             </Show>
-        </MovableContent>;
+        </MovableContent>
     </Show>
 
     return el;

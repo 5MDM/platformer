@@ -15,7 +15,7 @@ export interface EntityOpts extends MovingDynamicObjOpts {
 }
 
 export type MovingDynamicObjEvents = 
-"hitFloor" | "hitCeiling" | "hitLeft" | "hitRight" | "hit";
+"hitFloor" | "hitCeiling" | "hitLeft" | "hitRight" | "hit" | "move";
 
 export abstract class MovingDynamicObj extends BasicBox {
     vx: number = 0;
@@ -49,10 +49,10 @@ export abstract class MovingDynamicObj extends BasicBox {
         this.fy += n;
     }
 
-    moveLeft(n: number) {this.addFx(-n)}
-    moveRight(n: number) {this.addFx(n)}
-    moveDown(n: number) {this.addFy(n)}
-    moveUp(n: number) {this.addFy(-n)}
+    moveLeft(n: number) {this.addFx(-n); this.events.emit("move")}
+    moveRight(n: number) {this.addFx(n); this.events.emit("move")}
+    moveDown(n: number) {this.addFy(n); this.events.emit("move")}
+    moveUp(n: number) {this.addFy(-n); this.events.emit("move")}
 
     applyGravity(x: number, y: number) {
         this.setX(this.x - x);
@@ -111,9 +111,7 @@ export class Entity extends MovingDynamicObj {
         this.animController.destroy();
     }
 
-    lookUp() {
-        
-    }
+    lookUp() {}
 
     lookDown() {}
 
@@ -198,14 +196,17 @@ export class PlayerControlledEntity extends Entity {
 
     onLeft(n: number) {
         this.fx -= this.defaultSpeed * PlayerControlledEntity.dt * n;
+        this.events.emit("move");
     }
 
     onRight(n: number) {
         this.fx += this.defaultSpeed * PlayerControlledEntity.dt * n;
+        this.events.emit("move");
     }
 
     onDown(n: number) {
         this.fy += this.defaultSpeed * PlayerControlledEntity.dt * n;
+        this.events.emit("move");
     }
 
     destroy(): void {

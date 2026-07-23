@@ -2,18 +2,9 @@ in vec2 vTextureCoord;
 
 out vec4 finalColor;
 
-struct LightData {
-    vec2 pos;
-    float radius;
-    float brightness;
-    vec3 color;
-};
-
 uniform vec2 lightPos;
-uniform vec2 playerPos;
+uniform vec2 viewPos;
 uniform sampler2D uTexture;
-uniform float dpr;
-uniform vec2 screen;
 uniform float brightness;
 uniform float radius;
 
@@ -29,9 +20,9 @@ float falloff(float d, float r) {
 void main() {
     col = texture(uTexture, vTextureCoord);
 
-    vec2 tilePos = gl_FragCoord.xy - screen.xy / 2.0;
+    vec2 tilePos = gl_FragCoord.xy;
 
-    float dist = distance(playerPos.xy, lightPos.xy - tilePos);
+    float dist = distance(viewPos.xy, lightPos.xy - tilePos);
     float att = falloff(dist, radius) * brightness;
 
     vec3 outColor = col.rgb * att;

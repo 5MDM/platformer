@@ -1,14 +1,11 @@
-import { BitmapText, Sprite, Texture } from "pixi.js";
+import { Sprite, Texture } from "pixi.js";
 import { MDmatrix } from "../../../misc/matrix";
 import { MDV } from "../../../misc/vectors/vectors";
 import { MDgameGridType } from "../../../v2/types";
 import { BaseMode } from "./templates/base-mode";
 import { MD2editorV2 } from "../editor";
-import { MDCTUI } from "../main-ui";
-import { For, render } from "solid-js/web";
 import { SelectItemDiv } from "../../../misc/el/select";
-import { $ } from "../../../misc/util";
-import { createEffect, createSignal, on, Show } from "solid-js";
+import { createSignal } from "solid-js";
 
 interface GridFiller {
     types: MDgameGridType[];
@@ -17,7 +14,7 @@ interface GridFiller {
 
 export class Delete extends BaseMode {
     iconPath: string = "";
-    modeName: string = "Delete in world";
+    modeName: string = "Delete";
 
     readonly deleteGrid = 
     new MDmatrix<GridFiller>(MD2editorV2.maxLevelSize, MD2editorV2.maxLevelSize);
@@ -97,8 +94,15 @@ export class Delete extends BaseMode {
     }
 
     onEditorDelete(blockPos: MDV.V2) {
-        for(const type of ["fg", "bg", "overlay"])
+        for(const type of ["fg", "bg", "overlay"]) {
             this.blockTools.deleteSingleBlockInEditor(type as MDgameGridType, blockPos);
+
+            const grid = this.deleteGrid.get(blockPos.x, blockPos.y);
+            if(grid) {
+                grid.sprite.destroy();
+                this.deleteGrid.delete(blockPos.x, blockPos.y);
+            }
+        }
     }
 
     onDrag(blockPos: MDV.V2, pointerPosChange: MDV.V2): void {

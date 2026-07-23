@@ -11,6 +11,9 @@ import { createSignal, Signal } from "solid-js";
 import { initToolbarEvents } from "./toolbarEvents";
 import { EnableState } from "../../misc/enable-state";
 import { Delete } from "./modes/delete";
+import { PanMode } from "./modes/pan";
+import { EnvChangeMode } from "./modes/env-change";
+import { ShadowMode } from "./modes/shadows";
 
 type Mode = new (editor: MD2editorV2, targetEl: HTMLElement) => BaseMode;
 
@@ -91,6 +94,9 @@ export class MD2editorV2 {
     private modesToBeParsed: Mode[] = [
         PlaceBlock,
         Delete,
+        PanMode,
+        EnvChangeMode,
+        ShadowMode,
     ];
 
     modes: Record<string, BaseMode> = {};

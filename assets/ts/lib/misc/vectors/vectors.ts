@@ -1,8 +1,9 @@
 import { XYWH } from "../../v2/types";
+import { MDgrid } from "../grids/grid";
 import { MDmatrix } from "../matrix";
+import { objIterator, simpleSwitch } from "../util";
 import {vectorMixin1} from "./outside-points";
 import { vectorMixin2 } from "./point-adjacency";
-// import { startTests } from "./tests";
 
 export namespace MDV {
     export type XY = {
@@ -16,6 +17,13 @@ export namespace MDV {
         outsidePoints: Partial<MDV.V4neighboringCellHolder>[];
         removedPoints: Partial<MDV.V4neighboringCellHolder>[];
     };
+
+    type TypeFor4dir = "top" | "left" | "bottom" | "right";
+    type TypeForCorners = "bottomLeft" | "bottomRight" | "topLeft" | "topRight";
+    export type TypeFor8dir = TypeFor4dir | TypeForCorners;
+    export type In8dir<T> = Record<TypeFor8dir, T>;
+    export type In8dirAndCenter<T> = In8dir<T> & {center: T};
+    export type Some8dirAndCenter<T> = Partial<In8dir<T>> & {center: T};
 
     export class V2 implements XY {
         x: number;
@@ -76,9 +84,60 @@ export namespace MDV {
             return this;
         }
 
-        add(p: V2) {
+        add(p: XY) {
             this.x += p.x;
             this.y += p.y;
+            return this;
+        }
+
+        addS(n: number): this {
+            this.x += n;
+            this.y += n;
+            return this;
+        }
+
+        toArray(): [number, number] {
+            return [this.x, this.y];
+        }
+
+        toFloat32Array(): Float32Array {
+            return new Float32Array([this.x, this.y]);
+        }
+
+        isEqualTo(p: MDV.V2): boolean {
+            return this.x == p.x
+            && this.y == p.y;
+        }
+
+        static xy(x: number, y: number): XY {
+            return {x, y};
+        }
+
+        static pointsIn8dir: In8dir<XY> = {
+            "topLeft": this.xy(-1, -1),
+            "top": this.xy(0, -1),
+            "topRight": this.xy(1, -1),
+            "left": this.xy(-1, 0),
+            "right": this.xy(1, 0),
+            "bottomLeft": this.xy(-1, 1),
+            "bottom": this.xy(0, 1),
+            "bottomRight": this.xy(1, 1),
+        };
+
+        static keysOfPointsIn8dir = Object.keys(this.pointsIn8dir);
+
+        getPointsAndCenterIn8dir(): In8dirAndCenter<V2> {
+            return {
+                topLeft: this.clone().add(V2.pointsIn8dir.topLeft),
+                top: this.clone().add(V2.pointsIn8dir.top),
+                topRight: this.clone().add(V2.pointsIn8dir.topRight),
+                left: this.clone().add(V2.pointsIn8dir.left),
+                right: this.clone().add(V2.pointsIn8dir.right),
+                bottomLeft: this.clone().add(V2.pointsIn8dir.bottomLeft),
+                bottom: this.clone().add(V2.pointsIn8dir.bottom),
+                bottomRight: this.clone().add(V2.pointsIn8dir.bottomRight),
+                center: this.clone(),
+            };
         }
     }
 
@@ -108,7 +167,6 @@ export namespace MDV {
         bottom: V2;
         bottomRight: V2;
         point: V2;
-
         left: V2;
         right: V2;
     }
@@ -161,6 +219,10 @@ export namespace MDV {
             this.h = h;
         }
 
+        static fromV2(v2: MDV.V2, w = 1, h = 1): MDV.V4 {
+            return new MDV.V4(v2.x, v2.y, w, h);
+        }
+
         *[Symbol.iterator]() {
             for(const i of [this.x, this.y, this.w, this.h]) yield i;
         }
@@ -211,6 +273,11 @@ export namespace MDV {
             return this;
         }
 
+        /**
+         * # THIS DOESN'T WORK AT ALL
+         * ~WARNING: inset doesn't work~
+         * @deprecated
+         */
         getOutsideIntPoints(step = 1, inset = 0): V2[] {return [] as V2[]}
         getNeighboringOutsidePoints(step = 1, inset = 0): Partial<MDV.V4neighboringCellHolder>[]
         {return [] as Partial<MDV.V4neighboringCellHolder>[]}
@@ -221,6 +288,18 @@ export namespace MDV {
 
         static fromBounds({x, y, w, h}: XYWH) {
             return new V4(x, y, w, h);
+        }
+
+        addPos({x, y}: XY): this {
+            this.x += x;
+            this.y += y;
+            return this;
+        }
+
+        subtractPos({x, y}: XY): this {
+            this.x -= x;
+            this.y -= y;
+            return this;
         }
 
         divideS(n: number) {
@@ -267,6 +346,15 @@ export namespace MDV {
             return undefined as unknown as MDV.V4NeighborCellType;
         }
 
+        /**
+         * 
+         * @returns FindAdjacencyForEachOutsidePointUsingGridOutput  
+         * This returns an object with:  
+         * `main: V4NeighborCellType[];`  
+         * `removedPoints: Partial<V4neighboringCellHolder>[];`  
+         * 
+         * "main" will be the most useful
+         */
         findAdjacencyForEachOutsidePointUsingGrid<T>(
             grid: MDmatrix<T>,
             step = 1,
@@ -275,6 +363,12 @@ export namespace MDV {
             return {} as FindAdjacencyForEachOutsidePointUsingGridOutput;
         }
 
+        /**
+         * WARNING: inset doesn't work
+         * @returns MDV.GetNeighboringOutsidePointsUsingGridOutput  
+         * It returns an object that has the keys "outsidePoints" and "removedPoints". 
+         * "outsidePoints" will be the most useful
+         */
         getNeighboringOutsidePointsUsingGrid<T>(grid: MDmatrix<T>, step = 1, inset = 0): 
         GetNeighboringOutsidePointsUsingGridOutput {
             return {} as GetNeighboringOutsidePointsUsingGridOutput;
@@ -349,10 +443,237 @@ export namespace MDV {
         static fromElementBounds(el: Element): V4 {
             return V4.fromDOMrect(el.getBoundingClientRect());
         }
+
+        getOutsidePointsReformed
+        (this: MDV.V4, step = 1, inset = 0): Some8dirAndCenter<MDV.V2>[] {
+            const arr: Some8dirAndCenter<MDV.V2>[] = [];
+            //const maxX = this.x + this.w;
+            //const maxY = this.y + this.h;
+
+            const ib: XYWH = {
+                x: this.x - inset,
+                y: this.y - inset,
+                w: this.x + this.w - inset,
+                h: this.y + this.h - inset,
+            };
+
+            if(ib.w <= 0 || ib.h <= 0) return [];
+
+            const LCMmaxX = ib.w - (ib.w % step) - 1;
+            const LCMmaxY = ib.h - (ib.h % step) - 1;
+
+            const set = (x: number, y: number, o: Partial<MDV.V4neighboringCellHolder>) => {
+                arr.push({
+                    center: new MDV.V2(x, y),
+                    ...o
+                });
+            };
+
+            // singular block
+            if(ib.w <= ib.x + step
+            && ib.h <= ib.y + step
+            ) return [{
+                center: new MDV.V2(this.x, this.y),
+            }];
+
+            // checka if this is a 1 block wide column
+            if(ib.w <= ib.x + step) {
+                // singular width (column)
+                // this goes up to down
+
+                set(ib.x, ib.y, {
+                    bottom: new MDV.V2(ib.x, ib.y + step),
+                });
+
+                for(let y = ib.y + step; y < ib.h - step; y += step) {
+                    set(ib.x, y, {
+                        top: new MDV.V2(ib.x, y - step),
+                        bottom: new MDV.V2(ib.x, y + step),
+                    });
+                }
+
+                set(ib.x, LCMmaxY, {
+                    top: new MDV.V2(ib.x, LCMmaxY - step)
+                });
+
+                return arr;
+            } else if(ib.h <= ib.y + step) {
+                // checks if this is a 1 block tall row
+
+                // singular height (row)
+                // this goes left to right
+
+                set(ib.x, ib.y, {
+                    right: new MDV.V2(ib.x + step, ib.y),
+                });
+
+                for(let x = ib.x + step; x < ib.w - step; x += step) {
+                    set(x, this.y, {
+                        left: new MDV.V2(x - step, ib.y),
+                        right: new MDV.V2(x + step, ib.y),
+                    });
+                }
+
+                set(LCMmaxX, ib.y, {
+                    left: new MDV.V2(LCMmaxX - step, ib.y),
+                });
+
+                return arr;
+            }
+
+            // all the normal blocks are processed below this comment
+
+            // top left
+            set(ib.x, ib.y, {
+                bottomRight: new MDV.V2(ib.x + step, ib.y + step),
+                bottom: new MDV.V2(ib.x, ib.y + step),
+                right: new MDV.V2(ib.x + step, ib.y),
+            });
+
+            // top right
+            set(LCMmaxX, ib.y, {
+                bottom: new MDV.V2(LCMmaxX, ib.y + step),
+                left: new MDV.V2(LCMmaxX - step, ib.y),
+                bottomLeft: new MDV.V2(LCMmaxX - step, ib.y + step),
+            });
+
+            // bottom left
+            set(ib.x, LCMmaxY, {
+                top: new MDV.V2(ib.x, LCMmaxY - step),
+                right: new MDV.V2(ib.x + step, LCMmaxY),
+                topRight: new MDV.V2(ib.x + step, LCMmaxY - step),
+            });
+
+            // bottom right
+            set(LCMmaxX, LCMmaxY, {
+                top: new MDV.V2(LCMmaxX, LCMmaxY - step),
+                left: new MDV.V2(LCMmaxX - step, LCMmaxY),
+                topLeft: new MDV.V2(LCMmaxX - step, LCMmaxY - step),
+            });
+
+            for(let x = ib.x + step; x < ib.w - step; x += step) {
+                const leftX = x - step;
+                const rightX = x + step;
+                const bottomY = ib.y + step;
+
+                set(x, this.y, {
+                    left: new MDV.V2(leftX, ib.y),
+                    bottomLeft: new MDV.V2(leftX, bottomY),
+                    bottom: new MDV.V2(x, bottomY),
+                    bottomRight: new MDV.V2(rightX, bottomY),
+                    right: new MDV.V2(rightX, ib.y),
+                });
+
+                // recently fixed
+                set(x, ib.h - step, {
+                    left: new MDV.V2(leftX, ib.h),
+                    topLeft: new MDV.V2(leftX, ib.h - step),
+                    top: new MDV.V2(x, ib.h - step),
+                    topRight: new MDV.V2(rightX, ib.h - step),
+                    right: new MDV.V2(rightX, ib.h),
+                });
+            }
+
+            for(let y = ib.y + step; y < ib.h - step; y += step) {
+                const bottomY = y + step;
+
+                set(ib.x, y, {
+                    top: new MDV.V2(ib.x, y - step),
+                    topRight: new MDV.V2(ib.x + step, y - step),
+                    bottom: new MDV.V2(ib.x, bottomY),
+                    bottomRight: new MDV.V2(ib.x + step, bottomY),
+                    right: new MDV.V2(ib.x + step, y),
+                });
+
+                // recently fixed
+                set(ib.w - step, y, {
+                    topLeft: new MDV.V2(ib.w - step, y - step),
+                    top: new MDV.V2(ib.w, y - step),
+                    left: new MDV.V2(ib.w - step, y),
+                    bottomLeft: new MDV.V2(ib.w - step, y + step),
+                    bottom: new MDV.V2(ib.w, y + step),
+                });
+            }
+
+            return arr;
+        }
+
+        /**
+         * All neighboring points are 
+         */
+        getNeighboringOutsidePointsUsingGridReformed<T>(
+            this: MDV.V4,
+            grid: MDgrid<T>,
+            step = 1,
+            inset = 0,
+        ): Some8dirAndCenter<V2>[] {
+            const removedPoints: Some8dirAndCenter<T>[] = [];
+            const oldPoints = this.getOutsidePointsReformed(step, inset);
+
+            for(const n in oldPoints) {
+                const point = oldPoints[n];
+                var isPointAnOutsidePoint = false;
+
+                for(const key in MDV.V4neighboringCellPropMap) {
+                    if(!point[key]) {
+                        // Check surroundings with the grid.
+                        // This is to stop the greedy mesh
+                        // from messing things up
+
+                        // the fix was using point.point instead of "this"
+                        var x = point.center!.x;
+                        var y = point.center!.y;
+
+                        simpleSwitch<string, keyof MDV.V4NeighborCellType>(key, {
+                            topLeft() {
+                                x -= step;
+                                y -= step;
+                            },
+                            top() {y -= step},
+                            topRight() {
+                                x += step;
+                                y -= step;
+                            },
+                            bottomLeft() {
+                                x -= step;
+                                y += step;
+                            },
+                            bottom() {y += step},
+                            bottomRight() {
+                                x += step;
+                                y += step;
+                            },
+                            left() {x -= step},
+                            right() {x += step},
+                        });
+
+                        const found = grid.get(point.center);
+
+                        if(found) point[key] = new MDV.V2(x, y);
+                        else isPointAnOutsidePoint = true;
+                    }
+                }
+
+                // checks if all 8 surroundings are
+                // not air
+
+                if(!isPointAnOutsidePoint)
+                    for(const key in MDV.V4neighboringCellPropMap) 
+                        if(!point[key]) {
+                            isPointAnOutsidePoint = true;
+                            break;
+                        }
+
+                // Any point that doesn't border air
+                // if(!isPointAnOutsidePoint) {
+                //     removedPoints.push(...oldPoints.splice(Number(n), 1));
+                // }
+            }
+
+            return oldPoints;
+        }
     }
 }
 
 Object.assign(MDV.V4.prototype, vectorMixin1);
 Object.assign(MDV.V4.prototype, vectorMixin2);
-
-// startTests();

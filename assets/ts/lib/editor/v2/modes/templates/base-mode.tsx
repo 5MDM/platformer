@@ -5,12 +5,15 @@ import { _MD2engine } from "../../../../v2/engine";
 import { MD2zoomModule } from "../../../../v2/modules/zoom";
 import { MD2editorV2 } from "../../editor";
 import { MDgameGridType, XYtuple } from "../../../../v2/types";
-import { snapToGrid } from "../../../../misc/util";
+import { $, snapToGrid } from "../../../../misc/util";
 import { MDV } from "../../../../misc/vectors/vectors";
 import { AnyBlock, BgBlock, FgBlock } from "../../../../v2/blocks/blocks";
 import { MDmatrix } from "../../../../misc/matrix";
 import { createSignal, JSXElement, Show } from "solid-js";
 import { JSX } from "solid-js/h/jsx-runtime";
+import { Iwindow } from "../../../../misc/el/window";
+import { render } from "solid-js/web";
+import { MDCTUIids } from "../../main-ui";
 
 export abstract class BaseMode {
     readonly state = new EnableState(() => this.stateSignal[1](true), () => this.stateSignal[1](false));
@@ -115,10 +118,10 @@ export abstract class BaseMode {
             this.editor.engine.levelManager.groups.static
         );
 
-        this.onDrag(new MDV.V2(x, y).divideS(this.engine.blockSize), new MDV.V2(dx, dy));
+        this.onDrag?.(new MDV.V2(x, y).divideS(this.engine.blockSize), new MDV.V2(dx, dy));
     }
 
-    abstract onDrag(blockPos: MDV.V2, pointerPosChange: MDV.V2): void;
+    onDrag?(blockPos: MDV.V2, pointerPosChange: MDV.V2): void;
 
     yellowBorderTexture: Texture;
 
@@ -127,6 +130,28 @@ export abstract class BaseMode {
             <Show when={this.getState()}>{el}</Show>
         );
     }
+
+    devTools = {
+        self: this,
+        addWhiteSprite(worldBounds: MDV.V4 | MDV.V2): Sprite {
+            if(worldBounds instanceof MDV.V2) 
+                worldBounds = MDV.V4.fromV2(
+                    worldBounds, 
+                    this.self.engine.blockSize,
+                    this.self.engine.blockSize,
+                );
+
+            const s = new Sprite({
+                position: worldBounds,
+                width: worldBounds.w,
+                height: worldBounds.h,
+                texture: Texture.WHITE,
+            });
+            this.self.editor.c.addChild(s);
+
+            return s;
+        }
+    };
 
     blockTools = {
         self: this,
@@ -200,16 +225,22 @@ export abstract class BaseMode {
             this.self.editor.c.removeChild(b.container, b.sprite);
             g.delete(gridPos.x, gridPos.y);
         },
-        getWorldBlocks<T extends MDgameGridType[]>(types: T, [x, y]: MDV.V2)
+        getWorldBlocks<T extends MDgameGridType[]>(types: T, gridPos: MDV.V2)
         : GridTypeBlocks {
             const o: Partial<GridTypeBlocks> = {};
             for(const type of types) {
                 const grid = this.self.engine.levelManager.levelGrids[type];
-                const block = grid.get(x, y) || false;
+                const block = grid.get(gridPos.x, gridPos.y) || false;
                 o[type] = block as (FgBlock & BgBlock) | undefined;
             }
 
             return o as GridTypeBlocks;
+        },
+        getFirstAvailableWorldBlock(gridPos: MDV.V2): AnyBlock | undefined {
+            const blocks = this.getWorldBlocks(["overlay", "fg", "bg"], gridPos);
+            for(const type in blocks) if(blocks[type]) return blocks[type];
+
+            return undefined;
         },
         getEditorBlocks<T extends MDgameGridType[]>(types: T, [x, y]: MDV.V2)
         : GridTypeBlocks {
@@ -221,8 +252,22 @@ export abstract class BaseMode {
             }
 
             return o as GridTypeBlocks;
+        },
+        placeRedSpriteAt(gridPos: MDV.V2) {
+            const bz = this.self.engine.blockSize;
+            this.self.editor.c.addChild(new Sprite({
+                texture: Texture.WHITE,
+                tint: 0xff0000,
+                position: gridPos.clone().multiplyS(bz),
+                width: bz,
+                height: bz,
+            }));
         }
     };
+
+    spawnEl(el: JSXElement) {
+        render(() => el, $("#" + MDCTUIids.editor));
+    }
 }
 
 interface GridTypeBlocks {

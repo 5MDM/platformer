@@ -1,4 +1,4 @@
-import {Container, Sprite, Texture } from "pixi.js";
+import {Container, Sprite, Texture, TypedArray } from "pixi.js";
 
 export const UTIL_VERSION: number = 1.6;
 
@@ -454,3 +454,49 @@ export type PointerMoveEvent = PointerEvent & {
   target: Element;
   currentTarget: HTMLElement;
 };
+
+const typedArrayPrototype = Object.getPrototypeOf(Uint16Array);;
+export function isTypedArray<T>(val: T) {
+  return val instanceof typedArrayPrototype;
+}
+
+export function iterateObject
+<O extends Object>
+(obj: O, f: (key: keyof O, val: O[keyof O]) => true | undefined) {
+  const keys = Object.keys(obj) as (keyof O)[];
+  for(let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    f(key, obj[key]);
+  }
+}
+
+export const objIterator = {
+  requiredValues<O extends Record<K, V>, K extends string | number, V extends NonNullable<any>>(
+    obj: O, f: (key: keyof O, val: NonNullable<O[keyof O]>) => void
+  ) {
+    const keys = Object.keys(obj) as (keyof O)[];
+    for(let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      f(key, obj[key] as NonNullable<O[keyof O]>);
+    }
+  },
+  normal<O extends Object>(
+    obj: O, f: (key: keyof O, val: O[keyof O]) => void
+  ) {
+    const keys = Object.keys(obj) as (keyof O)[];
+    for(let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      f(key, obj[key] as O[keyof O]);
+    }
+  }
+};
+
+export function iterateObjectWithContext
+<O extends Object, C = unknown>
+(obj: O, f: (key: keyof O, val: O[keyof O], context: C) => true | undefined, context: C) {
+  const keys = Object.keys(obj) as (keyof O)[];
+  for(let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    f(key, obj[key], context);
+  }
+}

@@ -1,3 +1,4 @@
+import { Texture } from "pixi.js";
 import { MDscalableSprite } from "../../../../misc/scale-sprite";
 import { MDV } from "../../../../misc/vectors/vectors";
 import { MD2editorV2 } from "../../editor";
@@ -23,6 +24,7 @@ export abstract class SelectionMode extends BaseMode {
         super(editor, targetEl);
 
         this.s = new MDscalableSprite(this.engine);
+        this.s.sprite.texture = Texture.WHITE;
         this.editor.c.addChild(this.s.sprite);
 
         this.targetEl.addEventListener("pointerup", this.onPointerUp.bind(this));
@@ -38,9 +40,9 @@ export abstract class SelectionMode extends BaseMode {
 
         this.onSelection(
             MDV.V4.fromArr(this.s.getSize())
-            .divideS(this.engine.blockSize)
             .floor()
         );
+
         this.selection.reset();
     }
 
@@ -49,7 +51,7 @@ export abstract class SelectionMode extends BaseMode {
     protected onFirstPlaceDown?();
     
     onDrag(blockPos: MDV.V2, pointerPosChange: MDV.V2): void {
-        const [x, y] = this.getWorldPos(blockPos.x, blockPos.y);
+        const [x, y] = blockPos;
 
         if(!this.selection.hasPlacedFirst) {
             this.selection.hasPlacedFirst = true;

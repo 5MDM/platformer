@@ -1,4 +1,4 @@
-import { createRoot, createSignal, Signal } from "solid-js";
+import { createRoot, createSignal, JSXElement, Show, Signal, splitProps } from "solid-js";
 import { createStore } from "solid-js/store";
 import { Dict, objToCSSstring, Primative3 } from "../util";
 import { MD2errors } from "../../v2/errors";
@@ -96,3 +96,18 @@ export class CSSunitTable {
     }
 }
 
+export function VisibleTextIfDefined(p: {
+    children: string | undefined;
+    [i: string]: any;
+}) {
+    const [props, other] = splitProps(p, ["children"]);
+
+    return <Show when={props?.children}>
+        <p {...other}>{props?.children}</p>
+    </Show>;
+}
+
+export function ExecuteCode(props: {children: () => any}): JSXElement {
+    props.children();
+    return <></>;
+}

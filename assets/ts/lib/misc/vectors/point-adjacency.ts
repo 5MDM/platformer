@@ -3,7 +3,8 @@ import { MDmatrix } from "../matrix";
 import { MDV } from "./vectors";
 
 /**
- * Top and bottom MUST BE TRUE
+ * Top and bottom MUST BE TRUE.  
+ * **An iCorner is short for internal-corner**
  */
 function checkForIcorner(c: Partial<MDV.V4NeighborCellType>): false | MDV.V4cellIcornerType {
     // an iCorner has only 1 blank spot (for now)

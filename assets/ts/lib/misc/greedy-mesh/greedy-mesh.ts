@@ -1,7 +1,9 @@
 import { XYWH } from "../../v2/types";
+import { MDgrid } from "../grids/grid";
 import { Keymap } from "../keymap";
 import { MDmatrix } from "../matrix";
 import { SimpleExpander } from "../util";
+import { MDV } from "../vectors/vectors";
 
 function sweep(output: XYWH[], matrix: MDmatrix<boolean>, x: number, y: number) {
     var w = 0;
@@ -51,6 +53,58 @@ export function greedyMeshBooleans(m: MDmatrix<boolean>): XYWH[] {
     for(let y = 0; y < m.h; y++) {
         for(let x = 0; x < m.w; x++) {
             sweep(output, m, x, y);
+        }
+    }
+
+    return output;
+}
+
+function sweepFromGrid(output: XYWH[], matrix: MDgrid<true>, p: MDV.V2) {
+    var w = 0;
+    var h = 0;
+    
+    const res: boolean | undefined = matrix.get(p);
+    if(!res) return;
+
+    for(let fx = p.x; fx < matrix.w; fx++) {
+        const res: boolean | undefined = matrix.get(new MDV.V2(fx, p.y));
+        
+        if(!res) break;
+        w++;
+    }
+
+    for(let fy = p.y; fy < matrix.h; fy++) {
+        var hasEnded = false;
+        
+        for(let fx = p.x; fx < p.x+w; fx++) {
+            const res: boolean | undefined = matrix.get(new MDV.V2(fx, fy));
+            
+            if(!res) {
+                hasEnded = true;
+                break;
+            }
+        }
+
+        if(hasEnded) break;
+        h++;
+    }
+
+    for(let fy = p.y; fy < p.y+h; fy++) {
+        for(let fx = p.x; fx < p.x+w; fx++) {
+            matrix.delete(new MDV.V2(fx, fy));
+        }
+    }
+
+    output.push({x: p.x, y: p.y, w, h});
+}
+
+
+export function greedyMeshBooleansFromGrid(m: MDgrid<true>): XYWH[] {
+    const output: XYWH[] = [];
+    
+    for(let y = 0; y < m.h; y++) {
+        for(let x = 0; x < m.w; x++) {
+            sweepFromGrid(output, m, new MDV.V2(x, y));
         }
     }
 

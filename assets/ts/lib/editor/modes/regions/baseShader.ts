@@ -2,7 +2,6 @@ import { Container, Sprite, Texture, TilingSprite } from "pixi.js";
 import { MDV } from "../../../misc/vectors/vectors";
 import { XYWH } from "../../../v2/types";
 import { EditorRegionBase } from "./base";
-import { MDmatrix } from "../../../misc/matrix";
 import { _MD2levelManager } from "../../../v2/level";
 import { NameAndRotationStringGreedyMeshMap } from "../../../misc/greedy-mesh/sorter";
 
@@ -14,7 +13,8 @@ export abstract class EditorRegionBaseShader<T> extends EditorRegionBase<T> {
     protected fillsC = new Container();
     protected fills: (Sprite | TilingSprite)[] = [];
 
-    readonly fillMap = new NameAndRotationStringGreedyMeshMap(new MDV.V2(
+    readonly fillMap = 
+    new NameAndRotationStringGreedyMeshMap(new MDV.V2(
         _MD2levelManager.maxLevelSize, 
         _MD2levelManager.maxLevelSize,
     ));

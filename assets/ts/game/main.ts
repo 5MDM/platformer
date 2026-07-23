@@ -1,20 +1,13 @@
-import { isMobile, Particle, RenderTexture, Sprite, Texture, Ticker } from "pixi.js";
+import { isMobile, Particle, Sprite } from "pixi.js";
 import "./audio";
-import { $, clamp, round } from "../lib/misc/util";
+import { $, round } from "../lib/misc/util";
 import { _MD2engine } from "../lib/v2/engine";
-import { app, md2 } from "../constants";
-import { MD2editor } from "../lib/editor/main";
+import { md2 } from "../constants";
 import { MD2envModule } from "../lib/v2/modules/env/main";
 import { MD2devAutomation } from "../lib/v2/automation";
-import { MD2lightFilter } from "../lib/v2/lighting/lights";
 import { MD2editorV2 } from "../lib/editor/v2/editor";
-
-//MD2editor.creatorToolsState.disableIfOn();
-
-// const editor = new MD2editor({
-//     engine: md2,
-//     el: $("#ui > #editor-v2-c") as HTMLDivElement,
-// });
+import { MDV } from "../lib/misc/vectors/vectors";
+import { MD2lightFilter } from "../lib/v2/filters/lighting/lights";
 
 const editor = new MD2editorV2(md2, $("#ui > #editor-v2-c"));
 
@@ -40,6 +33,19 @@ function loadAnimations() {
     player.animController.registerStance("td-stand-u", md2.dataManager.getSprite("player-up-stand.png"));
     player.animController.setAction("td-stand-d");
 }
+
+const staticC = md2.levelManager.groups.static;
+
+const followingLight = new MD2lightFilter({
+    radius: 7,
+    brightness: 1,
+    pos: new MDV.V2(innerWidth / 2, innerHeight / 2)
+    .add(new MDV.V2(player.halfW, player.halfH)),
+    viewPos: MDV.V2.fromPoint(player),
+    adjustForDPR: true,
+});
+
+staticC.filters = [followingLight];
 
 export async function startGame(md2: _MD2engine) { 
     loadAnimations();
@@ -81,19 +87,8 @@ export async function startGame(md2: _MD2engine) {
         //zIndex: -1,
     });
 
-    const staticC = md2.levelManager.groups.static;
-
-    //staticC.mask = glow;
-    //player.container.addChild(glow);
-
-    const followingLight = new MD2lightFilter({
-        player,
-        radius: 7,//8.5,
-        follow: player,
-    });
-
-
-    //staticC.filters = [followingLight];
+    // staticC.mask = glow;
+    // player.container.addChild(glow);
 
     // new MD2devAutomation(md2)
     // .deleteCurrentLevel(self =>

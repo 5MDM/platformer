@@ -4,6 +4,11 @@ import { simpleSwitch } from "../util";
 import { MDV } from "./vectors";
 
 export const vectorMixin1 = {
+    /**
+     * # THIS DOESN'T WORK AT ALL
+     * ~WARNING: inset doesn't work~
+     * @deprecated
+     */
     getOutsideIntPoints(this: MDV.V4, step = 1, inset = 0): MDV.V2[] {
         const arr: MDV.V2[] = [];
         const maxX = this.x + this.w;
@@ -47,6 +52,12 @@ export const vectorMixin1 = {
         return arr;
     },
 
+    /**
+     * WARNING: inset doesn't work
+     * @returns MDV.GetNeighboringOutsidePointsUsingGridOutput  
+     * It returns an object that has the keys "outsidePoints" and "removedPoints". 
+     * "outsidePoints" will be the most useful
+     */
     getNeighboringOutsidePointsUsingGrid<T>(
         this: MDV.V4,
         grid: MDmatrix<T>,
@@ -67,17 +78,7 @@ export const vectorMixin1 = {
                     // This is to stop the greedy mesh
                     // from messing things up
 
-                    // topLeft: true,
-                    // top: true,
-                    // topRight: true,
-                    // bottomLeft: true,
-                    // bottom: true,
-                    // bottomRight: true,
-                    // left: true,
-                    // right: true,
-
                     // the fix was using point.point instead of "this"
-                    // I was stupid all along
                     var x = point.point!.x;
                     var y = point.point!.y;
 
@@ -121,6 +122,7 @@ export const vectorMixin1 = {
                         break;
                     }
 
+            // Any point that doesn't border air
             if(!isPointAnOutsidePoint) {
                 removedPoints.push(...oldPoints.splice(Number(n), 1));
             }

@@ -90,5 +90,13 @@ export const MD2errors = {
     },
     ifStatementErr() {
         return this.err(`"if" statement error`);
+    },
+    genericNumberTypeErr(reason: string) {
+        return this.err(`Number type error: ${reason}`);
+    },
+    /** @param reason - should start with "does not" or "is not" */
+    numberParameterInputErr(reasons: string[], n: number) {
+        return this.genericNumberTypeErr
+        (`number "${n}" does not match these requirements:\n${reasons.join(", ")}`);
     }
 };

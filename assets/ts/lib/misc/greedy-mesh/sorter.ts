@@ -35,10 +35,6 @@ export class SimpleNameAndRotationGreedyMeshFilter {
     clear() {
         this.record = {};
     }
-
-    // greedyMesh(): NameAndDegreeRecord<MDV.V4> {
-
-    // }
 }
 
 export class NameAndRotationStringGreedyMeshMap {
@@ -55,6 +51,10 @@ export class NameAndRotationStringGreedyMeshMap {
         return args.join(this.delimeter);
     }
 
+    /**
+     * @returns a string that is the name with the rotation.  
+     * Return examples: "cool-block,90" or "spike-block,270"
+     */
     createNameHash(name: string, rotation: number): string {
         return this.delimeterList(name, rotation.toString());
     }
@@ -64,6 +64,9 @@ export class NameAndRotationStringGreedyMeshMap {
         return [name, Number(rotation)];
     }
 
+    /**
+     * @description sets the has at the position if it's not out of bounds
+     */
     add(hash: string, pos: MDV.V2): Success {
         if(this.map.isOOB(pos.x, pos.y)) return false;
         this.map.set(pos.x, pos.y, hash);
