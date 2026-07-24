@@ -4,7 +4,6 @@ import { $, round } from "../lib/misc/util";
 import { _MD2engine } from "../lib/v2/engine";
 import { md2 } from "../constants";
 import { MD2envModule } from "../lib/v2/modules/env/main";
-import { MD2devAutomation } from "../lib/v2/automation";
 import { MD2editorV2 } from "../lib/editor/v2/editor";
 import { MDV } from "../lib/misc/vectors/vectors";
 import { MD2lightFilter } from "../lib/v2/filters/lighting/lights";
@@ -93,9 +92,7 @@ export async function startGame(md2: _MD2engine) {
     // new MD2devAutomation(md2)
     // .deleteCurrentLevel(self =>
     //     self.loadLevel("2")
-    // );
-
-    globalThis.MD2devAutomation = new MD2devAutomation(md2);
+    // );u
 }
 
 if(isMobile.any) {

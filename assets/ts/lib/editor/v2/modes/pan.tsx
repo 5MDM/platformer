@@ -36,8 +36,8 @@ export class PanMode extends BaseMode {
 
         this.addModeSettingsEl(<>
             <Show fallback={<>
-                <button onclick={() => this.enableExpressMode()}>Express mode</button>
-                <button onclick={() => this.goBackToPlayer()}>Go back to player</button>
+                <button onClick={() => this.enableExpressMode()}>Express mode</button>
+                <button onClick={() => this.goBackToPlayer()}>Go back to player</button>
             </>} when={this.pointerLockSignal[0]()}>
                 <p>
                     You're in express mode! Swipe with one finger

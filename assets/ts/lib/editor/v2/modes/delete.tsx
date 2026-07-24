@@ -46,12 +46,12 @@ export class Delete extends BaseMode {
         this.addModeSettingsEl(
             <SelectItemDiv itemSignal={this.chosenWorldSignal}>{setSelectedItem => <>
                 <button 
-                    onclick={() => setSelectedItem("world")} 
+                    onClick={() => setSelectedItem("world")} 
                     class={this.getChosenWorld() == "world" ? "selected" : undefined}>
                     Delete in world
                 </button>
                 <button 
-                    onclick={() => setSelectedItem("editor")} 
+                    onClick={() => setSelectedItem("editor")} 
                     class={this.getChosenWorld() == "editor" ? "selected" : undefined}>
                     Delete in editor
                 </button>

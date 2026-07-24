@@ -8,7 +8,6 @@ import { createImageFromTexture } from "../../../v2/data-loaders/spritesheet-fun
 import { _MD2engine } from "../../../v2/engine";
 import { Iwindow } from "../../../misc/el/window";
 import { SelectItemDiv } from "../../../misc/el/select";
-import { MD2editor } from "../../main";
 import { MD2editorV2 } from "../editor";
 
 const [getPrArr, setPrArr] = createSignal<Promise<HTMLImageElement[]>[]>([]);
@@ -37,7 +36,7 @@ function BlockGrid(p: {
 
             elArr.push(<button class={
                 (props.selectedBlockSignal[0]()?.name === o.name) ? "selected" : undefined
-            } onclick={() => setSelectedItem(o)}>
+            } onClick={() => setSelectedItem(o)}>
                 <p class="mdctui-block-name">{o.name}</p>
                 <Suspense fallback={
                     <p>Loading...</p>
@@ -86,7 +85,7 @@ export function MDCTUIblockGridContainer(props: {
                 <For each={["Forest", "Entities", "Town"]}>{categoryName =>
                     <button 
                         class={(props.editor.ui.currentCategory[0]() === categoryName) ? "selected" : undefined}
-                        onclick={() => setSelectedItem(categoryName)}>{categoryName}</button>
+                        onClick={() => setSelectedItem(categoryName)}>{categoryName}</button>
                 }</For>
             }</SelectItemDiv>
 

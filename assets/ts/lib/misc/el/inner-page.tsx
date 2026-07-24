@@ -70,7 +70,7 @@ export function InnerPageBtn(p: {
 
     const o: InnerPageBtnInfo = {
         entryElF: onClick => <button 
-            onclick={() => {setIsVisible(true); onClick()}}
+            onClick={() => {setIsVisible(true); onClick()}}
             {...other}>
             {props.text}
         </button>,

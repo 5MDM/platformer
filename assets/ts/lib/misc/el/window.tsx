@@ -110,9 +110,9 @@ export function Iwindow(p: {
                 <Show when={props.title}>
                     <p>{props.title}</p>
                 </Show>
-                <button onclick={minimize}>-</button>
-                <button onclick={maximize}>□</button>
-                <button onclick={close}>X</button>
+                <button onClick={minimize}>-</button>
+                <button onClick={maximize}>□</button>
+                <button onClick={close}>X</button>
             </div>
             <Show when={!getMinimizationState()}>
                 <div class="i-window-bottom">{props.children}</div>

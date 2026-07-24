@@ -29,5 +29,30 @@ export function initToolbarEvents(editor: MD2editorV2) {
         });
     });
 
-    on("toggle-editor", () => editor.state.toggle());
+    on("toggle-editor", () => {
+        if(editor.state.isEnabled) {
+            editor.selection.mode?.state.disableIfOn();
+            editor.selection.mode = undefined;
+            editor.selection.modeName[1](undefined);
+
+            var hasUnsavedChanges = false;
+            for(const gridName in editor.editorGrids) {
+                const grid = editor
+                .editorGrids[gridName as keyof typeof editor.editorGrids];
+                const count = grid.count();
+                if(count > 0) {
+                    hasUnsavedChanges = true;
+                    break;
+                }
+            }
+
+            if(hasUnsavedChanges) {
+                const needsToDeleteChanges = 
+                confirm("You have an unsaved changes. Continue without saving?");
+                if(needsToDeleteChanges) md2._editorEmit("cancel-changes");
+            }
+        }
+
+        editor.state.toggle();
+    });
 }

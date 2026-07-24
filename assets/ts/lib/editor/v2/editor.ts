@@ -5,7 +5,6 @@ import { MDgameGridType } from "../../v2/types";
 import { MDmatrix } from "../../misc/matrix";
 import { BgBlock, FgBlock } from "../../v2/blocks/blocks";
 import { MDCTUI } from "./main-ui";
-import { MD2editor } from "../main";
 import { PlaceBlock } from "./modes/placeBlock";
 import { createSignal, Signal } from "solid-js";
 import { initToolbarEvents } from "./toolbarEvents";

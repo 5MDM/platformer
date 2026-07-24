@@ -27,7 +27,7 @@ export function EditorV2panel(p: {
             shrinkToScreen={true} title="Modes" heightPercent={20}>
             
             <Show fallback={<div id="md2-editor-v2-mode-settings-c">
-                <button onclick={() => setModeSettingsVisibility(false)}>Back</button>
+                <button onClick={() => setModeSettingsVisibility(false)}>Back</button>
                 <div id="editor-v2-mode-settings">
                     {props.editorModeSettings}
                 </div>
@@ -39,7 +39,7 @@ export function EditorV2panel(p: {
                     <For each={Object.entries(props.editor.modes)}>{([name, mode]) =>
                         <button 
                             class={(s.modeName[0]() === name) ? "selected" : undefined}
-                            onclick={() => setSelectedItem(name)}>
+                            onClick={() => setSelectedItem(name)}>
                             {name}
                         </button>
                     }</For>

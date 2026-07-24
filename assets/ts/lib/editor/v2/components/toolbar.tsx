@@ -1,5 +1,4 @@
 import { JSX } from "solid-js/jsx-runtime";
-import { MD2editor } from "../../main";
 import { _MD2engine } from "../../../v2/engine";
 import { MDCTUI, MDCTUIids } from "../main-ui";
 import { createSignal, For, Show, Signal } from "solid-js";
@@ -58,7 +57,7 @@ function ToolbarEl(props: {obj: ToolbarObj, editor: MD2editorV2, id?: string}): 
                 const signal = createSignal(false);
 
                 return <div>
-                    <button onclick={() => onDropdownBtnClick(signal)}>{name}</button>
+                    <button onClick={() => onDropdownBtnClick(signal)}>{name}</button>
                     <Show when={signal[0]()}>
                         <ToolbarEl obj={val as ToolbarObj} editor={props.editor} />
                     </Show>
@@ -67,12 +66,12 @@ function ToolbarEl(props: {obj: ToolbarObj, editor: MD2editorV2, id?: string}): 
             
             // event emitter
             else if(type == "string") 
-                return <button onclick={() => props.editor.engine._editorEmit(val as string)}>
+                return <button onClick={() => props.editor.engine._editorEmit(val as string)}>
                     {name}
                 </button>;
             
             // runs a function
-            else return <button onclick={
+            else return <button onClick={
                 () => (val as ((editor: MD2editorV2, md2: _MD2engine) => void))
                 (props.editor, props.editor.engine)
             }>{name}</button>;

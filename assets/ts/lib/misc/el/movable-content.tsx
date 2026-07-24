@@ -69,7 +69,7 @@ export function MovableContent(p: {
         position: "fixed",
         height: [100, "%"],
         left: [0, "px"],
-        "touch-action": "none",
+        // "touch-action": "none",
         "user-select": "none",
         transform: "translate(0, 0)",
     });
@@ -89,6 +89,9 @@ export function MovableContent(p: {
     var divPrRes: (e: HTMLDivElement) => void;
     const divPr = new Promise<HTMLDivElement>(res => divPrRes = res);
 
+    // polyfill
+    const pointerMap = new Map<number, [number, number]>();
+
     return <div
         ref={div => divPrRes(div)}
         {...other}
@@ -98,6 +101,7 @@ export function MovableContent(p: {
             speed.y = 0;
 
             isDragging = true;
+            pointerMap.set(e.pointerId, [e.clientX, e.clientY]);
 
             if(!isInitCalculated) {
                 const canMove = props.canMove?.() || true;
@@ -122,6 +126,18 @@ export function MovableContent(p: {
 
             props.events?.emit("move", e);
 
+            const lastPointerMovement = pointerMap.get(e.pointerId);
+            if(!lastPointerMovement) return;
+
+            const movement = new MDV.V2(
+                e.movementX ?? e.clientX - lastPointerMovement[0],
+                e.movementY ?? e.clientY - lastPointerMovement[1],
+            );
+
+            pointerMap.set(e.pointerId, [e.clientX, e.clientY]);
+
+            console.log(movement.toArray())
+
             onMove({
                 css,
                 shrinkToScreen: props.shrinkToScreen,
@@ -131,21 +147,22 @@ export function MovableContent(p: {
                 initW,
                 initH,
                 el: e.currentTarget,
-                movement: new MDV.V2(e.movementX, e.movementY),
+                movement: movement.clone(),
                 box: MDV.V4.fromElementBounds(e.currentTarget),
                 translateF([x, y]) {
                     
                 }
             });
 
-            speed.x = e.movementX;
-            speed.y = e.movementY;
+            speed.x = movement.x;
+            speed.y = movement.y;
 
             css.refreshSignal();
         }}
 
         onpointerup={e => {
             isDragging = false;
+            pointerMap.delete(e.pointerId);
             if(props.inertiaDecay) handleInertia(e);
         }}
 

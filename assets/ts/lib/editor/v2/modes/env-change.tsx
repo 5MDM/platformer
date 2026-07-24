@@ -4,7 +4,6 @@ import { InnerPage, InnerPageBtn } from "../../../misc/el/inner-page";
 import { BaseMode } from "./templates/base-mode";
 import { ExtractUniformObject, Filter, TypedArray, UniformData, UniformGroup } from "pixi.js";
 import { MD2baseFilter, UniformValue } from "../../../v2/filters/baseFilter";
-import { ExecuteCode, VisibleTextIfDefined } from "../../../misc/el/solidjs";
 import { isTypedArray } from "../../../misc/util";
 import { Iwindow } from "../../../misc/el/window";
 
@@ -49,14 +48,14 @@ function InfoElForFilter(p: {
         <p>isEnabled: {`${getIsEnabled()}`}</p>
         <p>UID: {info.uid}</p>
         <p>Resolution: {info.resolution}</p>
-        <button onclick={() => {
+        <button onClick={() => {
             filter.enabled = !filter.enabled;
             setIsEnabled(filter.enabled);
         }}>
             {getIsEnabled() ? "Disable" : "Enable"}
         </button>
         <Show fallback={<p>Uniforms: none</p>} when={info.uniforms}>
-            <button onclick={
+            <button onClick={
                 () => mode.spawnEl(<Iwindow
                     title="Uniforms"
                     class="card-window"
@@ -101,7 +100,7 @@ export class EnvChangeMode extends BaseMode {
 
         this.addModeSettingsEl(<>
             {/* <InnerPage backBtnF={onClick =>
-                <button onclick={onClick}>Back</button>
+                <button onClick={onClick}>Back</button>
             }>{backBtn => <>
 
                 <InnerPageBtn text="filter settings">

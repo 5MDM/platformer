@@ -1,7 +1,6 @@
 import { createStore } from "solid-js/store";
 import { Dict } from "../../misc/util";
 import { BlockInfo } from "../../v2/types";
-import { MD2editor } from "../main";
 import { MDCTUItoolbar } from "./components/toolbar";
 import { JSX } from "solid-js/jsx-runtime";
 import { render } from "solid-js/web";
