@@ -302,6 +302,16 @@ export namespace MDV {
             return this;
         }
 
+        getPosAsVec2(): MDV.V2 {
+            return new MDV.V2(this.x, this.y);
+        }
+
+        getPosAsXY(): XY {return {x: this.x, y: this.y}}
+
+        getWH(): MDV.V2 {return new MDV.V2(this.w, this.h)}
+
+        getWHasXY(): XY {return {x: this.w, y: this.h}} 
+
         divideS(n: number) {
             this.x /= n;
             this.y /= n;

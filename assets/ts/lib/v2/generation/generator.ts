@@ -11,7 +11,6 @@ import { greedyMesh } from "./greedy-mesh";
 import { MD2componentObjType } from "../../misc/components";
 import { AnimatedTilingSprite } from "../../misc/animated-tiles";
 import { MD2errors } from "../errors";
-import { MDregexUtils } from "../engine-utils/regex";
 
 
 export interface BlockOpts {
@@ -55,7 +54,9 @@ export abstract class _MD2Blockgenerator {
     }
 
     getBlockDef(path: string): BlockInfo | false {
-        const [ss, name] = MDregexUtils.splitResourcePath(path);
+        // make sure removing the regex doesn't destroy anything
+        //const [ss, name] = MDregexUtils.splitResourcePath(path);
+        const name = path;
 
         const blockDef = this.blockDefs[name];
         if (blockDef) return blockDef;
@@ -173,7 +174,7 @@ export abstract class _MD2Blockgenerator {
         else return this.createStaticSprite(o, def);
     }
 
-    private parseHitbox(o: BlockOpts, def: BlockInfo): XYWH {
+    private parseHitbox(o: XYWH, def: BlockInfo): XYWH {
         if(def.hitbox) {            
             return {
                 x: o.x + (def.hitbox.x ?? 0),
@@ -184,9 +185,9 @@ export abstract class _MD2Blockgenerator {
         } else return {x: o.x, y: o.y, w: o.w, h: o.h};
     }
 
-    private createFgBlock(o: BlockOpts, def: BlockInfo, sprite: TilingSprite, record: boolean = true) {
+    private createFgBlock(o: Omit<BlockOpts, "name">, def: BlockInfo, sprite: TilingSprite, record: boolean = true) {
         const components = o.components || def.components;
-
+        // o.name
         if(def.isOversize) {
             const hw = this.engine.utils.roundBz(sprite.width / 2);
             const hh = this.engine.utils.roundBz(sprite.height / 2);
@@ -261,6 +262,7 @@ export abstract class _MD2Blockgenerator {
     }
 
     generateBlocks(o: BlockOpts): Success {
+        // name is texture
         const block = this.createAndReturnBlock(o);
         if(!block) return block;
 
@@ -322,7 +324,6 @@ export abstract class _MD2Blockgenerator {
         try {
             data = greedyMesh(grid);
         } catch(err) {
-
             throw MD2errors.greedyMeshError();
         }
         

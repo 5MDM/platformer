@@ -132,25 +132,9 @@ export abstract class MD2SpriteLoader {
     static readonly spritesheetNameRegex = /(\w+\/){2}/;
 
     protected initializedGetTexture(name: string, err: boolean = true): Texture {
-        // //name = "base/spritesheet/" + name;
-
-        // //const t = this.spritesheet!.textures[name];
-        // //const spritesheetName = name.match(MD2SpriteLoader.spritesheetNameRegex)?.[0];
-        // //console.log(spritesheetName)
-        // //const spritesheetName = name.match(MD2SpriteLoader.spritesheetNameRegex)?.[0].slice(0, -1);
-        // const [ssName, name] = MDregexUtils.splitResourcePath(path);
-
-        // var ss = this.spritesheetMap.get(ssName);
-        // if(!ss) {
-        //     ss = this.spritesheetMap.get("base/spritesheet");
-        //     MD2errors.err("Spritesheet object not found for " + ssName);
-        //     return Texture.WHITE;
-        // }
-
-        //console.log(name)
         const t = this.textureRegistry.get(name);
 
-        if (!t) {
+        if(!t) {
             if (err) this.engine.errorManager.textureNotFound(name);
 
             return Texture.WHITE;

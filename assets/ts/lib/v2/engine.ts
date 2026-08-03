@@ -1,7 +1,6 @@
 import { Application, EventEmitter, SpritesheetData } from "pixi.js";
 import { _MD2dataManager } from "./data-loaders/data";
 import { _MD2dataManagerOpts } from "./data-loaders/sprite-loader";
-import { _MD2 } from "./obj";
 import { _MD2levelManager } from "./level";
 import { _MD2errorManager } from "./errors";
 import { _MD2physics, _MD2physicsOpts } from "./physics/main";

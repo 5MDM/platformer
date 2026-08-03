@@ -8,7 +8,6 @@ import { Projectile } from "../entities/projectile";
 import { findstaticCollisions } from "./collision-f";
 import { setupMovementLoop } from "./movement";
 
-
 export interface _MD2physicsOpts {
     simSpeed: number;
     smoothing: number;
@@ -27,11 +26,6 @@ export class _MD2physics {
     static expectedFPS = 1000 / 60;
 
     static isMovementLoopSetup = false;
-    // static isMovingUp = false;
-    // static isMovingDown = false;
-    // static isMovingLeft = false;
-    // static isMovingRight = false;
-    // static isJumping = false;
 
     static controls = new ControlDump();
 
@@ -47,7 +41,6 @@ export class _MD2physics {
         this.simSpeed = o.simSpeed;
         this.smoothing = o.smoothing;
 
-        this.setupAnimationLoop();
         this.setupPhysicsLoop();
 
         if (!_MD2physics.isMovementLoopSetup) setupMovementLoop(this.engine.joystick);
@@ -105,7 +98,6 @@ export class _MD2physics {
 
     // iterate dynamic objects
     ido(fn: (e: Entity | Projectile, isEntity: boolean) => void) {
-        const self = this;
         this.dynamicObjs.forEach(e => {
             if(e.isDestroyed) return;
             fn(e, e instanceof Entity);
@@ -118,31 +110,30 @@ export class _MD2physics {
         this.entityGroupMapRecursiveIteration(fn, this.entityGroups);
     }
 
+    private readonly physicsLoop = () => {
+        const timeNow = performance.now();
+        this.physicsDeltaTime = timeNow - this.lastPhysicsUpdate;
+        this.dt = this.physicsDeltaTime / _MD2physics.expectedFPS;
+        this.lastPhysicsUpdate = timeNow;
+
+        PlayerControlledEntity.dt = this.physicsDeltaTime;
+
+        if(!this.isLoopRunning) return;
+
+        const j = this.engine.joystick;
+
+        this.globalPhysicsLoopBefore();
+
+        if(this.engine.CD == "td") this.TDphysicsLoop(j);
+        else this.sideScrollerPhysicsLoop(j);
+
+        this.globalPhysicsLoopAfter();
+    }
+
     setupPhysicsLoop() {
-        const self = this;
         this.lastPhysicsUpdate = performance.now();
 
-        function physicsLoop() {
-            const timeNow = performance.now();
-            self.physicsDeltaTime = timeNow - self.lastPhysicsUpdate;
-            self.dt = self.physicsDeltaTime / _MD2physics.expectedFPS;
-            self.lastPhysicsUpdate = timeNow;
-
-            PlayerControlledEntity.dt = self.physicsDeltaTime;
-
-            if (!self.isLoopRunning) return;
-
-            const j = self.engine.joystick;
-
-            self.globalPhysicsLoopBefore();
-
-            if(self.engine.CD == "td") self.TDphysicsLoop(j);
-            else self.sideScrollerPhysicsLoop(j);
-
-            self.globalPhysicsLoopAfter();
-        }
-
-        setInterval(physicsLoop, this.simSpeed);
+        setInterval(this.physicsLoop, this.simSpeed);
     }
 
     globalPhysicsLoopBefore() {
@@ -264,8 +255,6 @@ export class _MD2physics {
     addPlayer(player: PlayerControlledEntity) {
         this.playerGroup.set(player.id, player);
     }
-
-    setupAnimationLoop() {}
 
     static recentCollisions: Record<number, FgBlock> = {};
 }

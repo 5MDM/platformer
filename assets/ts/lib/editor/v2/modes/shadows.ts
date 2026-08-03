@@ -36,8 +36,7 @@ export class ShadowMode extends BaseShader {
             const boxes = shadedBlocks[textureName];
             for(const xywhr of boxes) {
                 const worldBounds = MDV.V4.fromBounds(xywhr)
-                .multiplyS(this.engine.blockSize)
-                .subtractPos({x: .1, y: .1});
+                .multiplyS(this.engine.blockSize);
 
                 const r = degToRad(xywhr.rotation);
 
@@ -56,9 +55,9 @@ export class ShadowMode extends BaseShader {
         rotation: number,
     }) {
         const s = new TilingSprite({
-            position: worldBounds,
-            width: worldBounds.w+.2,
-            height: worldBounds.h+.2,
+            position: worldBounds.clone(),
+            width: worldBounds.w+.1,
+            height: worldBounds.h+.1,
             texture,
             tileScale: new MDV.V4(
                 this.editor.engine.blockSize / texture.width,

@@ -6,7 +6,6 @@ import { MD2dataManagerParseMod, MD2dataManagerParseSpritesheets } from "../mod-
 import { RegisterItemOpts, ModInfo, EntityFileInfo, ItemFileInfo } from "../types";
 import { _MD2dataManagerOpts, MD2SpriteLoader } from "./sprite-loader";
 import { combineSpritesheets } from "./spritesheet-functions";
-import { sp } from "../../misc/util";
 
 export class _MD2dataManager extends MD2SpriteLoader {
     registeredItems: Record<string, RegisterItemOpts> = {};

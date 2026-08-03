@@ -18,7 +18,7 @@ interface BlockConstructorOpts extends BasicBoxOpts {
     isOversize: boolean;
 }
 
-interface FGblockConstructorOpts extends BlockConstructorOpts {
+export interface FGblockConstructorOpts extends BlockConstructorOpts {
     components?: Record<string, Record<string, any>>;
     defaultComponents?: Record<string, Record<string, any>>;
 }
@@ -276,7 +276,7 @@ export class FgBlock extends Block {
     }
 }
 
-interface BgBlockConstructorOpts extends BlockConstructorOpts {
+export interface BgBlockConstructorOpts extends BlockConstructorOpts {
     isOverlay?: boolean;
 }
 

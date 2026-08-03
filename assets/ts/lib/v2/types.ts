@@ -8,8 +8,6 @@ import { AnimatedTilingSprite } from "../misc/animated-tiles";
 export type Stop = boolean;
 export type MDgameGridType = "fg" | "bg" | "overlay";
 
-
-
 export interface LevelJSONoutput extends GMOutput {
     rotation: number;
     components?: Record<string, Record<string, any>>;
@@ -22,6 +20,7 @@ export type AnyTileSprites = TilingSprite | AnimatedTilingSprite;
 export interface BlockInfo {
     name: string;
     type?: MDgameGridType;
+    /** texture contains the path to the texture */
     texture: string;
     components?: MD2componentObjType;
     isOversize: boolean;

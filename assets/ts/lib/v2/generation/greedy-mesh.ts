@@ -19,6 +19,10 @@ function fillDegreeList(list: Record<Degrees, Record<number, AnyBlock>>, m: MDma
     );
 }
 
+/**
+ * destructive
+ * @param grids - **WILL BE CLEARED** 
+ */
 export function greedyMesh(grids: WorldGrids): LevelJSONoutput[] {
     // each item is an object of Record<Degree, Record<id, block>>
     const lists: Record<MDgameGridType, Record<Degrees, Record<number, AnyBlock>>> = {

@@ -52,6 +52,7 @@ export async function startGame(md2: _MD2engine) {
     md2.levelManager.loadLevel("1");
     //md2.levelManager.loadLevel("2");
     //md2.levelManager.loadLevel("test");
+    
 
     md2.modules.env.addParticles({
         name: "glow",
@@ -78,13 +79,13 @@ export async function startGame(md2: _MD2engine) {
         },
     });
 
-    const glow = new Sprite({
-        texture: md2.modules.env.getParticle("glow"),
-        anchor: .5,
-        scale: {x: 7, y: 7},
-        position: {x: md2.generator.player.halfW, y: md2.generator.player.halfH},
-        //zIndex: -1,
-    });
+    // const glow = new Sprite({
+    //     texture: md2.modules.env.getParticle("glow"),
+    //     anchor: .5,
+    //     scale: {x: 7, y: 7},
+    //     position: {x: md2.generator.player.halfW, y: md2.generator.player.halfH},
+    //     //zIndex: -1,
+    // });
 
     // staticC.mask = glow;
     // player.container.addChild(glow);

@@ -1,10 +1,10 @@
 import { Application, Container, SpritesheetData, WebGLRenderer } from "pixi.js";
 import { $, convertPathToObj } from "./lib/misc/util";
 import { MDmatrix } from "./lib/misc/matrix";
-import { MD2 } from "./lib/v2/main";
 import { Mod, ModInfo } from "./lib/v2/types";
 import { Joystick } from "./lib/misc/joystick";
 import { c } from "./canvas";
+import { _MD2engine } from "./lib/v2/engine";
 
 export const chunkSize = 16;
 export const blockSize = 2**6;
@@ -29,7 +29,7 @@ if(!webglC) {
 
 export const app: Application = new Application<WebGLRenderer<HTMLCanvasElement>>();
 
-export const md2 = new MD2.Engine({
+export const md2 = new _MD2engine({
     engine: {
         blockSize: 32,
         app,
@@ -39,7 +39,6 @@ export const md2 = new MD2.Engine({
             innerColor: "cyan",
             outerColor: "rgba(100, 100, 255, .5)",
             max: 80,
-
         }),
     },
     dataManager: {
