@@ -17,6 +17,7 @@ import { MDaudio } from "../misc/audio";
 import { MD2GUI } from "./modules/gui/main";
 import { BlockComponentManager } from "./blocks/components/main-manager";
 import { MD2utils } from "./md2utils";
+import { Mgenerator } from "./generation/generatorv2";
 
 interface EngineOpts {
     engine: {
@@ -41,7 +42,7 @@ export class _MD2engine {
     dataManager: _MD2dataManager;
     levelManager: _MD2levelManager;
     errorManager: _MD2errorManager;
-    generator: _MD2fullGen;
+    generator: Mgenerator;
     physics: _MD2physics;
     deletor: _MD2deletor;
     app: Application;
@@ -91,7 +92,7 @@ export class _MD2engine {
         this.dataManager = new _MD2dataManager(this, opts.dataManager);
         this.levelManager = new _MD2levelManager(this);
         this.errorManager = new _MD2errorManager();
-        this.generator = new _MD2fullGen(this);
+        this.generator = new Mgenerator(this);
 
         this.modules = {
             zoom: new MD2zoomModule(this),

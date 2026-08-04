@@ -1,10 +1,36 @@
-import { Texture, TilingSprite } from "pixi.js";
+import { SpriteOptions, Texture, TilingSprite, TilingSpriteOptions } from "pixi.js";
 import { _MD2engine } from "../engine";
 import type { Mgenerator, MgeneratorCreateTileSpriteFromBoundsOpts } from "./generatorv2";
 import { MDV } from "../../misc/vectors/vectors";
 import { BlockInfo, XYWH } from "../types";
 import { AnyBlock, BgBlock, BgBlockConstructorOpts, FgBlock, FGblockConstructorOpts } from "../blocks/blocks";
 import { degToRad } from "../../misc/util";
+import { Projectile } from "../entities/projectile";
+import { MD2errors } from "../errors";
+
+/** Some options are mutually exclusive */
+export const spriteBitflags = {
+    none: 0,
+    getPivotFromWH: 1 << 0,
+    getTileScaleFromTexture: 1 << 1,
+    setClampMarginTo0: 1 << 2,
+    addPosByHalfSize: 1 << 3,
+    roundPixels: 1 << 4,
+    getPivotFromTexture: 1 << 5,
+} as const;
+
+export const spriteBitflagCombinations = {
+    standardSprite: spriteBitflags.getPivotFromWH 
+    | spriteBitflags.getTileScaleFromTexture
+    | spriteBitflags.setClampMarginTo0
+    | spriteBitflags.addPosByHalfSize
+    | spriteBitflags.roundPixels,
+
+    oversizeSprite: spriteBitflags.getPivotFromWH 
+    | spriteBitflags.getPivotFromTexture
+    | spriteBitflags.setClampMarginTo0
+    | spriteBitflags.roundPixels,
+} as const;
 
 export class MgeneratorUtils {
     g: Mgenerator;
@@ -12,21 +38,17 @@ export class MgeneratorUtils {
     bz: number;
     constructor(g: Mgenerator) {
         this.g = g;
-        this.md2 = g.md2;
+        this.md2 = g.engine;
         this.bz = this.md2.blockSize;
     }
 
-    getPivotFromWH({w, h}: {w: number, h: number}): MDV.XY {
-        return {x: w / 2, y: h / 2};
+    getBlockDef(tPath: string): BlockInfo | never {
+        const i = this.g.blockDefs[tPath];
+        if(!i) throw MD2errors.notFound("texture path", tPath);
+
+        return i;
     }
 
-    getPivotFromTexture(t: Texture): MDV.XY {
-        return {x: t.width / 2, y: t.height / 2};
-    }
-
-    getTileScaleFromTexture(t: Texture): MDV.XY {
-        return {x: this.bz / t.width, y: this.bz / t.height};
-    }
 
     doesTexturePathExist(tPath: string): boolean {
         const foundInfo = this.g.blockDefs[tPath];
@@ -44,26 +66,15 @@ export class MgeneratorUtils {
         t: Texture, 
         worldBounds: XYWH, 
         radians = 0, 
-        opts?: MgeneratorCreateTileSpriteFromBoundsOpts
     ): TilingSprite {
         // TODO: clamp margin = 0
         return new TilingSprite({
             position: {x: worldBounds.x, y: worldBounds.y},
-            width: worldBounds.w,
-            height: worldBounds.h,
+            width: worldBounds.w+1,
+            height: worldBounds.h+1,
             roundPixels: true,
             texture: t,
             tileRotation: radians,
-            ...opts
-        });
-    }
-
-    createFgBlock
-    (opts: Omit<FGblockConstructorOpts, "id" | "blockSize">): FgBlock {
-        return new FgBlock({
-            id: this.md2.dataManager.getNewId(),
-            blockSize: this.bz,
-            ...opts
         });
     }
 
@@ -71,75 +82,92 @@ export class MgeneratorUtils {
      * 
      * @param worldBounds - non-destructive
      */
-    createFgBlockFromBlockInfo(
+    createTileSpriteFromBoundsWithOpts(
+        t: Texture, 
         worldBounds: XYWH, 
-        info: BlockInfo, 
-        texture: Texture,
-        deg = 0, 
-        spriteOpts?: MgeneratorCreateTileSpriteFromBoundsOpts,
-        components?: Record<string, Record<string, any>>
-    ): FgBlock {
-        return this.createFgBlock({
-            ...worldBounds,
-            name: info.name,
-            // block constructor opts rotation must be in degrees
-            rotation: deg,
-            sprite: this.createTileSpriteFromBounds(texture, worldBounds, deg, spriteOpts),
-            isOversize: info.isOversize,
-            defaultComponents: info.components,
-            components,
-        });
-    }
-
-    createBgBlock(opts: Omit<BgBlockConstructorOpts, "id" | "blockSize">): BgBlock {
-        return new BgBlock({
-            id: this.md2.dataManager.getNewId(),
-            blockSize: this.bz,
+        radians = 0, 
+        opts?: MgeneratorCreateTileSpriteFromBoundsOpts
+    ): TilingSprite {
+        // TODO: clamp margin = 0
+        return new TilingSprite({
+            position: {x: worldBounds.x, y: worldBounds.y},
+            width: worldBounds.w+1,
+            height: worldBounds.h+1,
+            roundPixels: true,
+            texture: t,
+            tileRotation: radians,
             ...opts
-        });
-    }
-
-    createBgBlockFromBlockInfo(
-        worldBounds: XYWH, 
-        info: BlockInfo,
-        texture: Texture,
-        deg = 0,
-        isOverlay = false,
-        spriteOpts?: MgeneratorCreateTileSpriteFromBoundsOpts,
-    ): BgBlock {
-        return this.createBgBlock({
-            ...worldBounds,
-            rotation: deg,
-            sprite: this.createTileSpriteFromBounds(texture, worldBounds, degToRad(deg), spriteOpts),
-            name: info.name,
-            isOversize: info.isOversize,
-            isOverlay,
         });
     }
 
     /**
      * 
-     * ## warning
-     * Extra caution needed when using in internal generator functions. 
-     * Oversize sprites may break
+     * @param worldBounds - non-destructive
+     * @param opts - this will override the bitflag properties
      */
-    createBlockFromInfo(
-        info: BlockInfo, 
+    createTileSpriteFromBoundsAndBitflags(
+        t: Texture, 
         worldBounds: XYWH, 
-        texture: Texture,
-        deg = 0, 
-        spriteOpts?: MgeneratorCreateTileSpriteFromBoundsOpts,
-        components?: Record<string, Record<string, any>>,
-    ): AnyBlock {        
-        if(info.type == "fg") {
-            return this.createFgBlockFromBlockInfo
-            (worldBounds, info, texture, deg, spriteOpts, components);
-        } else {
-            return this.createBgBlockFromBlockInfo(
-                worldBounds, info, texture, deg,
-                info.type == "overlay",
-                spriteOpts,
-            );
+        radians = 0, 
+        bi: number,
+        opts?: MgeneratorCreateTileSpriteFromBoundsOpts
+        & keyof typeof TilingSprite
+    ) {
+        /** null values cannot be null at the end */
+        const os = {
+            width: 0,
+            height: 0,
+            roundPixels: false,
+            texture: null! as (null | Texture),
+            tileRotation: 0,
+            pivot: {x: 0, y: 0},
+            tileScale: {x: 1, y: 1},
+            position: {x: 0, y: 0},
+        };
+
+        const o = os as typeof os & TilingSpriteOptions;
+
+        o.width = worldBounds.w+1;
+        o.height = worldBounds.h+1;
+        o.texture = t;
+        o.tileRotation = radians;
+
+        if(bi & spriteBitflags.getPivotFromWH) {
+            o.pivot.x = worldBounds.w / 2;
+            o.pivot.y = worldBounds.h / 2;
+        } else if(bi & spriteBitflags.getPivotFromTexture) {
+            o.pivot.x = t.width / 2;
+            o.pivot.y = t.height / 2;
         }
+
+        if(bi & spriteBitflags.getTileScaleFromTexture) {
+            o.tileScale.x = this.bz / t.width;
+            o.tileScale.y = this.bz / t.height;
+        }
+
+        o.roundPixels = !!(bi & spriteBitflags.roundPixels);
+
+        if(bi & spriteBitflags.addPosByHalfSize) {
+            o.position.x = worldBounds.x + worldBounds.w / 2;
+            o.position.y = worldBounds.y + worldBounds.h / 2;
+        } else {
+            o.position.x = worldBounds.x;
+            o.position.y = worldBounds.y;
+        }
+
+        const s = new TilingSprite(o);
+
+        if(opts) {
+            const keys = Object.keys(opts) as (keyof typeof opts)[];
+            for(let i = 0; i < keys.length; i++) {
+                const key = keys[i];
+                s[key] = opts[key];
+            }
+        }
+
+        if(bi & spriteBitflags.setClampMarginTo0) 
+            s.clampMargin = 0;
+
+        return s;
     }
 } 

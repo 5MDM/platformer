@@ -52,6 +52,12 @@ export namespace MDV {
             return this;
         }
 
+        setFromWidthHeight(o: {width: number, height: number}): this {
+            this.x = o.width;
+            this.y = o.height;
+            return this;
+        }
+
         clone(): V2 {return V2.fromPoint(this)}
         
         divideS(n: number) {
@@ -87,6 +93,12 @@ export namespace MDV {
         add(p: XY) {
             this.x += p.x;
             this.y += p.y;
+            return this;
+        }
+
+        addToXY(o: XY): this {
+            o.x += this.x;
+            o.y += this.y;
             return this;
         }
 

@@ -1,13 +1,10 @@
-import { AnimatedSprite, Sprite, Ticker, TilingSprite } from "pixi.js";
-import { MDmatrix } from "../../misc/matrix";
+import { TilingSprite } from "pixi.js";
 import { degToRad } from "../../misc/util";
 import { FgBlock, BgBlock, AnyBlock, BasicBox } from "../blocks/blocks";
 import { _MD2engine } from "../engine";
 import { EntityOpts, Entity } from "../entities/entity";
 import { Player } from "../entities/player";
-import { Success } from "../level";
 import { AnyTileSprites, BlockCreationOpts, BlockInfo, EntityInfo, LevelJSONoutput, MDgameGridType, XYWH } from "../types";
-import { greedyMesh } from "./greedy-mesh";
 import { MD2componentObjType } from "../../misc/components";
 import { AnimatedTilingSprite } from "../../misc/animated-tiles";
 import { MD2errors } from "../errors";
@@ -54,8 +51,6 @@ export abstract class _MD2Blockgenerator {
     }
 
     getBlockDef(path: string): BlockInfo | false {
-        // make sure removing the regex doesn't destroy anything
-        //const [ss, name] = MDregexUtils.splitResourcePath(path);
         const name = path;
 
         const blockDef = this.blockDefs[name];
@@ -114,64 +109,65 @@ export abstract class _MD2Blockgenerator {
         }
     }
 
-    private createAnimatedSprite(o: BlockCreationOpts, def: BlockInfo): AnimatedTilingSprite {
-        //const t = this.engine.dataManager.getTexture(o.name);
-        const t = this.engine.dataManager.getAnimationTextures(o.name);
+    // private createAnimatedSprite(o: BlockCreationOpts, def: BlockInfo): AnimatedTilingSprite {
+    //     //const t = this.engine.dataManager.getTexture(o.name);
+    //     const t = this.engine.dataManager.getAnimationTextures(o.name);
 
-        if(def.isOversize) {
-            const x = o.x;
-            const y = o.y;
+    //     if(def.isOversize) {
+    //         const x = o.x;
+    //         const y = o.y;
 
-            const s = new AnimatedTilingSprite({
-                position: { x, y },
-                roundPixels: true,
-                //tileScale: {x: this.engine.blockSize / t.width, y: this.engine.blockSize / t.height},
-                pivot: {
-                    x: t[0].width / 2,
-                    y: t[0].height / 2,
-                },
+    //         const s = new AnimatedTilingSprite({
+    //             position: { x, y },
+    //             roundPixels: true,
+    //             //tileScale: {x: this.engine.blockSize / t.width, y: this.engine.blockSize / t.height},
+    //             pivot: {
+    //                 x: t[0].width / 2,
+    //                 y: t[0].height / 2,
+    //             },
 
-                tileRotation: degToRad(o.rotation ?? 0),
-                animationSpeed: 0.5,
-                textureList: t,
-            });
+    //             tileRotation: degToRad(o.rotation ?? 0),
+    //             animationSpeed: 0.5,
+    //             textureList: t,
+    //         });
 
-            s.play();
+    //         s.play();
 
-            s.clampMargin = 0;
+    //         s.clampMargin = 0;
 
-            return s;
-        } else {
-            const x = o.x + o.w / 2;
-            const y = o.y + o.h / 2;
+    //         return s;
+    //     } else {
+    //         const x = o.x + o.w / 2;
+    //         const y = o.y + o.h / 2;
 
-            const s = new AnimatedTilingSprite({
-                width: o.w + .1,
-                height: o.h + .1,
-                position: { x, y },
-                roundPixels: true,
-                tileScale: { x: this.engine.blockSize / t[0].width, y: this.engine.blockSize / t[0].height },
-                pivot: {
-                    x: o.w / 2,
-                    y: o.h / 2,
-                },
-                animationSpeed: 0.5,
-                textureList: t,
+    //         const s = new AnimatedTilingSprite({
+    //             width: o.w + .1,
+    //             height: o.h + .1,
+    //             position: { x, y },
+    //             roundPixels: true,
+    //             tileScale: { x: this.engine.blockSize / t[0].width, y: this.engine.blockSize / t[0].height },
+    //             pivot: {
+    //                 x: o.w / 2,
+    //                 y: o.h / 2,
+    //             },
+    //             animationSpeed: 0.5,
+    //             textureList: t,
 
-                tileRotation: degToRad(o.rotation ?? 0),
-            });
+    //             tileRotation: degToRad(o.rotation ?? 0),
+    //         });
 
-            s.clampMargin = 0;
+    //         s.clampMargin = 0;
 
-            s.play();
+    //         s.play();
 
-            return s;
-        }
-    }
+    //         return s;
+    //     }
+    // }
 
     createSprite(o: BlockCreationOpts, def: BlockInfo): AnyTileSprites {
-        if(def.isAnimated) return this.createAnimatedSprite(o, def);
-        else return this.createStaticSprite(o, def);
+        // if(def.isAnimated) return this.createAnimatedSprite(o, def);
+        // else 
+        return this.createStaticSprite(o, def);
     }
 
     private parseHitbox(o: XYWH, def: BlockInfo): XYWH {
@@ -237,7 +233,7 @@ export abstract class _MD2Blockgenerator {
         return bgBlock;
     }
 
-    createAndReturnBlock(o: BlockOpts, record: boolean = true): AnyBlock | false {
+    generateBlock(o: BlockOpts, record: boolean = true): AnyBlock | false {
         o.x *= this.engine.blockSize;
         o.y *= this.engine.blockSize;
         o.w *= this.engine.blockSize;
@@ -261,16 +257,6 @@ export abstract class _MD2Blockgenerator {
         }
     }
 
-    generateBlocks(o: BlockOpts): Success {
-        // name is texture
-        const block = this.createAndReturnBlock(o);
-        if(!block) return block;
-
-        //this.engine.levelManager.groups[block.type].addChild(block.sprite);
-
-        return true;
-    }
-
     registerBlock(name: string, block: BlockInfo) {
         this.blockDefs[name] = block;
     }
@@ -287,9 +273,8 @@ export abstract class _MD2Blockgenerator {
 
     replaceBlocks(data: LevelJSONoutput[]) {
         for(const i of data) {
-
             try {
-                this.generateBlocks({
+                this.generateBlock({
                     name: i.type,
                     rotation: i.rotation,
                     x: i.x,
@@ -305,7 +290,7 @@ export abstract class _MD2Blockgenerator {
     }
 
     generateBlockFromData(o: LevelJSONoutput) {
-        this.generateBlocks({
+        this.generateBlock({
             name: o.type,
             rotation: o.rotation,
             x: o.x,
@@ -314,20 +299,6 @@ export abstract class _MD2Blockgenerator {
             h: o.h,
             components: o.components,
         });
-    }
-
-    /** @param grid - a record of 3 grids holding blocks.
-     *  THIS WILL CLEAR THE GRIDS
-     */
-    injectBlocks(grid: Record<MDgameGridType, MDmatrix<AnyBlock>>) {
-        var data: LevelJSONoutput[];
-        try {
-            data = greedyMesh(grid);
-        } catch(err) {
-            throw MD2errors.greedyMeshError();
-        }
-        
-        this.replaceBlocks(data);
     }
 
     getEntityDefArr(): EntityInfo[] {

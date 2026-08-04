@@ -9,11 +9,13 @@ export function initToolbarEvents(editor: MD2editorV2) {
 
     on("save-changes", () => {
         try {
-            md2.generator.injectBlocks({
+            const blocks = greedyMesh({
                 fg: grids.fg.clone(),
                 bg: grids.bg.clone(),
                 overlay: grids.overlay.clone()
             });
+
+            editor.engine.generator.replaceBlocks(blocks);
         } catch(err) {
             console.error(err);
             alert("There was an error and changes have been cancelled. Check the console");

@@ -22,5 +22,6 @@ export class MD2utils {
     mbzFloor(n: number): number {return Math.floor(this.mbz(n))}
 
     // round by block size
+    /** # This does nothing @deprecated */
     roundBz(n: number): number {return this.mbz(this.dbz(n))}
 }
