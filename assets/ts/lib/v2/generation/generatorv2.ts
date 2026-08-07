@@ -1,15 +1,13 @@
-import { Sprite, Texture, TextureSource, TilingSprite, TilingSpriteOptions } from "pixi.js";
-import { degToRad, Dict, radToDeg } from "../../misc/util";
+import { Sprite, Texture, TilingSpriteOptions } from "pixi.js";
 import { _MD2engine } from "../engine";
 import { Player } from "../entities/player";
-import { AnyTileSprites, BlockCreationOpts, BlockInfo, EntityInfo, LevelJSONoutput, MDgameGridType, XYWH } from "../types";
-import { MDV } from "../../misc/vectors/vectors";
-import { MgeneratorUtils, spriteBitflagCombinations } from "./generatorv2-utils";
+import { BlockInfo, EntityInfo, LevelJSONoutput } from "../types";
+import { MgeneratorSpriteUtils } from "./sprite-utils";
 import { MD2errors } from "../errors";
-import { BlockOpts } from "./generator";
-import { AnyBlock, BgBlock, FgBlock } from "../blocks/blocks";
 import { Entity, EntityOpts } from "../entities/entity";
 import { Projectile, ProjectileOpts } from "../entities/projectile";
+import { MgeneratorBlockUtils } from "./block-utils";
+import { BlockOpts } from "./generator";
 
 export type MgeneratorCreateTileSpriteFromBoundsOpts = 
 Omit<TilingSpriteOptions, "position" | "width" 
@@ -25,7 +23,8 @@ export class Mgenerator {
 
     entityDefs: Record<string, EntityInfo> = {};
 
-    u: MgeneratorUtils;
+    su: MgeneratorSpriteUtils;
+    bu: MgeneratorBlockUtils;
 
     constructor(engine: _MD2engine) {
         this.engine = engine;
@@ -37,8 +36,7 @@ export class Mgenerator {
             h: 64,
             id: this.engine.dataManager.getNewId(),
             view: this.engine.levelManager.groups.view,
-            animOpts: {
-            },
+            animOpts: {},
             name: "player",
         });
 
@@ -46,7 +44,8 @@ export class Mgenerator {
             this.player.init();
         });
 
-        this.u = new MgeneratorUtils(this);
+        this.su = new MgeneratorSpriteUtils(this);
+        this.bu = new MgeneratorBlockUtils(this);
 
         this.engine.levelManager.recordPlayer(this.player);
     }
@@ -59,107 +58,6 @@ export class Mgenerator {
         else {
             this.engine.errorManager.blockNotFound(name);
             return false;
-        }
-    }
-
-    createSprite(t: Texture, worldBounds: XYWH, radians: number, isOversize = false): AnyTileSprites {
-        return this.u.createTileSpriteFromBoundsAndBitflags(
-            t, 
-            worldBounds,
-            radians, 
-            isOversize ? spriteBitflagCombinations.oversizeSprite 
-            : spriteBitflagCombinations.standardSprite
-        );    
-    }
-
-    private modifyBoundsByHitbox(o: XYWH, hitbox: Partial<XYWH>) {
-        o.x += hitbox.x ?? 0;
-        o.y += hitbox.y ?? 0;
-        o.w = hitbox.w ?? o.w;
-        o.h = hitbox.h ?? o.h;
-    }
-
-    private tempv2 = new MDV.V2(0, 0);
-
-    private createFgBlock(
-        o: Omit<BlockOpts, "name">, 
-        def: BlockInfo, 
-        sprite: TilingSprite, 
-        record: boolean = true
-    ) {
-        const components = o.components || def.components;
-
-        if(def.isOversize) {
-            // adds sprite pos by half size
-            const halfSize = this.tempv2;
-            halfSize.setFromWidthHeight(sprite);
-            halfSize.divideS(2);
-            halfSize.addToXY(sprite);
-        }
-
-        if(def.hitbox) this.modifyBoundsByHitbox(o, def.hitbox);
-
-        const fgBlock = new FgBlock({
-            x: o.x,
-            y: o.y,
-            w: o.w,
-            h: o.h,
-            name: def.texture,
-            rotation: o.rotation,
-            sprite,
-            id: this.engine.dataManager.getNewId(),
-            blockSize: this.engine.blockSize,
-            isOversize: def.isOversize,
-            defaultComponents: def.components,
-            components,
-        });
-
-        if(record) this.engine.levelManager.recordBlock("fg", fgBlock);
-
-        return fgBlock;
-    }
-
-    private createBgBlock(o: BlockOpts, def: BlockInfo, sprite: TilingSprite, isOverlay: boolean = false, record: boolean = true) {
-        const bgBlock = new BgBlock({
-            x: o.x,
-            y: o.y,
-            w: o.w,
-            h: o.h,
-            name: def.texture,
-            rotation: o.rotation,
-            sprite,
-            id: this.engine.dataManager.getNewId(),
-            isOverlay,
-            blockSize: this.engine.blockSize,
-            isOversize: def.isOversize,
-        });
-        
-        if(record) this.engine.levelManager.recordBlock(def.type || "bg", bgBlock);
-
-        return bgBlock;
-    }
-
-    generateBlock(o: BlockOpts, record: boolean = true): AnyBlock | false {
-        o.x *= this.engine.blockSize;
-        o.y *= this.engine.blockSize;
-        o.w *= this.engine.blockSize;
-        o.h *= this.engine.blockSize;
-
-        o.rotation ??= 0;
-
-        const info = this.getBlockDef(o.name);
-        if(!info) return false;
-
-        const t = this.engine.dataManager.getTexture(o.name);
-        const radians = degToRad(o.rotation);
-        const s = this.createSprite(t, o, radians, info.isOversize);
-
-        // !info.type is needed for player
-        if(info.type == "fg" || !info.type) {
-            return this.createFgBlock(o, info, s, record);
-        } else {
-            // bg and overlay
-            return this.createBgBlock(o, info, s, info.type == "overlay", record);
         }
     }
 
@@ -180,31 +78,30 @@ export class Mgenerator {
     replaceBlocks(data: LevelJSONoutput[]) {
         for(const i of data) {
             try {
-                this.generateBlock({
-                    name: i.type,
-                    rotation: i.rotation,
-                    x: i.x,
-                    y: i.y,
-                    w: i.w,
-                    h: i.h,
-                    components: i.components,
-                });
+                this.generateBlockFromData(i);
             } catch(err) {
                 throw MD2errors.generatingBlockError(i.type, i.x, i.y);
             }
         }
     }
 
+    private tempBlockOptsObj: BlockOpts = {
+        x: 0, y: 0, w: 0, h: 0,
+        name: "blank.png",
+        rotation: 0,
+        components: null!,
+    };
+
     generateBlockFromData(o: LevelJSONoutput) {
-        this.generateBlock({
-            name: o.type,
-            rotation: o.rotation,
-            x: o.x,
-            y: o.y,
-            w: o.w,
-            h: o.h,
-            components: o.components,
-        });
+        const ob = this.tempBlockOptsObj;
+        ob.x = o.x;
+        ob.y = o.y;
+        ob.w = o.w;
+        ob.h = o.h;
+        ob.name = o.type;
+        ob.components = o.components;
+
+        this.bu.generateBlock(ob);
     }
 
     getEntityDefArr(): EntityInfo[] {
@@ -243,22 +140,30 @@ export class Mgenerator {
         return e;
     }
 
+    private tempProjObj: ProjectileOpts = {
+        x: 0, y: 0, w: 0, h: 0,
+        name: "blank.png",
+        id: 0,
+        texture: null!,
+    };
+
     returnProjectile(opts: Partial<ProjectileOpts>, record = true): Projectile {
-        const p = new Projectile({
-            x: opts.x ?? 0,
-            y: opts.y ?? 0,
-            w: opts.w ?? 0,
-            h: opts.h ?? 0,
-            name: opts.name ?? "blank",
-            id: this.engine.dataManager.getNewId(),
-            texture: opts.texture || Texture.WHITE
-        });
+        const o = this.tempProjObj;
+        o.x = opts.x ?? 0;
+        o.y = opts.y ?? 0;
+        o.w = opts.w ?? 0;
+        o.h = opts.h ?? 0;
+        o.name = opts.name ?? "blank";
+        o.id = this.engine.dataManager.getNewId();
+        o.texture = opts.texture || Texture.WHITE;
 
-        if(opts.w) p.sprite.scaleX = (opts.w) / p.sprite.texture.width;
-        if(opts.h) p.sprite.scaleY = (opts.h) / p.sprite.texture.height;
+        const p = new Projectile(o);
 
-        p.setX(opts.x ?? 0);
-        p.setY(opts.y ?? 0);
+        if(opts.w) p.sprite.scaleX = opts.w / p.sprite.texture.width;
+        if(opts.h) p.sprite.scaleY = opts.h / p.sprite.texture.height;
+
+        p.setX(o.x);
+        p.setY(o.y);
 
         if(record) this.engine.levelManager.recordProjectile(p);
 

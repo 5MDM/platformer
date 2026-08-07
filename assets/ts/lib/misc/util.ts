@@ -500,3 +500,5 @@ export function iterateObjectWithContext
     f(key, obj[key], context);
   }
 }
+
+export type Either<A, B> = (A & Partial<B>) | (B & Partial<A>);

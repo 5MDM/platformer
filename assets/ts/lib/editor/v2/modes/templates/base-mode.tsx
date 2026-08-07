@@ -175,7 +175,7 @@ export abstract class BaseMode {
         createBlock(
             name: string, [x, y, w, h]: MDV.V4, rotation: number = 0, record = false
         ): AnyBlock | false {
-            const block = this.self.editor.engine.generator
+            const block = this.self.editor.engine.generator.bu
             .generateBlock({name, x, y, w, h, rotation}, record);
             
             const bz = this.self.engine.blockSize;

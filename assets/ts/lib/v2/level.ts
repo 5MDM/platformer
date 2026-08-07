@@ -29,7 +29,7 @@ Record<number, Record<number, Record<number, (engine: _MD2engine, data: LevelDat
                         continue;
                     }
 
-                    engine.generator.generateBlock({
+                    engine.generator.bu.generateBlock({
                         name: block.type,
                         rotation: block.rotation,
                         x: block.x,
