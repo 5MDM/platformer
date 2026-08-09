@@ -24,7 +24,8 @@ export class Gun4dir extends WeaponGun {
 
         audio.playAudio("gunshot");
 
-        await this.moveObjByVel(e, this.currentDirection.clone().multiplyS(this.opts.bulletSpeed), 1000);
+        await this.moveObjByVel
+        (e, this.currentDirection.clone().multiplyS(this.opts.bulletSpeed), 1000);
 
         this.deleteProjectiles(e);
     }

@@ -1,78 +1,68 @@
 import { Joystick } from "../../misc/joystick";
 import { _MD2physics } from "./main";
+import { Mphysics } from "./v2/main";
 
-export function setupMovementLoop(j: Joystick) {
-    const P = _MD2physics;
-    const setTrue = P.controls.setPolarTrue.bind(P.controls);
-    const setFalse = P.controls.setFalse.bind(P.controls);
+export function setupMovementLoop() {
+    const P = Mphysics;
+    //const setTrue = P.controls.setPolarTrue.bind(P.controls);
+    //const setFalse = P.controls.setFalse.bind(P.controls);
 
     P.isMovementLoopSetup = true;
+    const c = P.controls.moving;
 
-    j.onDrag = () => {
-        P.controls.setAll4DirFalse();
-
-        if (j.xdir == "left") setTrue("left");
-        else if (j.xdir == "right") setTrue("right");
-
-        if (j.ydir == "down") setTrue("down");
-        else if (j.ydir == "up") setTrue("up");
-    };
-
-    j.onReset = () => P.controls.setAll4DirFalse();
-
-    addEventListener("keydown", ({ key }) => {
+    addEventListener("keydown", o => {
+        const key = o.key.toLowerCase();
         switch (key) {
             case "w":
-            case "W":
-                setTrue("up");
+                c.up = true;
+                //setTrue("up");
                 break;
             case "a":
-            case "A":
-                setTrue("left");
+                c.left = true;
+                //setTrue("left");
                 break;
             case "s":
-            case "S":
-                setTrue("down");
+                c.down = true;
+                //setTrue("down");
+                //P.controls.looking.down = true;
                 break;
             case "d":
-            case "D":
-                setTrue("right");
+                c.right = true;
+                //setTrue("right");
                 break;
             case "\\":
             case "|":
-                P.controls.isJumping = true;
+                c.isJumping = true;
+                //P.controls.isJumping = true;
                 break;
-            case "s":
-            case "S":
-                P.controls.looking.down = true;
         }
     }, {passive: true});
 
-    addEventListener("keyup", ({ key }) => {
+    addEventListener("keyup", o => {
+        const key = o.key.toLowerCase();
         switch (key) {
             case "w":
-            case "W":
-                setFalse("up");
+                c.up = false;
+                //setFalse("up");
                 break;
             case "a":
-            case "A":
-                setFalse("left");
+                c.left = false;
+                //setFalse("left");
                 break;
             case "s":
-            case "S":
-                setFalse("down");
+                c.down = false;
+                //setFalse("down");
+                //P.controls.looking.down = false;
                 break;
             case "d":
-            case "D":
-                setFalse("right");
+                c.right = false;
+                //setFalse("right");
                 break;
             case "\\":
             case "|":
-                P.controls.isJumping = false;
+                c.isJumping = false;
+                //P.controls.isJumping = false;
                 break;
-            case "s":
-            case "S":
-                P.controls.looking.down = false;
         }
     }, {passive: true});
 }

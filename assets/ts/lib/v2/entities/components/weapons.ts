@@ -102,7 +102,6 @@ export abstract class WeaponsComponent<Attacks extends string = "main"> extends 
 
         const coords = MDV.V2.fromPoint(this.manager.target);
 
-
         const s = md2.generator.returnProjectile({
             name,
             x: bounds.x ?? coords.x,

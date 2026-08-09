@@ -89,11 +89,6 @@ export async function startGame(md2: _MD2engine) {
 
     // staticC.mask = glow;
     // player.container.addChild(glow);
-
-    // new MD2devAutomation(md2)
-    // .deleteCurrentLevel(self =>
-    //     self.loadLevel("2")
-    // );u
 }
 
 if(isMobile.any) {

@@ -18,6 +18,7 @@ import { MD2GUI } from "./modules/gui/main";
 import { BlockComponentManager } from "./blocks/components/main-manager";
 import { MD2utils } from "./md2utils";
 import { Mgenerator } from "./generation/generatorv2";
+import { Mphysics } from "./physics/v2/main";
 
 interface EngineOpts {
     engine: {
@@ -43,7 +44,7 @@ export class _MD2engine {
     levelManager: _MD2levelManager;
     errorManager: _MD2errorManager;
     generator: Mgenerator;
-    physics: _MD2physics;
+    physics: Mphysics;
     deletor: _MD2deletor;
     app: Application;
     audio: MDaudio = new MDaudio();
@@ -88,7 +89,7 @@ export class _MD2engine {
         this.app = opts.engine.app;
         
         this.deletor = new _MD2deletor(this);
-        this.physics = new _MD2physics(this, opts.physics);
+        this.physics = new Mphysics(this, opts.physics);
         this.dataManager = new _MD2dataManager(this, opts.dataManager);
         this.levelManager = new _MD2levelManager(this);
         this.errorManager = new _MD2errorManager();
@@ -101,7 +102,7 @@ export class _MD2engine {
             gui: new MD2GUI(this),
         };
 
-        this.physics.setMatrix(this.levelManager.levelGrids.fg as MDmatrix<FgBlock>);
+        this.physics.setBlockGrid(this.levelManager.levelGrids.fg as MDmatrix<FgBlock>);
 
         this.modules.gui.appendToTarget(opts.gui.target);
 

@@ -1,12 +1,12 @@
-import { ControlDump } from "../../misc/control-dump";
-import { Joystick } from "../../misc/joystick";
-import { MDmatrix } from "../../misc/matrix";
-import { FgBlock } from "../blocks/blocks";
-import { _MD2engine } from "../engine";
-import { Entity, PlayerControlledEntity } from "../entities/entity";
-import { Projectile } from "../entities/projectile";
-import { findstaticCollisions } from "./collision-f";
-import { setupMovementLoop } from "./movement";
+import { ControlDump } from "../../../misc/control-dump";
+import { Joystick, joystickBitflagCombinations, joystickBitflags } from "../../../misc/joystick";
+import { MDmatrix } from "../../../misc/matrix";
+import { FgBlock } from "../../blocks/blocks";
+import { _MD2engine } from "../../engine";
+import { Entity, PlayerControlledEntity } from "../../entities/entity";
+import { Projectile } from "../../entities/projectile";
+import { findstaticCollisions } from "../collision-f";
+import { setupMovementLoop } from "../movement";
 
 export interface _MD2physicsOpts {
     simSpeed: number;
@@ -15,19 +15,27 @@ export interface _MD2physicsOpts {
 
 type EntityGroupMap = Map<number, Entity> | EntityGroupMap[];
 
-export class _MD2physics {
+const jbm = joystickBitflagCombinations;
+const jb = joystickBitflags;
+
+export class Mphysics {
     engine: _MD2engine;
-    matrix: MDmatrix<FgBlock> = new MDmatrix(1, 1);
+    blockGrid: MDmatrix<FgBlock> = new MDmatrix(1, 1);
 
     private dynamicObjs = new Map<number, Entity | Projectile>();
-    private entityGroups: EntityGroupMap[] = [];
     private playerGroup = new Map<number, PlayerControlledEntity>();
 
     static expectedFPS = 1000 / 60;
 
     static isMovementLoopSetup = false;
 
-    static controls = new ControlDump();
+    static controls = {
+        moving: {
+            up: false, down: false,
+            left: false, right: false,
+            isJumping: false,
+        }
+    };
 
     gx: number = 0;
     gy: number = 5;
@@ -42,12 +50,14 @@ export class _MD2physics {
         this.smoothing = o.smoothing;
 
         this.setupPhysicsLoop();
+        this.j = engine.joystick;
 
-        if (!_MD2physics.isMovementLoopSetup) setupMovementLoop();
+        if(!this.P.isMovementLoopSetup) 
+            setupMovementLoop();
     }
 
-    setMatrix(matrix: MDmatrix<FgBlock>) {
-        this.matrix = matrix;
+    setBlockGrid(blockGrid: MDmatrix<FgBlock>) {
+        this.blockGrid = blockGrid;
     }
 
     lastPhysicsUpdate: number = 0;
@@ -55,77 +65,79 @@ export class _MD2physics {
     dt: number = 0;
     isLoopRunning: boolean = false;
 
-    P = _MD2physics;
+    P = Mphysics;
+    j: Joystick;
 
-    TDphysicsLoop(j: Joystick) {
-        var dirX = 1;
-        var dirY = 1;
+    TDphysicsLoop() {
+        const j = this.j;
 
-        if(j.directionX != 0 && j.directionY != 0) {
+        statement: if(j.b & jbm.isMoving) {
+            // joystick
             const dirX = j.directionX;
             const dirY = j.directionY;
 
             this.playerGroup.forEach(e => e.move(dirX, dirY));
         } else {
+            // keyboard
             const {up, left, right, down} = this.P.controls.moving;
 
-            if((up || down) && (left || right)) {
+            var dirX = 1;
+            var dirY = 1;
+
+            const isUpOrDown = up || down;
+            const isLeftOrRight = left || right;
+            const isMoving = isUpOrDown || isLeftOrRight;
+            if(!isMoving) {
+                this.playerGroup.forEach(e => e.onNotMoving());
+                break statement;
+            }
+
+            if(isUpOrDown && isLeftOrRight) {
                 dirX /= Math.SQRT2;
                 dirY /= Math.SQRT2;
             }
 
-            if (up) this.playerGroup.forEach(e => e.onUp(dirY));
-            if (down) this.playerGroup.forEach(e => e.onDown(dirY));
+            if(up) this.playerGroup.forEach(e => e.onUp(dirY));
+            if(down) this.playerGroup.forEach(e => e.onDown(dirY));
 
-            if (left) this.playerGroup.forEach(e => e.onLeft(dirX));
-
-            if (right) this.playerGroup.forEach(e => e.onRight(dirX));
-
-            if (!(up || down || left || right)) this.playerGroup.forEach(e => e.onNotMoving());
+            if(left) this.playerGroup.forEach(e => e.onLeft(dirX));
+            if(right) this.playerGroup.forEach(e => e.onRight(dirX));
         }
 
         this.findCollisions();
     }
 
-    private entityGroupMapRecursiveIteration
-    (fn: (e: Entity | Projectile, isEntity: boolean) => void, m: EntityGroupMap) {
-        m.forEach(e => {
-            if(e.isDestroyed) return;
-            if(e instanceof Map) return this.entityGroupMapRecursiveIteration(fn, e)
-            else return fn.call(this, e, e instanceof Entity);
-        });
-    }
-
     // iterate dynamic objects
     ido(fn: (e: Entity | Projectile, isEntity: boolean) => void) {
-        this.dynamicObjs.forEach(e => {
+        const doVals = this.dynamicObjs.values();
+        for(const e of doVals) {
             if(e.isDestroyed) return;
             fn(e, e instanceof Entity);
-        });
-        this.playerGroup.forEach(e => {
-            if(e.isDestroyed) return;
-            fn(e, e instanceof Entity);
-        });
+        }
 
-        this.entityGroupMapRecursiveIteration(fn, this.entityGroups);
+        const pgVals = this.playerGroup.values();
+        for(const e of pgVals) {
+            if(e.isDestroyed) return;
+            fn(e, e instanceof Entity);
+        }
     }
 
     private readonly physicsLoop = () => {
         const timeNow = performance.now();
         this.physicsDeltaTime = timeNow - this.lastPhysicsUpdate;
-        this.dt = this.physicsDeltaTime / _MD2physics.expectedFPS;
+        this.dt = this.physicsDeltaTime / this.P.expectedFPS;
         this.lastPhysicsUpdate = timeNow;
 
         PlayerControlledEntity.dt = this.physicsDeltaTime;
 
         if(!this.isLoopRunning) return;
 
-        const j = this.engine.joystick;
+        const j = this.j;
 
         this.globalPhysicsLoopBefore();
 
-        if(this.engine.CD == "td") this.TDphysicsLoop(j);
-        else this.sideScrollerPhysicsLoop(j);
+        if(this.engine.CD == "td") this.TDphysicsLoop();
+        else this.sideScrollerPhysicsLoop();
 
         this.globalPhysicsLoopAfter();
     }
@@ -168,7 +180,8 @@ export class _MD2physics {
         this.playerGroup.forEach(e => e.onJump(.9));
     }
 
-    sideScrollerPhysicsLoop(j: Joystick) {
+    sideScrollerPhysicsLoop() {
+        const j = this.j;
         var dirX = 1;
         var dirY = 1;
 
@@ -181,9 +194,9 @@ export class _MD2physics {
 
             if(j.directionY > .3) this.tryJumping();
         } else {
-            const {moving, looking, isJumping} = this.P.controls;
+            const moving = this.P.controls.moving;
 
-            if(isJumping) {
+            if(moving.isJumping) {
                 this.tryJumping();
             } else {
                 this.playerGroup.forEach(e => e.jumpBreak());
@@ -192,17 +205,17 @@ export class _MD2physics {
             if(moving.left) this.playerGroup.forEach(e => e.onLeft(dirX));
             if(moving.right) this.playerGroup.forEach(e => e.onRight(dirX));
 
-            if(looking.up) this.playerGroup.forEach(e => {
+            if(moving.up) this.playerGroup.forEach(e => {
                 e.lookUp();
             });
 
-            if(looking.down) this.playerGroup.forEach(e => e.lookDown());
+            if(moving.down) this.playerGroup.forEach(e => e.lookDown());
 
             if(!(moving.up
             || moving.down
             || moving.left
             || moving.right
-            || isJumping)) 
+            || moving.isJumping)) 
                 this.playerGroup.forEach(e => e.onNotMoving())
         }
 
@@ -212,9 +225,9 @@ export class _MD2physics {
     findCollisions() {
         const recentColClone: Record<number, FgBlock> = {};
 
-        for (const id in _MD2physics.recentCollisions) {
-            recentColClone[id] = _MD2physics.recentCollisions[id];
-            delete _MD2physics.recentCollisions[id];
+        for (const id in this.P.recentCollisions) {
+            recentColClone[id] = this.P.recentCollisions[id];
+            delete this.P.recentCollisions[id];
         }
 
         this.ido(moving => {
@@ -224,19 +237,19 @@ export class _MD2physics {
             if (moving.fx != 0) moving.setX(moving.x + moving.fx);
             if (moving.fy != 0) moving.setY(moving.y + moving.fy);
 
-            findstaticCollisions(this.matrix, moving, this.engine.blockSize, this.engine);
+            findstaticCollisions(this.blockGrid, moving, this.engine.blockSize, this.engine);
 
             moving.fx = 0;
             moving.fy = 0;
         });
 
-        for (const id in _MD2physics.recentCollisions)
+        for (const id in this.P.recentCollisions)
             delete recentColClone[id];
 
         for (const id in recentColClone) {
             recentColClone[id].components.onCollisionLeave();
             recentColClone[id].hasCollidedRecently = false;
-            delete _MD2physics.recentCollisions[id];
+            delete this.P.recentCollisions[id];
         }
     }
 
@@ -246,10 +259,6 @@ export class _MD2physics {
 
     removeEntity(e: Entity | Projectile) {
         this.dynamicObjs.delete(e.id);
-    }
-
-    addEntityGroup(map: EntityGroupMap) {
-        this.entityGroups.push(map);
     }
 
     addPlayer(player: PlayerControlledEntity) {
